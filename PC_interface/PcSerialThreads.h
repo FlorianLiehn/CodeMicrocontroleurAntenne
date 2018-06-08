@@ -34,6 +34,12 @@ THD_FUNCTION(PC_TxThread, arg) {
 		msg_t state = chMBFetchI(mailbox_log,&msg);
 
 		if(state==MSG_OK){
+			//send message
+			struct log_message log=*(struct log_message*)msg;
+			union Payload_message payload={.message=log};
+			sdAsynchronousWrite(&SD2, payload.buffer,
+				sizeof(payload.buffer)/sizeof(uint8_t));
+
 			phase=~phase;
 			if(phase){
 				palClearPad(GPIOD, GPIOD_LED6);
@@ -60,7 +66,6 @@ THD_FUNCTION(PC_RxThread, arg) {
 	//mailbox_t*  mailbox_order=((struct RxThread_args*)arg)->mailbox_order_arg;
 
 	chRegSetThreadName("Thread RX PC");
-	int count=0;
 	while (true) {
 		palSetPad(GPIOD, GPIOD_LED3);
 		chThdSleepMilliseconds(250);
@@ -73,15 +78,13 @@ THD_FUNCTION(PC_RxThread, arg) {
 		union ARGS log_test;
 		strcpy(log_test.message_antenne,"TESTMESSAGE\n");
 
-		if(++count>2){
-			count=0;
-			struct log_message test={
-					.order=ORDER_CALAGE,
-					.logs =log_test,
-			};
+		struct log_message test={
+				.order=ORDER_CALAGE,
+				.logs =log_test,
+		};
 
-			(void)chMBPostI(mailbox_log, (msg_t)&test);
-		}
+		(void)chMBPostI(mailbox_log, (msg_t)&test);
+
 
 	}
 }

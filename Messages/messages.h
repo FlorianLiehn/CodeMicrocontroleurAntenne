@@ -48,7 +48,7 @@ struct log_message{
 
 union Payload_message{
 	struct log_message 	message;
-	char buffer[sizeof(struct log_message)];
+	uint8_t buffer[sizeof(struct log_message)/(sizeof(uint8_t))];
 }Payload_message;
 
 #endif /* MESSAGES_MESSAGES_H_ */

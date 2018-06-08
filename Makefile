@@ -209,6 +209,8 @@ ULIBS =
 #
 # End of user defines
 ##############################################################################
+all:
+	gcc -o build/ConnectionSerial PcSerialHandler/test.c
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
