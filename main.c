@@ -19,35 +19,10 @@
 #include "rt_test_root.h"
 #include "oslib_test_root.h"
 
-/*
- * This is a periodic thread that does absolutely nothing except flashing
- * a LED.
- */
-static THD_WORKING_AREA(waThread1, 128);
-static THD_FUNCTION(Thread1, arg) {
-
-  (void)arg;
-  chRegSetThreadName("blinker");
-  while (true) {
-    palSetPad(GPIOD, GPIOD_LED3);
-    chThdSleepMilliseconds(250);
-    palClearPad(GPIOD, GPIOD_LED3);
-
-    palSetPad(GPIOD, GPIOD_LED4);
-    chThdSleepMilliseconds(250);
-    palClearPad(GPIOD, GPIOD_LED4);
-
-    palSetPad(GPIOD, GPIOD_LED6);
-    chThdSleepMilliseconds(250);
-    palClearPad(GPIOD, GPIOD_LED6);
-
-    palSetPad(GPIOD, GPIOD_LED5);
-    chThdSleepMilliseconds(250);
-    palClearPad(GPIOD, GPIOD_LED5);
+#include "PC_interface/PcSerialThreads.h"
 
 
-  }
-}
+#define NUM_BUFFERS 20
 
 /*
  * Application entry point.
@@ -64,28 +39,35 @@ int main(void) {
   halInit();
   chSysInit();
 
-  /*
-   * Activates the serial driver 2 using the driver default configuration.
-   * PA2(TX) and PA3(RX) are routed to USART2.
-   */
-  sdStart(&SD2, NULL);
+//CONNECTIONS EXTERNES
+  /**
+   * SD2 = PC
+   * A2 et A3
+   * **/
+  sdStart(&SD2, &PcSerialConfig);
   palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
-  /*
-   * Creates the example thread.
-   */
-  chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+//CONNECTIONS INTERNES
+  // FIFO that contain all logs and will be send to PC
+  msg_t  mailbox_log_buffer[NUM_BUFFERS];
+  mailbox_t  mailbox_log;
+  chMBObjectInit(&mailbox_log, mailbox_log_buffer, NUM_BUFFERS);
+  // FIFO that contain all orders, must be execute in the correct order
+  msg_t  mailbox_order_buffer[NUM_BUFFERS];
+  mailbox_t  mailbox_order;
+  chMBObjectInit(&mailbox_order, mailbox_order_buffer, NUM_BUFFERS);
 
   /*
-   * Normal main() thread activity, in this demo it does nothing except
-   * sleeping in a loop and check the button state.
+   * Creates threads.
    */
+  chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
+               (void*)&(struct RxThread_args){&mailbox_log  ,&mailbox_order,});
+  chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
+               	   	   	   	   	   	   	   	   	   	   	   (void*)&mailbox_log);
+
+
   while (true) {
-    if (palReadPad(GPIOA, GPIOA_BUTTON)) {
-      test_execute((BaseSequentialStream *)&SD2, &rt_test_suite);
-      test_execute((BaseSequentialStream *)&SD2, &oslib_test_suite);
-    }
     chThdSleepMilliseconds(500);
   }
 }
