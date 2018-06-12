@@ -24,21 +24,23 @@ THD_WORKING_AREA(waPC_TxThread, 128);
 THD_FUNCTION(PC_TxThread, arg) {
 
 	mailbox_t*  mailbox_log  =(mailbox_t*)arg;
+	msg_t msg=(msg_t)-1;
+	uint8_t emit_buffer[serialMessageLength];
 
 	chRegSetThreadName("Thread TX PC");
+
 	int phase=0;
 	palSetPad(GPIOD, GPIOD_LED6);
-	msg_t msg=(msg_t)-1;
 	while (true) {
 
 		msg_t state = chMBFetchI(mailbox_log,&msg);
 
 		if(state==MSG_OK){
 			//send message
-			struct log_message log=*(struct log_message*)msg;
-			union Payload_message payload={.message=log};
-			sdAsynchronousWrite(&SD2, payload.buffer,
-				sizeof(payload.buffer)/sizeof(uint8_t));
+			union Payload_message payload={.message=*(struct log_message*)msg};
+			encodePayload(payload.buffer,emit_buffer);
+			sdWrite(&SD2, emit_buffer,serialMessageLength);
+			//sdAsynchronousWrite(&SD2, (uint8_t*)emit_buffer,serialMessageLength);
 
 			phase=~phase;
 			if(phase){
@@ -76,10 +78,10 @@ THD_FUNCTION(PC_RxThread, arg) {
 		palClearPad(GPIOD, GPIOD_LED4);
 
 		union ARGS log_test;
-		strcpy(log_test.message_antenne,"TESTMESSAGE\n");
+		strcpy(log_test.message_antenne,"TEST MESSAGE");
 
 		struct log_message test={
-				.order=ORDER_CALAGE,
+				.order=ORDER_GOTO,
 				.logs =log_test,
 		};
 

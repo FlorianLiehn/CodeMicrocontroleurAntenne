@@ -39,6 +39,9 @@ int main(void) {
   halInit();
   chSysInit();
 
+  //Init CRC table
+  crcInit();
+
 //CONNECTIONS EXTERNES
   /**
    * SD2 = PC

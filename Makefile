@@ -110,8 +110,10 @@ LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CSRC = $(ALLCSRC) \
-       $(TESTSRC) \
+PROJECT_CSRC= Messages/messages.c
+CSRC = $(ALLCSRC) 		\
+       $(TESTSRC) 		\
+       $(PROJECT_CSRC) 	\
        main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -210,7 +212,7 @@ ULIBS =
 # End of user defines
 ##############################################################################
 all:
-	gcc -o build/ConnectionSerial PcSerialHandler/test.c
+	gcc -o build/ConnectionSerial PcSerialHandler/test.c $(PROJECT_CSRC)
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
