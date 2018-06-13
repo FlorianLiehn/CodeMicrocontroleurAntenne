@@ -83,7 +83,7 @@ void write_test_message(int fd){
 	strcpy(log_test.message_antenne,"MESSAGE PCuC");
 
 	log_message test={
-		.order=ORDER_ANTENNA,
+		.id=ID_MSG_ORDER_ANTENNA,
 		.logs =log_test,
 	};
 	Payload_message payload={.message=test};

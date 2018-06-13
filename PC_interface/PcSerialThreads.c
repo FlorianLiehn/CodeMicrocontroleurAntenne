@@ -66,8 +66,12 @@ THD_FUNCTION(PC_RxThread, arg) {
 		count++;
 		int status=read_message(STM_PC_reader,(uint8_t*)&in_message.buffer);
 
-		if(status==0){
-			//TODO Log CRC problem
+		if(status==0){//If CRC is wrong create a log
+			log_message* new_message=next_message();
+			new_message->id=ID_MSG_ALERT_CRC_ERROR;
+			strcpy(new_message->logs.message_antenne,
+					in_message.message.logs.message_antenne);
+			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
 		else if(status>0){
 			phase=1-phase;
@@ -89,7 +93,7 @@ THD_FUNCTION(PC_RxThread, arg) {
 
 		if(count%20==0){
 			log_message* new_message=next_message();
-			new_message->order=ORDER_GOTO;
+			new_message->id=ID_MSG_ORDER_GOTO;
 			strncpy(new_message->logs.message_antenne,"TEST0MESSAGE",12);
 			new_message->logs.message_antenne[4]+=(count/20)%10;
 			chFifoSendObjectI(fifo_log_arg,(void*)new_message);

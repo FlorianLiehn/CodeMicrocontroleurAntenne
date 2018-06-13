@@ -17,13 +17,16 @@
 
 
 //Id of each messages
-enum ORDER{
-	ORDER_SURVIE,
-	ORDER_REINI,
-	ORDER_CALAGE,
-	ORDER_GOTO,
-	ORDER_ANTENNA,
-	//TODO all orders
+enum ID_MSG{
+	ID_MSG_ORDER_SURVIE,
+	ID_MSG_ORDER_REINI,
+	ID_MSG_ORDER_CALAGE,
+	ID_MSG_ORDER_GOTO,
+	ID_MSG_ORDER_ANTENNA,
+
+	ID_MSG_ALERT_CRC_ERROR=50,
+	//TODO all id message
+
 };
 
 /////////////////////ARGS DEFINITION//////////////////
@@ -51,7 +54,7 @@ typedef struct {
 
 //log or reply from microcontroler
 typedef struct {
-	uint8_t order;
+	uint8_t id;
 	ARGS logs;
 }log_message;
 
