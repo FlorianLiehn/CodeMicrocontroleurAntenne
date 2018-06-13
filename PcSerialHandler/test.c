@@ -95,47 +95,6 @@ void write_test_message(int fd){
 
 }
 
-int wait_message(int fd,char* message){
-	uint8_t buf [serialMessageLength];
-    memset (message, 0, Payload_message_lenght);
-
-	int n=read (fd,buf,1);//n = number of read bytes
-	if(buf[0]!=HEADER_BYTE || n!=1)
-		return -1;
-	while(n==1)
-		n+=read (fd,&(buf[n]),1);//read nb
-	int tot=(int)(buf[1]);
-	while(n<tot+3){
-		n+=read (fd,&(buf[n]),tot+3-n);
-	}
-	strncpy(message,&(buf[2]),tot);
-
-	uint8_t crc=ComputeCRC(message,tot);
-	printf("taille:%d CRC:%d|%d\n",tot, buf[tot+3-1],crc);
-	if(crc!=buf[tot+3-1]){
-		printf("ERREUR CRC\n");
-		return 0;
-	}
-	return 1;
-}
-
-
-
-void read_message(char message[]){
-
-	Payload_message msg;
-	strcpy(msg.buffer,message);
-	log_message log_msg=msg.message;
-	printf("New message %d :",log_msg.order);
-	switch(log_msg.order){
-	case(ORDER_GOTO):
-	default:
-		printf("%s\n",log_msg.logs.message_antenne);
-		break;
-	}
-
-}
-
 
 void main(){
    signal(SIGINT, intHandler);
@@ -153,13 +112,20 @@ void main(){
 	set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
 	set_blocking (fd, 0);                // set no blocking
 
+	//create a intermediar reader function
+	inline int PC_Serial_reader(uint8_t* buff,int n)
+		{return read(fd,buff,n);}
+
 	char buf [Payload_message_lenght];
 	printf("C'est parti! %s\n",portname);
 
 	int count=0;
 	while(running){
-		if(wait_message(fd,buf)>=0){
-			printf("Message:%s\n",buf);
+		int state=read_message(PC_Serial_reader,buf);
+		if(state>=0){
+			printf("Message:%s",buf);
+			if(state==0)printf("\tERROR ON CRC");
+			printf("\n");
 
 			if(count++>=10){
 				count=0;

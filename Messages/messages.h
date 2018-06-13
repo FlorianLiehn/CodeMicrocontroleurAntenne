@@ -9,6 +9,7 @@
 #define MESSAGES_MESSAGES_H_
 
 #include <stdint.h>
+#include <string.h>
 
 #define FIFO_BUFFER_SIZE 20
 #define POLYNOMIAL_CRC 0xE1 //EYE...
@@ -70,5 +71,6 @@ void crcInit(void);
 
 void encodePayload(char* payload,uint8_t* msg);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
+int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 
 #endif /* MESSAGES_MESSAGES_H_ */

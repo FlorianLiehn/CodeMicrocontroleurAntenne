@@ -30,9 +30,9 @@ typedef struct {
 extern THD_WORKING_AREA(waPC_RxThread, 128);
 THD_FUNCTION(PC_RxThread, arg);
 
-#define TIMEOUT TIME_MS2I(500) //Number of ms
-int read_message(uint8_t* message);
+inline int STM_PC_reader(uint8_t* buff,int n){return sdAsynchronousRead(&SD2,buff,n);}
 
 log_message* next_message(void);
+
 
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */

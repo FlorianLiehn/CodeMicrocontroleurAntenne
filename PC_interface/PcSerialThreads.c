@@ -64,7 +64,7 @@ THD_FUNCTION(PC_RxThread, arg) {
 	palSetPad(GPIOD, GPIOD_LED3);
 	while (true) {
 		count++;
-		int status=read_message((uint8_t*)&in_message.buffer);
+		int status=read_message(STM_PC_reader,(uint8_t*)&in_message.buffer);
 
 		if(status==0){
 			//TODO Log CRC problem
@@ -98,32 +98,6 @@ THD_FUNCTION(PC_RxThread, arg) {
 		chThdSleepMilliseconds(25);
 
 	}
-}
-
-int read_message(uint8_t* message){
-
-	uint8_t buf [serialMessageLength];
-    memset (message, 0, Payload_message_lenght);
-    //Read Header Byte
-	int n=sdAsynchronousRead(&SD2,buf,1);
-
-	if(n!=1 || buf[0]!=HEADER_BYTE)
-		return -1;
-	//Read Payload lenght
-	while(n==1)
-		n+=sdAsynchronousRead(&SD2,&(buf[n]),1);//read nb
-	int tot=(int)(buf[1]);
-	//Read Payload + CRC
-	while(n<tot+3){
-		n+=sdAsynchronousRead(&SD2,&(buf[n]),tot+3-n);
-	}
-	strncpy((char*)message,(char*)&(buf[2]),tot);
-	//Check CRC
-	uint8_t crc=ComputeCRC(message,tot);
-	if(crc!=buf[tot+3-1]){
-		return 0;
-	}
-	return 1;
 }
 
 

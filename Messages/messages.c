@@ -61,3 +61,29 @@ void encodePayload(char* payload,uint8_t* msg){
 	uint8_t crc=ComputeCRC((uint8_t*)payload,Payload_message_lenght);
 	*(msg+serialMessageLength-1)=crc;//CRC to check the communication
 }
+
+int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
+
+	uint8_t buf [serialMessageLength];
+    memset (message, 0, Payload_message_lenght);
+    //Read Header Byte
+	int n=reader(buf,1);
+
+	if(n!=1 || buf[0]!=HEADER_BYTE)
+		return -1;
+	//Read Payload lenght
+	while(n==1)
+		n+=reader(&(buf[n]),1);//read nb
+	int tot=(int)(buf[1]);
+	//Read Payload + CRC
+	while(n<tot+3){
+		n+=reader(&(buf[n]),tot+3-n);
+	}
+	strncpy((char*)message,(char*)&(buf[2]),tot);
+	//Check CRC
+	uint8_t crc=ComputeCRC(message,tot);
+	if(crc!=buf[tot+3-1]){
+		return 0;
+	}
+	return 1;
+}
