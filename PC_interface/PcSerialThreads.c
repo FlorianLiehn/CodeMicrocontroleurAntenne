@@ -34,7 +34,7 @@ THD_FUNCTION(PC_TxThread, arg) {
 			union Payload_message payload={.message=*(struct log_message*)msg};
 			encodePayload(payload.buffer,emit_buffer);
 			sdWrite(&SD2, emit_buffer,serialMessageLength);
-			//sdAsynchronousWrite(&SD2, (uint8_t*)emit_buffer,serialMessageLength);
+			//sdAsynchronousWrite(&SD2, emit_buffer,serialMessageLength);
 
 			phase=~phase;
 			if(phase){
@@ -55,27 +55,71 @@ THD_FUNCTION(PC_RxThread, arg) {
 
 	mailbox_t*  mailbox_log  =((struct RxThread_args*)arg)->mailbox_log_arg;
 	//mailbox_t*  mailbox_order=((struct RxThread_args*)arg)->mailbox_order_arg;
+	union Payload_message in_message;
 
 	chRegSetThreadName("Thread RX PC");
-	while (true) {
-		palSetPad(GPIOD, GPIOD_LED3);
-		chThdSleepMilliseconds(250);
-		palClearPad(GPIOD, GPIOD_LED3);
 
-		palSetPad(GPIOD, GPIOD_LED4);
-		chThdSleepMilliseconds(250);
-		palClearPad(GPIOD, GPIOD_LED4);
+	int phase=0;
+	int count=0;
+	palSetPad(GPIOD, GPIOD_LED3);
+	while (true) {
+		count++;/*
+		int status=read_message((uint8_t*)&in_message.buffer);
+
+		if(status==0){
+			//TODO Log CRC problem
+		}
+		else if(status>=0){
+			phase=~phase;
+
+		}*/
+
+
+		if(phase){
+			palClearPad(GPIOD, GPIOD_LED3);
+			palSetPad(GPIOD, GPIOD_LED4);
+		}
+		else{
+			palSetPad(GPIOD, GPIOD_LED3);
+			palClearPad(GPIOD, GPIOD_LED4);
+		}
 
 		union ARGS log_test;
 		strcpy(log_test.message_antenne,"TEST MESSAGE");
 
 		struct log_message test={
-				.order=ORDER_GOTO,
-				.logs =log_test,
+			.order=ORDER_GOTO,
+			.logs =log_test,
 		};
+		//if(count%500==0)
+			(void)chMBPostI(mailbox_log, (msg_t)&test);
 
-		(void)chMBPostI(mailbox_log, (msg_t)&test);
-
+		chThdSleepMilliseconds(250);
 
 	}
 }
+
+int read_message(uint8_t* message){
+	return 0;
+	uint8_t buf [serialMessageLength];
+
+	int n=sdAsynchronousRead(&SD2,buf,1);
+	if(buf[0]!=HEADER_BYTE || n!=1)
+		return -1;
+	return 1;
+	while(n==1)
+		n+=sdAsynchronousRead(&SD2,&(buf[n]),1);//read nb
+	int tot=(int)(buf[1]);
+	while(n<tot){
+		n+=sdAsynchronousRead(&SD2,&(buf[n]),tot+3-n);
+	}
+	strncpy((char*)message,(char*)&(buf[2]),tot);
+
+	uint8_t crc=ComputeCRC(message,tot);
+	if(crc!=buf[tot+3-1]){
+		return 0;
+	}
+	return 1;
+}
+
+

@@ -33,7 +33,6 @@ int set_interface_attribs (int fd, int speed, int parity)
 
         tty.c_oflag = 0;                // no remapping, no delays
 
-
         tty.c_cc[VMIN]  = 0;            // read doesn't block
         tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
 
@@ -51,6 +50,7 @@ int set_interface_attribs (int fd, int speed, int parity)
                 fprintf(stderr, "error %d from tcsetattr", errno);
                 return -1;
         }
+
         return 0;
 }
 
@@ -77,16 +77,35 @@ void intHandler(int dummy) {
     running = 0;
 }
 
+void write_test_message(int fd){
+
+	union ARGS log_test;
+	strcpy(log_test.message_antenne,"MESSAGE PCuC");
+
+	struct log_message test={
+		.order=ORDER_GOTO,
+		.logs =log_test,
+	};
+	union Payload_message payload={.message=test};
+	uint8_t emit_buffer[serialMessageLength];
+	encodePayload(payload.buffer,emit_buffer);
+	write(fd,emit_buffer,serialMessageLength);
+	printf("Message writted!\n");
+
+
+}
+
 int wait_message(int fd,char* message){
 	char buf [serialMessageLength];
+    memset (message, 0, Payload_message_lenght);
 
-	int n=read (fd,buf,1);
+	int n=read (fd,buf,1);//n = number of read bytes
 	if(buf[0]!=HEADER_BYTE || n!=1)
 		return -1;
 	while(n==1)
 		n+=read (fd,&(buf[n]),1);//read nb
 	int tot=(int)(buf[1]);
-	while(n<tot){
+	while(n<tot+3){
 		n+=read (fd,&(buf[n]),tot+3-n);
 	}
 	strncpy(message,&(buf[2]),tot);
@@ -94,7 +113,7 @@ int wait_message(int fd,char* message){
 	uint8_t crc=ComputeCRC(message,tot);
 	printf("taille:%d CRC:%d|%d\n",tot, buf[tot+3-1],crc);
 	if(crc!=buf[tot+3-1]){
-		printf("ERREUR CRC");
+		printf("ERREUR CRC\n");
 		return 0;
 	}
 	return 1;
@@ -137,9 +156,17 @@ void main(){
 	char buf [Payload_message_lenght];
 	printf("C'est parti! %s\n",portname);
 
+	int count=0;
 	while(running){
-		if(wait_message(fd,buf)>=0)
+		if(wait_message(fd,buf)>=0){
 			printf("Message:%s\n",buf);
 
+			if(count++>=10){
+				count=0;
+				write_test_message(fd);
+			}
+		}
+
 	}
+    close(fd);
 }

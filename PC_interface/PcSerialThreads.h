@@ -34,4 +34,6 @@ struct RxThread_args{
 extern THD_WORKING_AREA(waPC_RxThread, 128);
 THD_FUNCTION(PC_RxThread, arg);
 
+#define TIMEOUT TIME_MS2I(500) //Number of ms
+int read_message(uint8_t* message);
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */
