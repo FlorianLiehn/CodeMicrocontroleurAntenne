@@ -28,39 +28,39 @@ enum ORDER{
 /////////////////////ARGS DEFINITION//////////////////
 
 //angles for the goto order
-struct goto_args{
+typedef struct {
 	uint8_t elevation;
 	uint8_t azimut;
-};
+}goto_args;
 
 //Union of all args for all messages
-union ARGS{
+typedef union {
 	char message_antenne[12];
 	char date[12];
-	struct goto_args ARGS_goto;
-};
+	goto_args ARGS_goto;
+}ARGS;
 
 //////////////////MESSAGES DEFINITION//////////////////
 
 //message for microcontroler
-struct order_message{
+typedef struct {
 	uint8_t order;//fill with ORDER enum
-	union ARGS arguments;
-};
+	ARGS arguments;
+}order_message;
 
 //log or reply from microcontroler
-struct log_message{
+typedef struct {
 	uint8_t order;
-	union ARGS logs;
-};
+	ARGS logs;
+}log_message;
 
-#define Payload_message_lenght (sizeof(struct log_message)/(sizeof(char)))
+#define Payload_message_lenght (sizeof(log_message)/(sizeof(char)))
 #define serialMessageLength (int)(1+1+Payload_message_lenght+1)//INIT+nb+[Payload]+CRC
 
-union Payload_message{
-	struct log_message 	message;
+typedef union {
+	log_message message;
 	char buffer[Payload_message_lenght];
-};
+}Payload_message;
 
 
 //////////////////MESSAGES ENCODE/DECODE//////////////////

@@ -53,9 +53,9 @@ THD_FUNCTION(PC_TxThread, arg) {
 THD_WORKING_AREA(waPC_RxThread, 128);
 THD_FUNCTION(PC_RxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((struct RxThread_args*)arg)->fifo_log_arg;
-	//objects_fifo_t*  fifo_order_arg=((struct RxThread_args*)arg)->fifo_order_arg;
-	union Payload_message in_message;
+	objects_fifo_t*  fifo_log_arg  =((RxThread_args*)arg)->fifo_log_arg;
+	//objects_fifo_t*  fifo_order_arg=((RxThread_args*)arg)->fifo_order_arg;
+	Payload_message in_message;
 
 	chRegSetThreadName("Thread RX PC");
 
@@ -72,7 +72,7 @@ THD_FUNCTION(PC_RxThread, arg) {
 		else if(status>0){
 			phase=1-phase;
 
-			struct log_message* new_message=next_message();
+			log_message* new_message=next_message();
 			*new_message=in_message.message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
@@ -88,7 +88,7 @@ THD_FUNCTION(PC_RxThread, arg) {
 		}
 
 		if(count%20==0){
-			struct log_message* new_message=next_message();
+			log_message* new_message=next_message();
 			new_message->order=ORDER_GOTO;
 			strncpy(new_message->logs.message_antenne,"TEST0MESSAGE",12);
 			new_message->logs.message_antenne[4]+=(count/20)%10;
@@ -127,9 +127,9 @@ int read_message(uint8_t* message){
 }
 
 
-static struct log_message messages_buffer[FIFO_BUFFER_SIZE];
+static log_message messages_buffer[FIFO_BUFFER_SIZE];
 static int log_pointer=0;
-struct log_message* next_message(){
+log_message* next_message(){
 	log_pointer++;
 	if(log_pointer>=FIFO_BUFFER_SIZE)
 		log_pointer=0;

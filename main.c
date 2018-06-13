@@ -22,11 +22,11 @@
 //CONNECTIONS INTERNES
 // FIFO that contain all logs and will be send to PC
 msg_t  msg_log_buffer[FIFO_BUFFER_SIZE];
-struct log_message  logs_buffer[FIFO_BUFFER_SIZE];
+log_message  logs_buffer[FIFO_BUFFER_SIZE];
 objects_fifo_t Fifo_log;
 // FIFO that contain all orders, must be execute in the correct order
 msg_t  msg_order_buffer[FIFO_BUFFER_SIZE];
-struct log_message  orders_buffer[FIFO_BUFFER_SIZE];
+log_message  orders_buffer[FIFO_BUFFER_SIZE];
 objects_fifo_t Fifo_order;
 
 /*
@@ -48,10 +48,10 @@ int main(void) {
   crcInit();
 
   //Init Connections internes
-  chFifoObjectInit(&Fifo_log,sizeof(struct log_message),
+  chFifoObjectInit(&Fifo_log,sizeof(log_message),
 		  FIFO_BUFFER_SIZE,0,(void*)logs_buffer,msg_log_buffer);
 
-  chFifoObjectInit(&Fifo_order,sizeof(struct log_message),
+  chFifoObjectInit(&Fifo_order,sizeof(log_message),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 //CONNECTIONS EXTERNES
   /**
@@ -66,7 +66,7 @@ int main(void) {
    * Creates threads.
    */
   chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
-               (void*)&(struct RxThread_args){&Fifo_log  ,&Fifo_order,});
+               (void*)&(RxThread_args){&Fifo_log  ,&Fifo_order,});
   chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
                	   	   	   	   	   	   	   	   	   	   	   (void*)&Fifo_log);
 

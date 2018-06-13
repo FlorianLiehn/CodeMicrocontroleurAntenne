@@ -79,14 +79,14 @@ void intHandler(int dummy) {
 
 void write_test_message(int fd){
 
-	union ARGS log_test;
+	ARGS log_test;
 	strcpy(log_test.message_antenne,"MESSAGE PCuC");
 
-	struct log_message test={
+	log_message test={
 		.order=ORDER_ANTENNA,
 		.logs =log_test,
 	};
-	union Payload_message payload={.message=test};
+	Payload_message payload={.message=test};
 	uint8_t emit_buffer[serialMessageLength];
 	encodePayload(payload.buffer,emit_buffer);
 	write(fd,emit_buffer,serialMessageLength);
@@ -123,9 +123,9 @@ int wait_message(int fd,char* message){
 
 void read_message(char message[]){
 
-	union Payload_message msg;
+	Payload_message msg;
 	strcpy(msg.buffer,message);
-	struct log_message log_msg=msg.message;
+	log_message log_msg=msg.message;
 	printf("New message %d :",log_msg.order);
 	switch(log_msg.order){
 	case(ORDER_GOTO):

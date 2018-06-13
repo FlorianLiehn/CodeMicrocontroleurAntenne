@@ -22,10 +22,10 @@ extern THD_WORKING_AREA(waPC_TxThread, 128);
 THD_FUNCTION(PC_TxThread, arg);
 
 //RX PC thread
-struct RxThread_args{
+typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
-};
+}RxThread_args;
 
 extern THD_WORKING_AREA(waPC_RxThread, 128);
 THD_FUNCTION(PC_RxThread, arg);
@@ -33,6 +33,6 @@ THD_FUNCTION(PC_RxThread, arg);
 #define TIMEOUT TIME_MS2I(500) //Number of ms
 int read_message(uint8_t* message);
 
-struct log_message* next_message(void);
+log_message* next_message(void);
 
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */
