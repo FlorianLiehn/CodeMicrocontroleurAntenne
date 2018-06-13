@@ -83,7 +83,7 @@ void write_test_message(int fd){
 	strcpy(log_test.message_antenne,"MESSAGE PCuC");
 
 	struct log_message test={
-		.order=ORDER_GOTO,
+		.order=ORDER_ANTENNA,
 		.logs =log_test,
 	};
 	union Payload_message payload={.message=test};
@@ -96,7 +96,7 @@ void write_test_message(int fd){
 }
 
 int wait_message(int fd,char* message){
-	char buf [serialMessageLength];
+	uint8_t buf [serialMessageLength];
     memset (message, 0, Payload_message_lenght);
 
 	int n=read (fd,buf,1);//n = number of read bytes

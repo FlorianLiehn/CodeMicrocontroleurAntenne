@@ -10,10 +10,7 @@
 
 #include <string.h>
 
-#include "ch.h"
 #include "hal.h"
-#include "rt_test_root.h"
-#include "oslib_test_root.h"
 
 #include "Messages/messages.h"
 
@@ -24,11 +21,10 @@ extern const SerialConfig PcSerialConfig;
 extern THD_WORKING_AREA(waPC_TxThread, 128);
 THD_FUNCTION(PC_TxThread, arg);
 
-
 //RX PC thread
 struct RxThread_args{
-	mailbox_t* mailbox_log_arg;
-	mailbox_t* mailbox_order_arg;
+	objects_fifo_t* fifo_log_arg;
+	objects_fifo_t* fifo_order_arg;
 };
 
 extern THD_WORKING_AREA(waPC_RxThread, 128);
@@ -36,4 +32,7 @@ THD_FUNCTION(PC_RxThread, arg);
 
 #define TIMEOUT TIME_MS2I(500) //Number of ms
 int read_message(uint8_t* message);
+
+struct log_message* next_message(void);
+
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */

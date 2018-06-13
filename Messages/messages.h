@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 
+#define FIFO_BUFFER_SIZE 20
 #define POLYNOMIAL_CRC 0xE1 //EYE...
 #define HEADER_BYTE '('
 
@@ -20,6 +21,7 @@ enum ORDER{
 	ORDER_REINI,
 	ORDER_CALAGE,
 	ORDER_GOTO,
+	ORDER_ANTENNA,
 	//TODO all orders
 };
 
