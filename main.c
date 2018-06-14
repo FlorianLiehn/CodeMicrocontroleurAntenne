@@ -62,10 +62,10 @@ int main(void) {
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
   //SD3 = Antenna (PB10 = Tx, PB11 = Rx)
-  /*
+
   sdStart(&SD3, &AntennaSerialConfig);
   palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
-  palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));*/
+  palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
 
   /*
    * Creates threads.
