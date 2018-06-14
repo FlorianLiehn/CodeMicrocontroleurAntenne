@@ -54,12 +54,7 @@ int main(void) {
 
   chFifoObjectInit(&Fifo_order,sizeof(log_message),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
-//CONNECTIONS EXTERNES
 
- //SD2 = PC A2 et A3
-  sdStart(&SD2, &PcSerialConfig);
-  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
-  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
   //SD3 = Antenna (PB10 = Tx, PB11 = Rx)
 
@@ -67,14 +62,8 @@ int main(void) {
   palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
   palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
 
-  /*
-   * Creates threads.
-   */
-  chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
-               (void*)&(RxThread_args){&Fifo_log  ,&Fifo_order,});
-  chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
-               	   	   	   	   	   	   	   	   	   	   	   (void*)&Fifo_log);
-
+  //enable PC communication & create corresponding Threads
+  StartPcThread(&Fifo_log, &Fifo_order);
 
   while (true) {
     chThdSleepMilliseconds(500);

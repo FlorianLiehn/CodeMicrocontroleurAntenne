@@ -15,7 +15,7 @@ const SerialConfig PcSerialConfig =  {
 };
 
 THD_WORKING_AREA(waPC_TxThread, 128);
-THD_FUNCTION(PC_TxThread, arg) {
+static THD_FUNCTION(PC_TxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 	void* msg;
@@ -51,7 +51,7 @@ THD_FUNCTION(PC_TxThread, arg) {
 }
 
 THD_WORKING_AREA(waPC_RxThread, 128);
-THD_FUNCTION(PC_RxThread, arg) {
+static THD_FUNCTION(PC_RxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((RxThread_args*)arg)->fifo_log_arg;
 	//objects_fifo_t*  fifo_order_arg=((RxThread_args*)arg)->fifo_order_arg;
@@ -115,3 +115,18 @@ log_message* next_message(){
 
 }
 
+
+void StartPcThread(objects_fifo_t* log, objects_fifo_t* order){
+	//init port
+	//SD2 = PC A2 et A3
+	sdStart(&SD2, &PcSerialConfig);
+	palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
+	palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+
+	//Creates threads
+	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
+			   (void*)&(RxThread_args){log  ,order,});
+	chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
+														   (void*)log);
+
+}

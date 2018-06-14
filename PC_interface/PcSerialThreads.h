@@ -17,20 +17,16 @@
 //Interface PC<->uC config (SD2)
 extern const SerialConfig PcSerialConfig;
 
-//TX PC thread
-extern THD_WORKING_AREA(waPC_TxThread, 128);
-THD_FUNCTION(PC_TxThread, arg);
-
 //RX PC thread
 typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
 }RxThread_args;
 
-extern THD_WORKING_AREA(waPC_RxThread, 128);
-THD_FUNCTION(PC_RxThread, arg);
+void StartPcThread(objects_fifo_t* log, objects_fifo_t* order);
 
-inline int STM_PC_reader(uint8_t* buff,int n){return sdAsynchronousRead(&SD2,buff,n);}
+inline int STM_PC_reader(uint8_t* buff,int n){
+	return sdAsynchronousRead(&SD2,buff,n);}
 
 log_message* next_message(void);
 
