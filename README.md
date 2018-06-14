@@ -2,7 +2,7 @@ Microcontroler Antenna Interface ( on ARM-Cortex-M4 STM32F407 )
 ===============
 
 
-###Installation
+### Installation
 
 Somewhere in your file system create a directory for CHIBIOS projects
 ```bash
@@ -24,10 +24,10 @@ Now you can clone this project :
 git clone https://github.com/FlorianLiehn/CodeMicrocontroleurAntenne.git
 cd CodeMicrocontroleurAntenne
 ```
-###Build Procedure
+### Build Procedure
 
 For building you just have to install correct compilator !
-#TODO which one ?
+##### TODO which one ?
 
 And in the project folder tape make
 ```bash
