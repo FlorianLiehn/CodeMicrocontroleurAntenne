@@ -18,6 +18,7 @@
 #include "hal.h"
 
 #include "PC_interface/PcSerialThreads.h"
+#include "Antenna_interface/AntennaThreads.h"
 
 //CONNECTIONS INTERNES
 // FIFO that contain all logs and will be send to PC
@@ -54,13 +55,17 @@ int main(void) {
   chFifoObjectInit(&Fifo_order,sizeof(log_message),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 //CONNECTIONS EXTERNES
-  /**
-   * SD2 = PC
-   * A2 et A3
-   * **/
+
+ //SD2 = PC A2 et A3
   sdStart(&SD2, &PcSerialConfig);
   palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+
+  //SD3 = Antenna (PB10 = Tx, PB11 = Rx)
+  /*
+  sdStart(&SD3, &AntennaSerialConfig);
+  palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
+  palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));*/
 
   /*
    * Creates threads.

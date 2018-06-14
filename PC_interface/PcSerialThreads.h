@@ -14,7 +14,7 @@
 
 #include "Messages/messages.h"
 
-//Interface PC<->uC config
+//Interface PC<->uC config (SD2)
 extern const SerialConfig PcSerialConfig;
 
 //TX PC thread

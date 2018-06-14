@@ -116,14 +116,16 @@ void main(){
 	inline int PC_Serial_reader(uint8_t* buff,int n)
 		{return read(fd,buff,n);}
 
-	char buf [Payload_message_lenght];
 	printf("C'est parti! %s\n",portname);
 
 	int count=0;
+	Payload_message message;
 	while(running){
-		int state=read_message(PC_Serial_reader,buf);
+		int state=read_message(PC_Serial_reader,message.buffer);
+
 		if(state>=0){
-			printf("Message:%s",buf);
+			printf("Message %02d:%s",
+				message.message.id,message.message.logs.message_antenne);
 			if(state==0)printf("\tERROR ON CRC");
 			printf("\n");
 
