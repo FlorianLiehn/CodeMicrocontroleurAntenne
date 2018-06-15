@@ -13,12 +13,6 @@
 #include "Messages/messages.h"
 
 
-//Interface uC<->Antenna (Port SD3: RS-422)
-extern const SerialConfig AntennaSerialConfig;
-
-//TX PC thread
-extern THD_WORKING_AREA(waAntenna_TxThread, 128);
-THD_FUNCTION(Antenna_TxThread, arg);
-
+void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order);
 
 #endif /* ANTENNATHREADS_H_ */

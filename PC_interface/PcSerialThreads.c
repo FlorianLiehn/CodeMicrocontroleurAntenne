@@ -116,7 +116,7 @@ log_message* next_message(){
 }
 
 
-void StartPcThread(objects_fifo_t* log, objects_fifo_t* order){
+void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order){
 	//init port
 	//SD2 = PC A2 et A3
 	sdStart(&SD2, &PcSerialConfig);

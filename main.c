@@ -56,14 +56,10 @@ int main(void) {
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 
 
-  //SD3 = Antenna (PB10 = Tx, PB11 = Rx)
-
-  sdStart(&SD3, &AntennaSerialConfig);
-  palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
-  palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
-
   //enable PC communication & create corresponding Threads
-  StartPcThread(&Fifo_log, &Fifo_order);
+  StartPcThreads(&Fifo_log, &Fifo_order);
+  //enable Antenna communication
+  StartAntennaThreads(&Fifo_log, &Fifo_order);
 
   while (true) {
     chThdSleepMilliseconds(500);

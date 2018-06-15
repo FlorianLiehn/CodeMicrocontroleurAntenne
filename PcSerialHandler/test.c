@@ -124,8 +124,10 @@ void main(){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
 		if(state>=0){
+			char log_ascci[12];
+			strncpy(log_ascci,message.message.logs.message_antenne,12);
 			printf("Message %02d:%s",
-				message.message.id,message.message.logs.message_antenne);
+				message.message.id,log_ascci);
 			if(state==0)printf("\tERROR ON CRC");
 			printf("\n");
 

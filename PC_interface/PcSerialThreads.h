@@ -14,16 +14,13 @@
 
 #include "Messages/messages.h"
 
-//Interface PC<->uC config (SD2)
-extern const SerialConfig PcSerialConfig;
-
 //RX PC thread
 typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
 }RxThread_args;
 
-void StartPcThread(objects_fifo_t* log, objects_fifo_t* order);
+void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order);
 
 inline int STM_PC_reader(uint8_t* buff,int n){
 	return sdAsynchronousRead(&SD2,buff,n);}
