@@ -22,7 +22,21 @@ THD_FUNCTION(Antenna_RxThread, arg){
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 	(void)fifo_log_arg;//unused for now
 
-	while(true){chThdSleepMilliseconds(500);}
+	log_message new_log={.id=ID_MSG_LOG_ANTENNA_RETURN};
+	while(true){
+
+		int status=readAntennaMessage((uint8_t*)&new_log.logs.message_antenne);
+
+		if(status>0){
+			//new Antenna log return
+			log_message* new_message=(log_message*)
+							chFifoTakeObjectI(fifo_log_arg);
+			*new_message=new_log;
+			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+		}
+
+		chThdSleepMilliseconds(2);
+	}
 
 }
 

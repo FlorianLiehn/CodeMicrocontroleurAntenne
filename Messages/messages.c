@@ -54,18 +54,18 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
 void encodePayload(char* payload,uint8_t* msg){
 
 	*(msg+0)=HEADER_BYTE;//Header
-	*(msg+1)=Payload_message_lenght;//lenght of the message
+	*(msg+1)=Payload_message_length;//lenght of the message
 	for(int i=0;i<serialMessageLength;i++){
 		*(msg+i+2)=payload[i];
 	}
-	uint8_t crc=ComputeCRC((uint8_t*)payload,Payload_message_lenght);
+	uint8_t crc=ComputeCRC((uint8_t*)payload,Payload_message_length);
 	*(msg+serialMessageLength-1)=crc;//CRC to check the communication
 }
 
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 
 	uint8_t buf [serialMessageLength];
-    memset (message, 0, Payload_message_lenght);
+    memset (message, 0, Payload_message_length);
     //Read Header Byte
 	int n=reader(buf,1);
 

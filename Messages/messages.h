@@ -15,6 +15,14 @@
 #define POLYNOMIAL_CRC 0xE1 //EYE...
 #define HEADER_BYTE '('
 
+#define ANTENNA_MESSAGE_LENGTH 12
+
+#define HEADER_ANTENNA "\x16" //22=0x16
+
+#define ANTENNA_DESACTIVATE		HEADER_ANTENNA"0000000000\r"
+#define ANTENNA_STANDBY			HEADER_ANTENNA"8000000000\r"
+#define ANTENNA_CALLAGE			HEADER_ANTENNA"8100000000\r"
+
 
 //Id of each messages
 enum ID_MSG{
@@ -25,6 +33,8 @@ enum ID_MSG{
 	ID_MSG_ORDER_ANTENNA,
 
 	ID_MSG_ALERT_CRC_ERROR=50,
+
+	ID_MSG_LOG_ANTENNA_RETURN=80,
 	//TODO all id message
 
 };
@@ -58,12 +68,12 @@ typedef struct {
 	ARGS logs;
 }log_message;
 
-#define Payload_message_lenght (sizeof(log_message)/(sizeof(char)))
-#define serialMessageLength (int)(1+1+Payload_message_lenght+1)//INIT+nb+[Payload]+CRC
+#define Payload_message_length (sizeof(log_message)/(sizeof(char)))
+#define serialMessageLength (int)(1+1+Payload_message_length+1)//INIT+nb+[Payload]+CRC
 
 typedef union {
 	log_message message;
-	char buffer[Payload_message_lenght];
+	char buffer[Payload_message_length];
 }Payload_message;
 
 

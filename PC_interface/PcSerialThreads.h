@@ -25,7 +25,4 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order);
 inline int STM_PC_reader(uint8_t* buff,int n){
 	return sdAsynchronousRead(&SD2,buff,n);}
 
-log_message* next_message(void);
-
-
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */

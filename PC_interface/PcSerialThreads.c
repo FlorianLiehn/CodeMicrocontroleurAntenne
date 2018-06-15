@@ -29,9 +29,11 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		msg_t state = chFifoReceiveObjectI(fifo_log_arg,&msg);
 
+
 		if(state==MSG_OK){
 			//send message
 			encodePayload((char*)msg,emit_buffer);
+			chFifoReturnObject(fifo_log_arg,msg);
 
 			//sdWrite(&SD2, emit_buffer,serialMessageLength);
 			sdAsynchronousWrite(&SD2, emit_buffer,serialMessageLength);
@@ -67,7 +69,8 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		int status=read_message(STM_PC_reader,(uint8_t*)&in_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
-			log_message* new_message=next_message();
+			log_message* new_message=(log_message*)
+					chFifoTakeObjectI(fifo_log_arg);
 			new_message->id=ID_MSG_ALERT_CRC_ERROR;
 			strcpy(new_message->logs.message_antenne,
 					in_message.message.logs.message_antenne);
@@ -76,7 +79,8 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		else if(status>0){
 			phase=1-phase;
 
-			log_message* new_message=next_message();
+			log_message* new_message=(log_message*)
+					chFifoTakeObjectI(fifo_log_arg);
 			*new_message=in_message.message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
@@ -92,7 +96,8 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 
 		if(count%20==0){
-			log_message* new_message=next_message();
+			log_message* new_message=(log_message*)
+					chFifoTakeObjectI(fifo_log_arg);
 			new_message->id=ID_MSG_ORDER_GOTO;
 			strncpy(new_message->logs.message_antenne,"TEST0MESSAGE",12);
 			new_message->logs.message_antenne[4]+=(count/20)%10;
@@ -103,18 +108,6 @@ static THD_FUNCTION(PC_RxThread, arg) {
 
 	}
 }
-
-
-static log_message messages_buffer[FIFO_BUFFER_SIZE];
-static int log_pointer=0;
-log_message* next_message(){
-	log_pointer++;
-	if(log_pointer>=FIFO_BUFFER_SIZE)
-		log_pointer=0;
-	return &messages_buffer[log_pointer];
-
-}
-
 
 void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order){
 	//init port

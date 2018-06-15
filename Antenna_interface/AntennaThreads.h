@@ -15,4 +15,6 @@
 
 void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order);
 
+int readAntennaMessage(uint8_t* message);
+
 #endif /* ANTENNATHREADS_H_ */
