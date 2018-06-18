@@ -35,7 +35,6 @@ static THD_FUNCTION(PC_TxThread, arg) {
 			encodePayload((char*)msg,emit_buffer);
 			chFifoReturnObject(fifo_log_arg,msg);
 
-			//sdWrite(&SD2, emit_buffer,serialMessageLength);
 			sdAsynchronousWrite(&SD2, emit_buffer,serialMessageLength);
 
 			phase=1-phase;
@@ -83,6 +82,13 @@ static THD_FUNCTION(PC_RxThread, arg) {
 					chFifoTakeObjectI(fifo_log_arg);
 			*new_message=in_message.message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+
+			////////TEST ANTENNA ORDER
+			if(in_message.message.id==ID_MSG_ORDER_ANTENNA){
+				sdAsynchronousWrite(&SD3,
+						(uint8_t*)in_message.message.logs.message_antenne,
+						ANTENNA_MESSAGE_LENGTH);
+			}
 		}
 
 

@@ -80,7 +80,7 @@ void intHandler(int dummy) {
 void write_test_message(int fd){
 
 	ARGS log_test;
-	strcpy(log_test.message_antenne,ANTENNA_DESACTIVATE);
+	strcpy(log_test.message_antenne,ANTENNA_SURVIE);
 
 	log_message test={
 		.id=ID_MSG_ORDER_ANTENNA,

@@ -31,6 +31,7 @@ THD_FUNCTION(Antenna_RxThread, arg){
 			//new Antenna log return
 			log_message* new_message=(log_message*)
 							chFifoTakeObjectI(fifo_log_arg);
+			//strcpy(new_log.logs.message_antenne,"YOLO TEST ./.");
 			*new_message=new_log;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
