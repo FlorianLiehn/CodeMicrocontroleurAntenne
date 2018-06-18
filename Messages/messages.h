@@ -17,7 +17,7 @@
 
 #define ANTENNA_MESSAGE_LENGTH 12
 
-#define HEADER_ANTENNA "\x16" //22=0x16
+#define HEADER_ANTENNA "\x16" //22=0x16=SYN
 
 #define ANTENNA_SURVIE			HEADER_ANTENNA"8400000000\r"
 #define ANTENNA_DESACTIVATE		HEADER_ANTENNA"0000000000\r"
@@ -27,19 +27,22 @@
 
 //Id of each messages
 enum ID_MSG{
+	//50 order id max
 	ID_MSG_ORDER_SURVIE,
 	ID_MSG_ORDER_REINI,
 	ID_MSG_ORDER_CALAGE,
 	ID_MSG_ORDER_GOTO,
 	ID_MSG_ORDER_ANTENNA,
 
+	//30 error id max
 	ID_MSG_ALERT_CRC_ERROR=50,
 	ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
 
+	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=80,
 	//TODO all id message
 
-};
+};//Max 256 (uint8_t)
 
 /////////////////////ARGS DEFINITION//////////////////
 
@@ -51,27 +54,29 @@ typedef struct {
 
 //Union of all args for all messages
 typedef union {
-	char message_antenne[12];
-	char date[12];
+	char message_antenne[ANTENNA_MESSAGE_LENGTH];
+	char date[ANTENNA_MESSAGE_LENGTH];
 	goto_args ARGS_goto;
 }ARGS;
 
 //////////////////MESSAGES DEFINITION//////////////////
 
-//message for microcontroler
+//message for microcontroller
 typedef struct {
 	uint8_t order;//fill with ORDER enum
 	ARGS arguments;
 }order_message;
 
-//log or reply from microcontroler
+//log or reply from microcontroller
 typedef struct {
 	uint8_t id;
+	//TODO add here a timestamps (long)
 	ARGS logs;
 }log_message;
 
 #define Payload_message_length (sizeof(log_message)/(sizeof(char)))
-#define serialMessageLength (int)(1+1+Payload_message_length+1)//INIT+nb+[Payload]+CRC
+#define serialMessageLength (int)(1+1+Payload_message_length+1)
+							//INIT+length_Payload+[Payload]+CRC
 
 typedef union {
 	log_message message;
@@ -81,14 +86,14 @@ typedef union {
 
 //////////////////MESSAGES ENCODE/DECODE//////////////////
 
-//CRC computation
+//CRC table computation
 void crcInit(void);
 
 void encodePayload(char* payload,uint8_t* msg);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 
-
+//If on microcontroller (and not on PC)
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
 ////////////////////////Thread Inputs/////////////////////
 //Init args for Threads

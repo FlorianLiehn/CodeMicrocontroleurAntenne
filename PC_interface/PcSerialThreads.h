@@ -14,6 +14,8 @@
 
 #include "Messages/messages.h"
 
+//PC<->microcontroller SD2
+
 
 void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order);
 
