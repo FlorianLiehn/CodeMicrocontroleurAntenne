@@ -14,8 +14,10 @@ int readAntennaMessage(uint8_t* message){
 
 	int n=sdAsynchronousRead(&SD3,&buf[0],1);
 
-	if(n!=1)//|| (buf[0]!=22))
+	if( n!=1 )
 		return -1;
+	if( buf[0]!=HEADER_ANTENNA[0] )
+		return 0;
 
 	while(n<ANTENNA_MESSAGE_LENGTH){
 		n+=sdAsynchronousRead(&SD3,&(buf[n]),ANTENNA_MESSAGE_LENGTH-n);

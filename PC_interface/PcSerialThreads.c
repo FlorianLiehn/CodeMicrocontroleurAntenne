@@ -54,8 +54,8 @@ static THD_FUNCTION(PC_TxThread, arg) {
 THD_WORKING_AREA(waPC_RxThread, 128);
 static THD_FUNCTION(PC_RxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((RxThread_args*)arg)->fifo_log_arg;
-	//objects_fifo_t*  fifo_order_arg=((RxThread_args*)arg)->fifo_order_arg;
+	objects_fifo_t*  fifo_log_arg  =((Fifos_args*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
 	Payload_message in_message;
 
 	chRegSetThreadName("Thread RX PC");
@@ -83,12 +83,12 @@ static THD_FUNCTION(PC_RxThread, arg) {
 			*new_message=in_message.message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 
-			////////TEST ANTENNA ORDER
-			if(in_message.message.id==ID_MSG_ORDER_ANTENNA){
-				sdAsynchronousWrite(&SD3,
-						(uint8_t*)in_message.message.logs.message_antenne,
-						ANTENNA_MESSAGE_LENGTH);
-			}
+			//Send to Antenna Executer
+			log_message* new_order=(log_message*)
+					chFifoTakeObjectI(fifo_order_arg);
+			*new_order=in_message.message;
+			chFifoSendObjectI(fifo_order_arg,  (void*)new_order);
+
 		}
 
 
@@ -124,7 +124,7 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order){
 
 	//Creates threads
 	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
-			   (void*)&(RxThread_args){log  ,order,});
+			   (void*)&(Fifos_args){log  ,order,});
 	chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
 														   (void*)log);
 

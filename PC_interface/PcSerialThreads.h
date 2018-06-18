@@ -14,11 +14,6 @@
 
 #include "Messages/messages.h"
 
-//RX PC thread
-typedef struct {
-	objects_fifo_t* fifo_log_arg;
-	objects_fifo_t* fifo_order_arg;
-}RxThread_args;
 
 void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order);
 

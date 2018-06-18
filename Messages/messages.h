@@ -34,6 +34,7 @@ enum ID_MSG{
 	ID_MSG_ORDER_ANTENNA,
 
 	ID_MSG_ALERT_CRC_ERROR=50,
+	ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
 
 	ID_MSG_LOG_ANTENNA_RETURN=80,
 	//TODO all id message
@@ -86,5 +87,17 @@ void crcInit(void);
 void encodePayload(char* payload,uint8_t* msg);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
+
+
+#if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
+////////////////////////Thread Inputs/////////////////////
+//Init args for Threads
+
+#include "hal.h"
+typedef struct {
+	objects_fifo_t* fifo_log_arg;
+	objects_fifo_t* fifo_order_arg;
+}Fifos_args;
+#endif
 
 #endif /* MESSAGES_MESSAGES_H_ */
