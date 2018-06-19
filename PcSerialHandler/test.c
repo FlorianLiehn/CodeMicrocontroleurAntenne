@@ -87,11 +87,10 @@ void write_test_message(int fd){
 		.logs =log_test,
 	};
 	Payload_message payload={.message=test};
-	uint8_t emit_buffer[serialMessageLength];
-	encodePayload(payload.buffer,emit_buffer);
-	write(fd,emit_buffer,serialMessageLength);
-	printf("Message writted!\n");
-
+	uint8_t emit_buffer[MaxSerialMessageLength];
+	int tot=encodePayload(payload.buffer,emit_buffer);
+	write(fd,emit_buffer,MaxSerialMessageLength);
+	printf("Message written! :%d\n",tot);
 
 }
 

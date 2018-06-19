@@ -74,13 +74,13 @@ typedef struct {
 	ARGS logs;
 }log_message;
 
-#define Payload_message_length (sizeof(log_message)/(sizeof(char)))
-#define serialMessageLength (int)(1+1+Payload_message_length+1)
+#define MaxPayloadMessageLength (int)(sizeof(log_message)/(sizeof(char)))
+#define MaxSerialMessageLength (int)(1+1+MaxPayloadMessageLength+1)
 							//INIT+length_Payload+[Payload]+CRC
 
 typedef union {
 	log_message message;
-	char buffer[Payload_message_length];
+	char buffer[MaxPayloadMessageLength];
 }Payload_message;
 
 
@@ -88,9 +88,10 @@ typedef union {
 
 //CRC table computation
 void crcInit(void);
-
-void encodePayload(char* payload,uint8_t* msg);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
+
+int PayloadLength(int id);
+int encodePayload(char* payload,uint8_t* msg);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 
 //If on microcontroller (and not on PC)

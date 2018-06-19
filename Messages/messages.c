@@ -6,7 +6,6 @@
  */
 #include "messages.h"
 
-
 #define WIDTH  (8 * sizeof(uint8_t))
 #define TOPBIT (1 << (WIDTH - 1))
 
@@ -51,21 +50,32 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
     return (remainder);
 }
 
-void encodePayload(char* payload,uint8_t* msg){
+inline int PayloadLength(int id){
+	switch(id){
 
-	*(msg+0)=HEADER_BYTE;//Header
-	*(msg+1)=Payload_message_length;//lenght of the message
-	for(int i=0;i<serialMessageLength;i++){
-		*(msg+i+2)=payload[i];
+
+	default:return MaxPayloadMessageLength;
 	}
-	uint8_t crc=ComputeCRC((uint8_t*)payload,Payload_message_length);
-	*(msg+serialMessageLength-1)=crc;//CRC to check the communication
+
+}
+
+int encodePayload(char* payload,uint8_t* msg){
+
+	int nb=0;
+	*(msg+(nb++))=HEADER_BYTE;//Header
+	*(msg+(nb++))=MaxPayloadMessageLength;//Lenght of the message
+	for(int i=0;i<MaxPayloadMessageLength;i++){
+		*(msg+(nb++))=payload[i];
+	}
+	uint8_t crc=ComputeCRC((uint8_t*)payload,MaxPayloadMessageLength);
+	*(msg+(nb++))=crc;//CRC to check the communication
+	return nb;
 }
 
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 
-	uint8_t buf [serialMessageLength];
-    memset (message, 0, Payload_message_length);
+	uint8_t buf [MaxSerialMessageLength];
+    memset (message, 0, MaxPayloadMessageLength);
     //Read Header Byte
 	int n=reader(buf,1);
 
