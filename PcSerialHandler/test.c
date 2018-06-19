@@ -78,6 +78,8 @@ void intHandler(int dummy) {
 }
 
 void write_test_message(int fd){
+	inline int PC_Serial_writer(uint8_t* buff,int n)
+		{return write(fd,buff,n);}
 
 	ARGS log_test;
 	strcpy(log_test.message_antenne,ANTENNA_SURVIE);
@@ -87,9 +89,8 @@ void write_test_message(int fd){
 		.logs =log_test,
 	};
 	Payload_message payload={.message=test};
-	uint8_t emit_buffer[MaxSerialMessageLength];
-	int tot=encodePayload(payload.buffer,emit_buffer);
-	write(fd,emit_buffer,MaxSerialMessageLength);
+
+	int tot= write_message(PC_Serial_writer,payload);
 	printf("Message written! :%d\n",tot);
 
 }

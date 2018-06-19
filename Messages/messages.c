@@ -72,6 +72,13 @@ int encodePayload(char* payload,uint8_t* msg){
 	return nb;
 }
 
+int write_message(int(*writer)(uint8_t*,int),Payload_message payload){
+
+	uint8_t emit_buffer[MaxSerialMessageLength];
+	int tot=encodePayload(payload.buffer,emit_buffer);
+	return writer(emit_buffer,tot);
+}
+
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 
 	uint8_t buf [MaxSerialMessageLength];
@@ -85,6 +92,8 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	while(n==1)
 		n+=reader(&(buf[n]),1);//read nb
 	int tot=(int)(buf[1]);
+	if(tot>MaxPayloadMessageLength)tot=MaxPayloadMessageLength;
+
 	//Read Payload + CRC
 	while(n<tot+3){
 		n+=reader(&(buf[n]),tot+3-n);
@@ -92,6 +101,7 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	strncpy((char*)message,(char*)&(buf[2]),tot);
 	//Check CRC
 	uint8_t crc=ComputeCRC(message,tot);
+
 	if(crc!=buf[tot+3-1]){
 		return 0;
 	}

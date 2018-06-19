@@ -19,7 +19,6 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 	void* msg;
-	uint8_t emit_buffer[MaxSerialMessageLength];
 
 	chRegSetThreadName("Thread TX PC");
 
@@ -32,10 +31,9 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//send message
-			encodePayload((char*)msg,emit_buffer);
-			chFifoReturnObject(fifo_log_arg,msg);
+			write_message(STM_PC_writer,*(Payload_message*)msg);
 
-			sdAsynchronousWrite(&SD2, emit_buffer,MaxSerialMessageLength);
+			chFifoReturnObject(fifo_log_arg,msg);
 
 			phase=1-phase;
 			if(phase){

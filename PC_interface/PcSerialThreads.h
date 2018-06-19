@@ -21,5 +21,7 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order);
 
 inline int STM_PC_reader(uint8_t* buff,int n){
 	return sdAsynchronousRead(&SD2,buff,n);}
+inline int STM_PC_writer(uint8_t* buff,int n){
+	return sdAsynchronousWrite(&SD2,buff,n);}
 
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */
