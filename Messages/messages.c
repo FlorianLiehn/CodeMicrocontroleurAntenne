@@ -50,24 +50,28 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
     return (remainder);
 }
 
-inline int PayloadLength(int id){
+inline int GetPayloadLength(int id){
 	switch(id){
+	case ID_MSG_ORDER_SURVIE:
+	case ID_MSG_ORDER_REINI:
+	case ID_MSG_ORDER_CALAGE:
+		return sizeof(none_args)/sizeof(uint8_t);
 
-
-	default:return MaxPayloadMessageLength;
+	default:
+		return MaxPayloadMessageLength;
 	}
 
 }
 
-int encodePayload(char* payload,uint8_t* msg){
+int encodePayload(char* payload,uint8_t* msg,int payload_length){
 
 	int nb=0;
 	*(msg+(nb++))=HEADER_BYTE;//Header
-	*(msg+(nb++))=MaxPayloadMessageLength;//Lenght of the message
-	for(int i=0;i<MaxPayloadMessageLength;i++){
+	*(msg+(nb++))=payload_length;//Lenght of the message
+	for(int i=0;i<payload_length;i++){
 		*(msg+(nb++))=payload[i];
 	}
-	uint8_t crc=ComputeCRC((uint8_t*)payload,MaxPayloadMessageLength);
+	uint8_t crc=ComputeCRC((uint8_t*)payload,payload_length);
 	*(msg+(nb++))=crc;//CRC to check the communication
 	return nb;
 }
@@ -75,7 +79,8 @@ int encodePayload(char* payload,uint8_t* msg){
 int write_message(int(*writer)(uint8_t*,int),Payload_message payload){
 
 	uint8_t emit_buffer[MaxSerialMessageLength];
-	int tot=encodePayload(payload.buffer,emit_buffer);
+	int tot=encodePayload(payload.buffer,emit_buffer,
+			GetPayloadLength(payload.message.id));
 	return writer(emit_buffer,tot);
 }
 

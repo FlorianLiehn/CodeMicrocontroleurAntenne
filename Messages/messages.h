@@ -46,17 +46,23 @@ enum ID_MSG{
 
 /////////////////////ARGS DEFINITION//////////////////
 
+
 //angles for the goto order
 typedef struct {
 	uint8_t elevation;
 	uint8_t azimut;
 }goto_args;
 
+//No args needed for some commands
+typedef struct {
+}none_args;
+
 //Union of all args for all messages
 typedef union {
 	char message_antenne[ANTENNA_MESSAGE_LENGTH];
 	char date[ANTENNA_MESSAGE_LENGTH];
 	goto_args ARGS_goto;
+	none_args NO_ARGS;
 }ARGS;
 
 //////////////////MESSAGES DEFINITION//////////////////
@@ -90,8 +96,8 @@ typedef union {
 void crcInit(void);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
 
-int PayloadLength(int id);
-int encodePayload(char* payload,uint8_t* msg);
+int GetPayloadLength(int id);
+int encodePayload(char* payload,uint8_t* msg,int payload_length);
 
 int write_message(int(*writer)(uint8_t*,int),Payload_message payload);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);

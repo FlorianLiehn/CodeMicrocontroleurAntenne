@@ -85,6 +85,10 @@ static THD_FUNCTION(PC_RxThread, arg) {
 			log_message* new_order=(log_message*)
 					chFifoTakeObjectI(fifo_order_arg);
 			*new_order=in_message.message;
+			if( new_order->id==ID_MSG_ORDER_SURVIE){
+				new_order->id=	ID_MSG_ORDER_ANTENNA;
+				strcpy(new_order->logs.message_antenne,ANTENNA_SURVIE);
+			}
 			chFifoSendObjectI(fifo_order_arg,  (void*)new_order);
 
 		}

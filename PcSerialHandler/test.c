@@ -81,12 +81,8 @@ void write_test_message(int fd){
 	inline int PC_Serial_writer(uint8_t* buff,int n)
 		{return write(fd,buff,n);}
 
-	ARGS log_test;
-	strcpy(log_test.message_antenne,ANTENNA_SURVIE);
-
 	log_message test={
-		.id=ID_MSG_ORDER_ANTENNA,
-		.logs =log_test,
+		.id=ID_MSG_ORDER_SURVIE,
 	};
 	Payload_message payload={.message=test};
 
