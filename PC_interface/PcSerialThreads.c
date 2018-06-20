@@ -74,33 +74,9 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 		else if(status>0){
 
-			if(
-			incoming_message.simple_message.id>=ID_MSG_LOG_ANTENNA_RETURN){
-
-				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_BAD_MESSAGE_ID,
-					incoming_message.simple_message.arguments);
-
-				continue;
-			}
-
-			phase=1-phase;
-
-			//Re-Send order as Log message
-			WriteLogToFifo(fifo_log_arg,
-					incoming_message.simple_message.id+ID_MSG_LOG_REEMIT_OFFSET,
-				incoming_message.simple_message.arguments);
-
-			//Send to Antenna Executer
-			SimpleMessage* new_order=(SimpleMessage*)
-					chFifoTakeObjectI(fifo_order_arg);
-			new_order->arguments=incoming_message.stamp_message.arguments;
-			new_order->id=incoming_message.stamp_message.id;
-			if( new_order->id==ID_MSG_ORDER_SURVIE){
-				new_order->id= ID_MSG_ORDER_ANTENNA;
-				strcpy(new_order->arguments.message_antenne,
-						ANTENNA_SURVIE);
-			}
-			chFifoSendObjectI(fifo_order_arg,  (void*)new_order);
+			if(ManageIncommingMessage(fifo_log_arg,fifo_order_arg,
+					traj_arg,incoming_message)>=0)
+				phase=1-phase;
 
 		}
 

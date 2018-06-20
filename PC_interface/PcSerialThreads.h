@@ -25,4 +25,7 @@ inline int STM_PC_reader(uint8_t* buff,int n){
 inline int STM_PC_writer(uint8_t* buff,int n){
 	return sdAsynchronousWrite(&SD2,buff,n);}
 
+int ManageIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+						Trajectory* traj,SerialPayload incoming_message);
+
 #endif /* PC_INTERFACE_PCSERIALTHREADS_H_ */

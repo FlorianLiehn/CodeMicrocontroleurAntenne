@@ -111,6 +111,7 @@ LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 PROJECT_CSRC= PC_interface/PcSerialThreads.c		\
+			  PC_interface/PcSerialFunctions.c		\
 			  Antenna_interface/AntennaThreads.c	\
 			  Antenna_interface/AntennaFunctions.c
 COMMON_CSRC= Messages/messages.c 
