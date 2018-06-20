@@ -51,11 +51,13 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
 }
 
 inline int GetPayloadLength(int id){
+	int base=1;//size of Id
+	//if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(timestamp)/sizeof(char)
 	switch(id){
 	case ID_MSG_ORDER_SURVIE:
 	case ID_MSG_ORDER_REINI:
 	case ID_MSG_ORDER_CALAGE:
-		return sizeof(none_args)/sizeof(uint8_t);
+		return sizeof(none_args)/sizeof(uint8_t)+base;//Args size + base
 
 	default:
 		return MaxPayloadMessageLength;

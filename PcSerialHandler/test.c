@@ -82,7 +82,7 @@ void write_test_message(int fd){
 		{return write(fd,buff,n);}
 
 	log_message test={
-		.id=ID_MSG_ORDER_SURVIE,
+		.id=ID_MSG_ORDER_REINI,
 	};
 	Payload_message payload={.message=test};
 
