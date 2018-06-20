@@ -24,7 +24,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
 
 	void* msg;
-	order_message input_message;
+	SerialMessage input_message;
 
 	chRegSetThreadName("Thread TX Antenna");
 
@@ -33,7 +33,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//free fifo
-			input_message=*(order_message*)msg;
+			input_message=*(SerialMessage*)msg;
 			chFifoReturnObject(fifo_order_arg,msg);
 
 			//send message
@@ -53,14 +53,15 @@ THD_FUNCTION(Antenna_RxThread, arg){
 
 	chRegSetThreadName("Thread RX Antenna");
 
-	log_message new_log;
+	StampedSerialMessage new_log;
 	while(true){
 
-		int status=readAntennaMessage((uint8_t*)&new_log.logs.message_antenne);
+		int status=readAntennaMessage(
+				(uint8_t*)&new_log.arguments.message_antenne);
 
 		if(status==0){
 			//new bad Antenna response return
-			log_message* new_message=(log_message*)
+			StampedSerialMessage* new_message=(StampedSerialMessage*)
 							chFifoTakeObjectI(fifo_log_arg);
 			new_log.id=ID_MSG_ALERT_BAD_ANTENNA_RESPONSE;
 			*new_message=new_log;
@@ -69,7 +70,7 @@ THD_FUNCTION(Antenna_RxThread, arg){
 		}
 		else if(status>0){
 			//new Antenna log return
-			log_message* new_message=(log_message*)
+			StampedSerialMessage* new_message=(StampedSerialMessage*)
 							chFifoTakeObjectI(fifo_log_arg);
 			new_log.id=ID_MSG_LOG_ANTENNA_RETURN;
 			*new_message=new_log;

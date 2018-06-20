@@ -247,6 +247,7 @@
 /*
  * SERIAL driver system settings.
  */
+#define SERIAL_BUFFERS_SIZE   32*2
 #define STM32_SERIAL_USE_USART1             FALSE
 #define STM32_SERIAL_USE_USART2             TRUE
 #define STM32_SERIAL_USE_USART3             TRUE

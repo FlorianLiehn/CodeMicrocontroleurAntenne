@@ -40,6 +40,7 @@ enum ID_MSG{
 
 	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=80,
+	ID_MSG_LOG_PING,
 	//TODO all id message
 
 };//Max 256 (uint8_t)
@@ -69,23 +70,24 @@ typedef union {
 
 //message for microcontroller
 typedef struct {
-	uint8_t order;//fill with ORDER enum
+	uint8_t id;//fill with ORDER enum
 	ARGS arguments;
-}order_message;
+}SerialMessage;
 
 //log or reply from microcontroller
 typedef struct {
-	uint8_t id;
-	//TODO add here a timestamps (long)
-	ARGS logs;
-}log_message;
+	uint8_t id;//fill with ORDER enum
+	uint8_t timestamps[4];
+	ARGS arguments;
+}StampedSerialMessage;
 
-#define MaxPayloadMessageLength (int)(sizeof(log_message)/(sizeof(char)))
+#define MaxPayloadMessageLength (int)(sizeof(StampedSerialMessage)/(sizeof(char)))
 #define MaxSerialMessageLength (int)(1+1+MaxPayloadMessageLength+1)
 							//INIT+length_Payload+[Payload]+CRC
 
 typedef union {
-	log_message message;
+	StampedSerialMessage stamp_message;
+	SerialMessage simple_message;
 	char buffer[MaxPayloadMessageLength];
 }Payload_message;
 

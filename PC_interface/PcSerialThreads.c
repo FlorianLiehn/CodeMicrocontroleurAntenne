@@ -54,7 +54,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((Fifos_args*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
-	Payload_message in_message;
+	Payload_message incoming_message;
 
 	chRegSetThreadName("Thread RX PC");
 
@@ -63,31 +63,32 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	palSetPad(GPIOD, GPIOD_LED3);
 	while (true) {
 		count++;
-		int status=read_message(STM_PC_reader,(uint8_t*)&in_message.buffer);
+		int status=read_message(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
-			log_message* new_message=(log_message*)
+			StampedSerialMessage* new_message=(StampedSerialMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
 			new_message->id=ID_MSG_ALERT_CRC_ERROR;
-			strcpy(new_message->logs.message_antenne,
-					in_message.message.logs.message_antenne);
+			strcpy(new_message->arguments.message_antenne,
+ incoming_message.stamp_message.arguments.message_antenne);
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
 		else if(status>0){
 			phase=1-phase;
 
-			log_message* new_message=(log_message*)
+			StampedSerialMessage* new_message=(StampedSerialMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
-			*new_message=in_message.message;
+			*new_message=incoming_message.stamp_message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 
 			//Send to Antenna Executer
-			log_message* new_order=(log_message*)
+			StampedSerialMessage* new_order=(StampedSerialMessage*)
 					chFifoTakeObjectI(fifo_order_arg);
-			*new_order=in_message.message;
+			*new_order=incoming_message.stamp_message;
 			if( new_order->id==ID_MSG_ORDER_SURVIE){
 				new_order->id=	ID_MSG_ORDER_ANTENNA;
-				strcpy(new_order->logs.message_antenne,ANTENNA_SURVIE);
+				strcpy(new_order->arguments.message_antenne,
+						ANTENNA_SURVIE);
 			}
 			chFifoSendObjectI(fifo_order_arg,  (void*)new_order);
 
@@ -104,11 +105,12 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 
 		if(count%20==0){
-			log_message* new_message=(log_message*)
+			StampedSerialMessage* new_message=(StampedSerialMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
-			new_message->id=ID_MSG_ORDER_GOTO;
-			strncpy(new_message->logs.message_antenne,"TEST0MESSAGE",12);
-			new_message->logs.message_antenne[4]+=(count/20)%10;
+			new_message->id=ID_MSG_LOG_PING;
+			strncpy(new_message->arguments.message_antenne,
+					"TEST0MESSAGE",12);
+			new_message->arguments.message_antenne[4]+=(count/20)%10;
 			chFifoSendObjectI(fifo_log_arg,(void*)new_message);
 		}
 

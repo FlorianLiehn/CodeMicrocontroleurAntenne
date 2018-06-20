@@ -51,8 +51,11 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
 }
 
 inline int GetPayloadLength(int id){
-	int base=1;//size of Id
-	//if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(timestamp)/sizeof(char)
+	//size of Id
+	int base=1;
+	//sizeof timestamps
+	if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(uint32_t)/sizeof(char);
+
 	switch(id){
 	case ID_MSG_ORDER_SURVIE:
 	case ID_MSG_ORDER_REINI:
@@ -82,7 +85,8 @@ int write_message(int(*writer)(uint8_t*,int),Payload_message payload){
 
 	uint8_t emit_buffer[MaxSerialMessageLength];
 	int tot=encodePayload(payload.buffer,emit_buffer,
-			GetPayloadLength(payload.message.id));
+			GetPayloadLength(payload.simple_message.id));
+
 	return writer(emit_buffer,tot);
 }
 
@@ -105,7 +109,8 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	while(n<tot+3){
 		n+=reader(&(buf[n]),tot+3-n);
 	}
-	strncpy((char*)message,(char*)&(buf[2]),tot);
+	for(int i=0;i<tot;i++)
+		message[i]=buf[i+2];//copy even 0
 	//Check CRC
 	uint8_t crc=ComputeCRC(message,tot);
 
