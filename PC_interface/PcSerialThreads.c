@@ -31,7 +31,7 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//send message
-			write_message(STM_PC_writer,*(Payload_message*)msg);
+			write_message(STM_PC_writer,*(SerialPayload*)msg);
 
 			chFifoReturnObject(fifo_log_arg,msg);
 
@@ -54,7 +54,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((Fifos_args*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
-	Payload_message incoming_message;
+	SerialPayload incoming_message;
 
 	chRegSetThreadName("Thread RX PC");
 
@@ -66,7 +66,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		int status=read_message(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
-			StampedSerialMessage* new_message=(StampedSerialMessage*)
+			StampedMessage* new_message=(StampedMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
 			new_message->id=ID_MSG_ALERT_CRC_ERROR;
 			strcpy(new_message->arguments.message_antenne,
@@ -76,13 +76,13 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		else if(status>0){
 			phase=1-phase;
 
-			StampedSerialMessage* new_message=(StampedSerialMessage*)
+			StampedMessage* new_message=(StampedMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
 			*new_message=incoming_message.stamp_message;
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 
 			//Send to Antenna Executer
-			StampedSerialMessage* new_order=(StampedSerialMessage*)
+			StampedMessage* new_order=(StampedMessage*)
 					chFifoTakeObjectI(fifo_order_arg);
 			*new_order=incoming_message.stamp_message;
 			if( new_order->id==ID_MSG_ORDER_SURVIE){
@@ -105,7 +105,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 
 		if(count%20==0){
-			StampedSerialMessage* new_message=(StampedSerialMessage*)
+			StampedMessage* new_message=(StampedMessage*)
 					chFifoTakeObjectI(fifo_log_arg);
 			new_message->id=ID_MSG_LOG_PING;
 			strncpy(new_message->arguments.message_antenne,

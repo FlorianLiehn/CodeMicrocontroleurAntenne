@@ -23,11 +23,11 @@
 //CONNECTIONS INTERNES
 // FIFO that contain all logs and will be send to PC
 msg_t  msg_log_buffer[FIFO_BUFFER_SIZE];
-StampedSerialMessage  logs_buffer[FIFO_BUFFER_SIZE];
+StampedMessage  logs_buffer[FIFO_BUFFER_SIZE];
 objects_fifo_t Fifo_log;
 // FIFO that contain all orders, must be execute in the correct order
 msg_t  msg_order_buffer[FIFO_BUFFER_SIZE];
-StampedSerialMessage  orders_buffer[FIFO_BUFFER_SIZE];
+StampedMessage  orders_buffer[FIFO_BUFFER_SIZE];
 objects_fifo_t Fifo_order;
 
 /*
@@ -49,10 +49,10 @@ int main(void) {
   crcInit();
 
   //Init Connections internes
-  chFifoObjectInit(&Fifo_log,sizeof(StampedSerialMessage),
+  chFifoObjectInit(&Fifo_log,sizeof(StampedMessage),
 		  FIFO_BUFFER_SIZE,0,(void*)logs_buffer,msg_log_buffer);
 
-  chFifoObjectInit(&Fifo_order,sizeof(StampedSerialMessage),
+  chFifoObjectInit(&Fifo_order,sizeof(StampedMessage),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 
 

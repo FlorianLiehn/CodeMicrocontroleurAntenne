@@ -81,13 +81,13 @@ void write_test_message(int fd){
 	inline int PC_Serial_writer(uint8_t* buff,int n)
 		{return write(fd,buff,n);}
 
-	StampedSerialMessage test={
-		.id=ID_MSG_ORDER_ANTENNA,
+	StampedMessage test={
+		.id=ID_MSG_ORDER_SURVIE,
 	};
 
 	strcpy(test.arguments.message_antenne,
 			ANTENNA_SURVIE);
-	Payload_message payload={.stamp_message=test};
+	SerialPayload payload={.stamp_message=test};
 
 	int tot= write_message(PC_Serial_writer,payload);
 	printf("Message written! :%d\n",tot);
@@ -117,7 +117,7 @@ void main(){
 
 	printf("C'est parti! %s\n",portname);
 	int count=0;
-	Payload_message message;
+	SerialPayload message;
 	while(running){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
@@ -131,7 +131,6 @@ void main(){
 
 			if(count++>=10){
 				count=0;
-				write_test_message(fd);
 				write_test_message(fd);
 			}
 		}

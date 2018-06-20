@@ -72,24 +72,24 @@ typedef union {
 typedef struct {
 	uint8_t id;//fill with ORDER enum
 	ARGS arguments;
-}SerialMessage;
+}SimpleMessage;
 
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
 	uint8_t timestamps[4];
 	ARGS arguments;
-}StampedSerialMessage;
+}StampedMessage;
 
-#define MaxPayloadMessageLength (int)(sizeof(StampedSerialMessage)/(sizeof(char)))
+#define MaxPayloadMessageLength (int)(sizeof(StampedMessage)/(sizeof(char)))
 #define MaxSerialMessageLength (int)(1+1+MaxPayloadMessageLength+1)
 							//INIT+length_Payload+[Payload]+CRC
 
 typedef union {
-	StampedSerialMessage stamp_message;
-	SerialMessage simple_message;
+	StampedMessage stamp_message;
+	SimpleMessage simple_message;
 	char buffer[MaxPayloadMessageLength];
-}Payload_message;
+}SerialPayload;
 
 
 //////////////////MESSAGES ENCODE/DECODE//////////////////
@@ -101,7 +101,7 @@ uint8_t ComputeCRC(uint8_t * message, int nBytes);
 int GetPayloadLength(int id);
 int encodePayload(char* payload,uint8_t* msg,int payload_length);
 
-int write_message(int(*writer)(uint8_t*,int),Payload_message payload);
+int write_message(int(*writer)(uint8_t*,int),SerialPayload payload);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 
 //If on microcontroller (and not on PC)

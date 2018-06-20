@@ -81,7 +81,7 @@ int encodePayload(char* payload,uint8_t* msg,int payload_length){
 	return nb;
 }
 
-int write_message(int(*writer)(uint8_t*,int),Payload_message payload){
+int write_message(int(*writer)(uint8_t*,int),SerialPayload payload){
 
 	uint8_t emit_buffer[MaxSerialMessageLength];
 	int tot=encodePayload(payload.buffer,emit_buffer,
