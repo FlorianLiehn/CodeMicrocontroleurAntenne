@@ -66,32 +66,26 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		int status=read_message(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
-			StampedMessage* new_message=(StampedMessage*)
-					chFifoTakeObjectI(fifo_log_arg);
-			new_message->id=ID_MSG_ALERT_CRC_ERROR;
-			strcpy(new_message->arguments.message_antenne,
- incoming_message.stamp_message.arguments.message_antenne);
-			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_CRC_ERROR,
+				incoming_message.simple_message.arguments);
 		}
 		else if(status>0){
 
 			if(
 			incoming_message.simple_message.id>=ID_MSG_LOG_ANTENNA_RETURN){
-				StampedMessage* new_message=(StampedMessage*)
-						chFifoTakeObjectI(fifo_log_arg);
-				new_message->id=ID_MSG_ALERT_BAD_MESSAGE_ID;
-				strcpy(new_message->arguments.message_antenne,
-			incoming_message.stamp_message.arguments.message_antenne);
-				chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+
+				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_BAD_MESSAGE_ID,
+					incoming_message.simple_message.arguments);
+
 				continue;
 			}
 
 			phase=1-phase;
 
-			StampedMessage* new_message=(StampedMessage*)
-					chFifoTakeObjectI(fifo_log_arg);
-			*new_message=incoming_message.stamp_message;
-			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+			//Re-Send order as Log message
+			WriteLogToFifo(fifo_log_arg,
+					incoming_message.simple_message.id+ID_MSG_LOG_REEMIT_OFFSET,
+				incoming_message.simple_message.arguments);
 
 			//Send to Antenna Executer
 			SimpleMessage* new_order=(SimpleMessage*)
@@ -118,13 +112,13 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 
 		if(count%20==0){
-			StampedMessage* new_message=(StampedMessage*)
-					chFifoTakeObjectI(fifo_log_arg);
-			new_message->id=ID_MSG_LOG_PING;
-			strncpy(new_message->arguments.message_antenne,
-					"TEST0MESSAGE",12);
-			new_message->arguments.message_antenne[4]+=(count/20)%10;
-			chFifoSendObjectI(fifo_log_arg,(void*)new_message);
+
+			ARGS ping;
+			strncpy(ping.message_antenne,"TEST0MESSAGE",12);
+			ping.message_antenne[4]+=(count/20)%10;
+
+			WriteLogToFifo(fifo_log_arg,ID_MSG_LOG_PING,
+				ping);
 		}
 
 		chThdSleepMilliseconds(25);

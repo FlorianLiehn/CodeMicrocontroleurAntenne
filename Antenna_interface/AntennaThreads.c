@@ -61,20 +61,15 @@ THD_FUNCTION(Antenna_RxThread, arg){
 
 		if(status==0){
 			//new bad Antenna response return
-			StampedMessage* new_message=(StampedMessage*)
-							chFifoTakeObjectI(fifo_log_arg);
-			new_log.id=ID_MSG_ALERT_BAD_ANTENNA_RESPONSE;
-			*new_message=new_log;
-			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+
+			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
+				new_log.arguments);
 
 		}
 		else if(status>0){
 			//new Antenna log return
-			StampedMessage* new_message=(StampedMessage*)
-							chFifoTakeObjectI(fifo_log_arg);
-			new_log.id=ID_MSG_LOG_ANTENNA_RETURN;
-			*new_message=new_log;
-			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+			WriteLogToFifo(fifo_log_arg,ID_MSG_LOG_ANTENNA_RETURN,
+							new_log.arguments);
 		}
 
 		chThdSleepMilliseconds(2);

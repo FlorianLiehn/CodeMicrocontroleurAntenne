@@ -54,21 +54,22 @@ inline int GetPayloadLength(int id){
 	//size of Id
 	int base=1;
 	//sizeof timestamps
-	if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(uint32_t)/sizeof(char);
+	if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(uint32_t)/sizeof(uint8_t);
+	id%=ID_MSG_LOG_REEMIT_OFFSET;
 
 	switch(id){
 	case ID_MSG_ORDER_SURVIE:
 	case ID_MSG_ORDER_REINI:
 	case ID_MSG_ORDER_CALAGE:
-		return sizeof(none_args)/sizeof(uint8_t)+base;//Args size + base
+		return (sizeof(none_args)/sizeof(uint8_t))+base;//Args size + base
 
 	default:
-		return MaxPayloadMessageLength;
+		return sizeof(ARGS)/sizeof(uint8_t)+base;
 	}
 
 }
 
-int encodePayload(char* payload,uint8_t* msg,int payload_length){
+int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
 
 	int nb=0;
 	*(msg+(nb++))=HEADER_BYTE;//Header
@@ -119,3 +120,24 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	}
 	return 1;
 }
+
+
+#if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
+
+void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
+
+	StampedMessage* new_message=(StampedMessage*)
+			chFifoTakeObjectI(fifo_log);
+
+	new_message->id=id;
+	new_message->arguments=args;
+	//timestamps
+	uint32_t time=chTimeI2MS(chVTGetSystemTimeX());
+	for(int i=0;i<4;i++)
+		new_message->timestamps[i]=(time>>(i*8))&0xFF;
+
+	chFifoSendObjectI(fifo_log,(void*)new_message);
+}
+
+#endif
+

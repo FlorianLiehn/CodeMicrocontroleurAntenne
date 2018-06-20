@@ -125,7 +125,14 @@ void main(){
 			char log_ascci[12];
 			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,12);
 			printf("Message %02d:%s",
-				message.stamp_message.id,log_ascci);
+				message.stamp_message.id%ID_MSG_LOG_REEMIT_OFFSET,
+				log_ascci);
+			printf("\tTime:");
+			uint32_t time=0;
+			for(int i=0;i<4;i++)
+				time+=message.stamp_message.timestamps[i]<<(8*i);
+			printf("%ums",time);
+
 			if(state==0)printf("\tERROR ON CRC");
 			printf("\n");
 

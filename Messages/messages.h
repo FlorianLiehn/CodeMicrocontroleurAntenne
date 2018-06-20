@@ -42,6 +42,8 @@ enum ID_MSG{
 	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=80,
 	ID_MSG_LOG_PING,
+
+	ID_MSG_LOG_REEMIT_OFFSET=150,
 	//TODO all id message
 
 };//Max 256 (uint8_t)
@@ -78,7 +80,7 @@ typedef struct {
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
-	uint8_t timestamps[4];
+	uint8_t timestamps[4];//uint8_t*4=uint32_t
 	ARGS arguments;
 }StampedMessage;
 
@@ -89,7 +91,7 @@ typedef struct {
 typedef union {
 	StampedMessage stamp_message;
 	SimpleMessage simple_message;
-	char buffer[MaxPayloadMessageLength];
+	uint8_t buffer[MaxPayloadMessageLength];
 }SerialPayload;
 
 
@@ -100,7 +102,7 @@ void crcInit(void);
 uint8_t ComputeCRC(uint8_t * message, int nBytes);
 
 int GetPayloadLength(int id);
-int encodePayload(char* payload,uint8_t* msg,int payload_length);
+int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length);
 
 int write_message(int(*writer)(uint8_t*,int),SerialPayload payload);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
@@ -115,6 +117,8 @@ typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
 }Fifos_args;
+
+void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
 #endif
 
 #endif /* MESSAGES_MESSAGES_H_ */
