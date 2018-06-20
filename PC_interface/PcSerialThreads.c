@@ -74,6 +74,18 @@ static THD_FUNCTION(PC_RxThread, arg) {
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 		}
 		else if(status>0){
+
+			if(
+			incoming_message.simple_message.id>=ID_MSG_LOG_ANTENNA_RETURN){
+				StampedMessage* new_message=(StampedMessage*)
+						chFifoTakeObjectI(fifo_log_arg);
+				new_message->id=ID_MSG_ALERT_BAD_MESSAGE_ID;
+				strcpy(new_message->arguments.message_antenne,
+			incoming_message.stamp_message.arguments.message_antenne);
+				chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
+				continue;
+			}
+
 			phase=1-phase;
 
 			StampedMessage* new_message=(StampedMessage*)
@@ -82,11 +94,12 @@ static THD_FUNCTION(PC_RxThread, arg) {
 			chFifoSendObjectI(fifo_log_arg,  (void*)new_message);
 
 			//Send to Antenna Executer
-			StampedMessage* new_order=(StampedMessage*)
+			SimpleMessage* new_order=(SimpleMessage*)
 					chFifoTakeObjectI(fifo_order_arg);
-			*new_order=incoming_message.stamp_message;
+			new_order->arguments=incoming_message.stamp_message.arguments;
+			new_order->id=incoming_message.stamp_message.id;
 			if( new_order->id==ID_MSG_ORDER_SURVIE){
-				new_order->id=	ID_MSG_ORDER_ANTENNA;
+				new_order->id= ID_MSG_ORDER_ANTENNA;
 				strcpy(new_order->arguments.message_antenne,
 						ANTENNA_SURVIE);
 			}

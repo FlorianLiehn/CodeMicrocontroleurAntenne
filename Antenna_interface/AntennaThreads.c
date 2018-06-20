@@ -24,7 +24,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
 
 	void* msg;
-	StampedMessage input_message;
+	SimpleMessage input_message;
 
 	chRegSetThreadName("Thread TX Antenna");
 
@@ -33,7 +33,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//free fifo
-			input_message=*(StampedMessage*)msg;
+			input_message=*(SimpleMessage*)msg;
 			chFifoReturnObject(fifo_order_arg,msg);
 
 			//send message
