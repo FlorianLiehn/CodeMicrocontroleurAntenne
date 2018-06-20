@@ -66,9 +66,9 @@ int main(void) {
 
 
   //enable PC communication & create corresponding Threads
-  StartPcThreads(&Fifo_log, &Fifo_order);
+  StartPcThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable Antenna communication
-  StartAntennaThreads(&Fifo_log, &Fifo_order);
+  StartAntennaThreads(&Fifo_log, &Fifo_order,&current_traj);
 
   while (true) {
     chThdSleepMilliseconds(500);

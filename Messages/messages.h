@@ -130,10 +130,13 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 //Init args for Threads
 
 #include "hal.h"
+
+#include "Trajectory/Trajectory.h"
 typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
-}Fifos_args;
+	Trajectory* traj_arg;
+}Threads_args;
 
 void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
 #endif

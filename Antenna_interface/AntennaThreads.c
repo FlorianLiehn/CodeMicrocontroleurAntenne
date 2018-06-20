@@ -19,9 +19,11 @@ const SerialConfig AntennaSerialConfig =  {
 THD_WORKING_AREA(waAntenna_TxThread, 128);
 static THD_FUNCTION(Antenna_TxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((Fifos_args*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
 	(void)fifo_log_arg;//unused for now
-	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
+	(void)traj_arg;	   //unused for now
 
 	void* msg;
 	SimpleMessage input_message;
@@ -77,7 +79,8 @@ THD_FUNCTION(Antenna_RxThread, arg){
 
 }
 
-void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order){
+void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
+						Trajectory* traj){
 	(void)order;//unused for now
 	//init port
 	//SD3 = Antenna (PB10 = Tx, PB11 = Rx)
@@ -89,6 +92,6 @@ void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order){
 	chThdCreateStatic(waAntenna_RxThread, sizeof(waAntenna_RxThread), NORMALPRIO, Antenna_RxThread,
 														   (void*)log);
 	chThdCreateStatic(waAntenna_TxThread, sizeof(waAntenna_TxThread), NORMALPRIO, Antenna_TxThread,
-			   (void*)&(Fifos_args){log  ,order,});
+			   (void*)&(Threads_args){log, order, traj });
 
 }

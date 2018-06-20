@@ -52,8 +52,11 @@ static THD_FUNCTION(PC_TxThread, arg) {
 THD_WORKING_AREA(waPC_RxThread, 128);
 static THD_FUNCTION(PC_RxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((Fifos_args*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((Fifos_args*)arg)->fifo_order_arg;
+	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
+	(void)traj_arg;	   //unused for now
+
 	SerialPayload incoming_message;
 
 	chRegSetThreadName("Thread RX PC");
@@ -126,7 +129,8 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	}
 }
 
-void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order){
+void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
+					Trajectory* traj){
 	//init port
 	//SD2 = PC A2 et A3
 	sdStart(&SD2, &PcSerialConfig);
@@ -135,7 +139,7 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order){
 
 	//Creates threads
 	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
-			   (void*)&(Fifos_args){log  ,order,});
+			   (void*)&(Threads_args){log, order, traj });
 	chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
 														   (void*)log);
 
