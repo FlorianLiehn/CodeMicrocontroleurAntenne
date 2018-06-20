@@ -61,7 +61,12 @@ inline int GetPayloadLength(int id){
 	case ID_MSG_ORDER_SURVIE:
 	case ID_MSG_ORDER_REINI:
 	case ID_MSG_ORDER_CALAGE:
+	case ID_MSG_ORDER_TRAJ_REINI:
 		return (sizeof(none_args)/sizeof(uint8_t))+base;//Args size + base
+	case ID_MSG_ORDER_TRAJ_SET_NEW_POINT:
+		return (sizeof(Traj_length_args)/sizeof(uint8_t))+base;//Args size + base
+	case ID_MSG_ORDER_TRAJ_CHECK_CORRECT:
+		return (sizeof(A_State_args)/sizeof(uint8_t))+base;//Args size + base
 
 	default:
 		return sizeof(ARGS)/sizeof(uint8_t)+base;

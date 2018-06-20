@@ -33,6 +33,10 @@ enum ID_MSG{
 	ID_MSG_ORDER_CALAGE,
 	ID_MSG_ORDER_GOTO,
 	ID_MSG_ORDER_ANTENNA,
+	ID_MSG_ORDER_TRAJ_SET_LENGTH,
+	ID_MSG_ORDER_TRAJ_SET_NEW_POINT,
+	ID_MSG_ORDER_TRAJ_REINI,
+	ID_MSG_ORDER_TRAJ_CHECK_CORRECT,
 
 	//30 error id max
 	ID_MSG_ALERT_CRC_ERROR=50,
@@ -42,6 +46,7 @@ enum ID_MSG{
 	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=80,
 	ID_MSG_LOG_PING,
+	ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
 
 	ID_MSG_LOG_REEMIT_OFFSET=150,
 	//TODO all id message
@@ -61,11 +66,23 @@ typedef struct {
 typedef struct {
 }none_args;
 
+//Args needed for setting traj length
+typedef struct {
+	uint8_t length[2];//0=LB 1=HB
+}Traj_length_args;
+
+//Args with just a bool state
+typedef struct {
+	uint8_t value;
+}A_State_args;
+
 //Union of all args for all messages
 typedef union {
 	char message_antenne[ANTENNA_MESSAGE_LENGTH];
 	char date[ANTENNA_MESSAGE_LENGTH];
 	goto_args ARGS_goto;
+	Traj_length_args traj_length;
+	A_State_args state;
 	none_args NO_ARGS;
 }ARGS;
 
@@ -80,7 +97,7 @@ typedef struct {
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
-	uint8_t timestamps[4];//uint8_t*4=uint32_t
+	uint8_t timestamps[4];//uint8_t*4=uint32_t 0=LB 3=HB
 	ARGS arguments;
 }StampedMessage;
 

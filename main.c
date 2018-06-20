@@ -17,8 +17,11 @@
 #include "ch.h"
 #include "hal.h"
 
+//Threads definitions
 #include "PC_interface/PcSerialThreads.h"
 #include "Antenna_interface/AntennaThreads.h"
+//Trajectory object
+#include "Trajectory/Trajectory.h"
 
 //CONNECTIONS INTERNES
 // FIFO that contain all logs and will be send to PC
@@ -29,6 +32,9 @@ objects_fifo_t Fifo_log;
 msg_t  msg_order_buffer[FIFO_BUFFER_SIZE];
 SimpleMessage  orders_buffer[FIFO_BUFFER_SIZE];
 objects_fifo_t Fifo_order;
+
+//Current traj loaded
+Trajectory current_traj;
 
 /*
  * Application entry point.
@@ -47,6 +53,9 @@ int main(void) {
 
   //Init CRC table
   crcInit();
+
+  //Init Trajectory table
+  InitTraj(&current_traj);
 
   //Init Connections internes
   chFifoObjectInit(&Fifo_log,sizeof(StampedMessage),
