@@ -74,7 +74,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 		else if(status>0){
 
-			if(ManageIncommingMessage(fifo_log_arg,fifo_order_arg,
+			if(HandleIncommingMessage(fifo_log_arg,fifo_order_arg,
 					traj_arg,incoming_message)>=0)
 				phase=1-phase;
 

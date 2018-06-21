@@ -54,7 +54,7 @@ inline int GetPayloadLength(int id){
 	//size of Id
 	int base=1;
 	//sizeof timestamps
-	if(id>=ID_MSG_LOG_ANTENNA_RETURN)base+=sizeof(uint32_t)/sizeof(uint8_t);
+	if(id>=FIRST_ERROR_ID)base+=sizeof(uint32_t)/sizeof(uint8_t);
 	id%=ID_MSG_LOG_REEMIT_OFFSET;
 
 	switch(id){

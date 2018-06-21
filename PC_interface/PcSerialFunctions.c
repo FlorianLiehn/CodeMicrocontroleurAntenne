@@ -7,14 +7,27 @@
 
 #include "PcSerialThreads.h"
 
-int ManageIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 						Trajectory* traj,SerialPayload incoming_message){
 
-	if(incoming_message.simple_message.id>=ID_MSG_LOG_ANTENNA_RETURN){
+	if(incoming_message.simple_message.id>=FIRST_ERROR_ID){
 
 		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 			incoming_message.simple_message.arguments);
 		return -1;
+	}
+	if(incoming_message.simple_message.id>=FIRST_ORDER_TRAJ_ID){
+
+		switch(incoming_message.simple_message.id){
+		case ID_MSG_ORDER_TRAJ_SET_LENGTH:
+		case ID_MSG_ORDER_TRAJ_SET_NEW_POINT:
+		case ID_MSG_ORDER_TRAJ_REINI:
+		case ID_MSG_ORDER_TRAJ_CHECK_CORRECT:
+			//TODO handle traj order
+			return 0;
+		default: //TODO error log
+			return 0;
+		}
 	}
 
 	//Re-Send order as Log message
