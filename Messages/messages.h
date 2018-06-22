@@ -45,6 +45,7 @@ enum ID_MSG{
 	ID_MSG_ALERT_CRC_ERROR=FIRST_ERROR_ID,
 	ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
 	ID_MSG_ALERT_BAD_MESSAGE_ID,
+	ID_MSG_ALERT_NO_1PPS,
 
 	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=FIRST_LOG_ID,
@@ -131,12 +132,14 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
 ////////////////////////Thread Inputs/////////////////////
 //Init args for Threads
+
 //Echo every receive command
-#define ECHO_COMMAND
+//#define ECHO_COMMAND
 //echo every Order receive
 #define ECHO_ORDER
 
 #include "hal.h"
+#include "ch.h"
 
 #include "Trajectory/Trajectory.h"
 typedef struct {

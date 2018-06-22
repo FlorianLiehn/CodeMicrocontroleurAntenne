@@ -8,9 +8,9 @@
 #ifndef ANTENNATHREADS_H_
 #define ANTENNATHREADS_H_
 
-#include "hal.h"
-
 #include "Messages/messages.h"
+
+#define TIMEOUT_1PPS  TIME_MS2I(1005)
 
 void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj);

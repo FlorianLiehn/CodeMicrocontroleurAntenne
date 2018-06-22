@@ -161,9 +161,9 @@ void main(){
 			if(state==0)printf("\tERROR ON CRC");
 			printf("\n");
 
-			if(count++>=10){
+			if(count++>=15){
 				count=0;
-				write_test_message(fd);
+				//write_test_message(fd);
 			}
 		}
 

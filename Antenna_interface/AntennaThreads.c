@@ -29,7 +29,6 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
 	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
-	(void)fifo_log_arg;//unused for now
 	(void)traj_arg;	   //unused for now
 
 	void* msg;
@@ -38,7 +37,14 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 	chRegSetThreadName("Thread TX Antenna");
 
 	while (true) {
-		msg_t state = chFifoReceiveObjectI(fifo_order_arg,&msg);
+
+		msg_t state = chThdSuspendTimeoutS(&new_front_1pps,TIMEOUT_1PPS);
+		if(state==MSG_TIMEOUT){
+			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
+				(ARGS){});
+		}
+
+		state = chFifoReceiveObjectI(fifo_order_arg,&msg);
 
 		if(state==MSG_OK){
 			//free fifo
@@ -101,7 +107,9 @@ void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 	palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
 	palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
 	//1pps Ext interuption
-	palSetPadCallback( GPIOB,0,Handler1PPS,NULL);
+	palSetPadMode(	   GPIOB,0, PAL_MODE_INPUT_PULLDOWN );
+	palEnablePadEventI(GPIOB,0, PAL_EVENT_MODE_RISING_EDGE);
+	palSetPadCallback( GPIOB,0, Handler1PPS,NULL);
 
 	//Creates threads
 	chThdCreateStatic(waAntenna_RxThread, sizeof(waAntenna_RxThread), NORMALPRIO, Antenna_RxThread,
