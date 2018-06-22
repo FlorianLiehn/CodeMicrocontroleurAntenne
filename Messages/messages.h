@@ -101,9 +101,15 @@ typedef struct {
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
-	uint8_t timestamps[4];//uint8_t*4=uint32_t 0=LB 3=HB
+	uint8_t year  [2];//uint8_t*2=uint16_t 0=LB 1=HB
+	uint8_t month;
+	uint8_t day;
+	uint8_t millis[4];//uint8_t*4=uint32_t 0=LB 3=HB
 	ARGS arguments;
 }StampedMessage;
+
+#define BaseMessageLength (int)( (sizeof(SimpleMessage )-sizeof(ARGS))/(sizeof(char)) )
+#define BaseLogLength     (int)( (sizeof(StampedMessage)-sizeof(ARGS))/(sizeof(char)) )
 
 #define MaxPayloadMessageLength (int)(sizeof(StampedMessage)/(sizeof(char)))
 #define MaxSerialMessageLength (int)(1+1+MaxPayloadMessageLength+1)

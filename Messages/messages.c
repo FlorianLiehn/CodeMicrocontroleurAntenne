@@ -52,9 +52,9 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
 
 inline int GetPayloadLength(int id){
 	//size of Id
-	int base=1;
+	int base=BaseMessageLength;
 	//sizeof timestamps
-	if(id>=FIRST_ERROR_ID)base+=sizeof(uint32_t)/sizeof(uint8_t);
+	if(id>=FIRST_ERROR_ID)base=BaseLogLength;
 	id%=ID_MSG_LOG_REEMIT_OFFSET;
 
 	switch(id){
@@ -138,9 +138,17 @@ void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 	new_message->id=id;
 	new_message->arguments=args;
 	//timestamps
-	uint32_t time=chTimeI2MS(chVTGetSystemTimeX());
+	RTCDateTime currentTime;
+	rtcGetTime(&RTCD1, &currentTime);
+	//set millis
 	for(int i=0;i<4;i++)
-		new_message->timestamps[i]=(time>>(i*8))&0xFF;
+		new_message->millis[i]=(currentTime.millisecond>>(i*8))&0xFF;
+	new_message->day=currentTime.day;
+	new_message->month=currentTime.month;
+	//set year
+	for(int i=0;i<2;i++){
+		new_message->year[i]=(currentTime.year>>(i*8))&0xFF;
+	}
 
 	chFifoSendObjectI(fifo_log,(void*)new_message);
 }

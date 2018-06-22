@@ -143,7 +143,7 @@ void main(){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
 		if(state>=0){
-			int args_length=max(state-3-4-1,0);
+			int args_length=max(state-3-8-1,0);
 			char log_ascci[args_length];
 			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,
 					args_length);
@@ -153,17 +153,17 @@ void main(){
 				message.stamp_message.id%ID_MSG_LOG_REEMIT_OFFSET);
 			for(int i=0;i<args_length;i++)printf("%c",log_ascci[i]);
 			printf("\tTime:");
-			uint32_t time=0;
+			uint32_t millis=0;
 			for(int i=0;i<4;i++)
-				time+=message.stamp_message.timestamps[i]<<(8*i);
-			printf("%ums",time);
+				millis+=message.stamp_message. millis[i]<<(8*i);
+			printf("%ums",millis);
 
 			if(state==0)printf("\tERROR ON CRC");
 			printf("\n");
 
 			if(count++>=15){
 				count=0;
-				//write_test_message(fd);
+				write_test_message(fd);
 			}
 		}
 
