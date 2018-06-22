@@ -82,8 +82,8 @@ void writeSerialMessage(int fd,int id, ARGS arguments){
 			{return write(fd,buff,n);}
 
 	SimpleMessage message={.id=id,.arguments=arguments};
-	int tot= write_message(PC_Serial_writer,
-			(SerialPayload){.simple_message=message});
+	SerialPayload seriMessage={.simple_message=message};
+	int tot= write_message(PC_Serial_writer,&seriMessage);
 	printf("Message written! :%d\n",tot);
 }
 
@@ -115,7 +115,27 @@ int max(int a , int b){
 	if(a>b)return a;
 	return b;
 }
+void write_log_message(StampedMessage message){
+	int args_length=GetPayloadLength(message.id);
+	args_length-=8;
 
+	char log_ascci[args_length];
+	strncpy(log_ascci,message.arguments.message_antenne,
+			args_length);
+	replaceInString(log_ascci,'\r','\n',args_length);
+	replaceInString(log_ascci,'\0','o',args_length);
+
+	printf("Message id:%02d:",message.id%ID_MSG_LOG_REEMIT_OFFSET);
+	for(int i=0;i<args_length;i++)printf("%c",log_ascci[i]);
+
+	uint32_t millis=0;
+	for(int i=0;i<4;i++)millis+=message.millis[i]<<(8*i);
+	uint16_t year=0;
+	for(int i=0;i<2;i++)year+=message.year[i]<<(8*i);
+	printf("\tTime:y:%d m:%2d d:%2d %ums\n",
+		year,message.month,message.day,	millis);
+
+}
 void main(){
    signal(SIGINT, intHandler);
    crcInit();
@@ -142,26 +162,13 @@ void main(){
 	while(running){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
-		if(state>=0){
-			int args_length=max(state-3-8-1,0);
-			char log_ascci[args_length];
-			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,
-					args_length);
-			replaceInString(log_ascci,'\r','\n',args_length);
-			replaceInString(log_ascci,'\0','o',args_length);
-			printf("Message id:%02d:",
-				message.stamp_message.id%ID_MSG_LOG_REEMIT_OFFSET);
-			for(int i=0;i<args_length;i++)printf("%c",log_ascci[i]);
-			printf("\tTime:");
-			uint32_t millis=0;
-			for(int i=0;i<4;i++)
-				millis+=message.stamp_message. millis[i]<<(8*i);
-			printf("%ums",millis);
+		if(state >= 0){
 
-			if(state==0)printf("\tERROR ON CRC");
-			printf("\n");
+			write_log_message(message.stamp_message);
 
-			if(count++>=15){
+			if(state==0)printf("\tERROR ON CRC\n");
+
+			if(count++ >= 15){
 				count=0;
 				write_test_message(fd);
 			}

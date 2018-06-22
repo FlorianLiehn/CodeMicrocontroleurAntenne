@@ -11,7 +11,7 @@ int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 						Trajectory* traj,SimpleMessage incoming_message){
 
 	//Wrong ID ( error or log )
-	if(incoming_message.id>=FIRST_ERROR_ID){
+	if(incoming_message.id >= FIRST_ERROR_ID){
 
 		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 			incoming_message.arguments);
@@ -26,7 +26,7 @@ int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 #endif
 
 	//Handle Trajectory
-	if(incoming_message.id>=FIRST_ORDER_TRAJ_ID){
+	if(incoming_message.id >= FIRST_ORDER_TRAJ_ID){
 		return  HandleTrajectory(fifo_log,traj,incoming_message);
 	}
 
@@ -95,9 +95,7 @@ int HandleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 
 	//Send to Antenna Executer
 	SimpleMessage* new_order=(SimpleMessage*)chFifoTakeObjectI(fifo_order);
-	new_order->arguments=incoming_message.arguments;
-	new_order->id=incoming_message.id;
-
+	*new_order=incoming_message;
 	chFifoSendObjectI(fifo_order,  (void*)new_order);
 	return 0;
 }

@@ -31,8 +31,8 @@ static THD_FUNCTION(GpsThread, arg) {
 void StartGpsThread(objects_fifo_t* log){
 	//init port
 	//SD1 = GPS : USART 1 (PB6 = Tx, PB7 = Rx)
-	palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(7));
-	palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(7));
+	palSetLineMode(GPS_PIN_RX, PAL_MODE_ALTERNATE(7));
+	palSetLineMode(GPS_PIN_TX, PAL_MODE_ALTERNATE(7));
 	sdStart(&SD1, &GpsSerialConfig);
 
 	//Creates threads

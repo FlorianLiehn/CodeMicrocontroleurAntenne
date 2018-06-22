@@ -15,13 +15,6 @@ const SerialConfig AntennaSerialConfig =  {
   0
 };
 
-//Reference between TX Antenna thread & EXT_1PPS_HANDLER
-static thread_reference_t new_front_1pps = NULL;
-void Handler1PPS(void*arg){
-	(void)arg;
-	chThdResumeI(&new_front_1pps, MSG_OK);
-}
-
 //TX Antenna thread
 THD_WORKING_AREA(waAntenna_TxThread, 128);
 static THD_FUNCTION(Antenna_TxThread, arg) {
@@ -38,7 +31,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 	while (TRUE) {
 
-		msg_t state = chThdSuspendTimeoutS(&new_front_1pps,TIMEOUT_1PPS);
+		msg_t state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
 		if(state==MSG_TIMEOUT){
 			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
 				(ARGS){});
@@ -79,7 +72,8 @@ THD_FUNCTION(Antenna_RxThread, arg){
 	while(TRUE){
 
 		int status=readAntennaMessage(
-				(uint8_t*)&new_log.arguments.message_antenne);
+				(uint8_t*)&new_log.arguments.message_antenne,
+				ANTENNA_MESSAGE_LENGTH);
 
 		if(status==0){
 			//new bad Antenna response return
@@ -103,13 +97,12 @@ void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj){
 	//init port
 	//SD3 = Antenna (PB10 = Tx, PB11 = Rx)
+	palSetLineMode(ANTENNA_PIN_RX, PAL_MODE_ALTERNATE(7));
+	palSetLineMode(ANTENNA_PIN_TX, PAL_MODE_ALTERNATE(7));
 	sdStart(&SD3, &AntennaSerialConfig);
-	palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
-	palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
 	//1pps Ext interuption
-	palSetPadMode(	   GPIOB,0, PAL_MODE_INPUT_PULLDOWN );
-	palEnablePadEventI(GPIOB,0, PAL_EVENT_MODE_RISING_EDGE);
-	palSetPadCallback( GPIOB,0, Handler1PPS,NULL);
+	palSetLineMode(	    PIN_1PPS, PAL_MODE_INPUT_PULLDOWN );
+	palEnableLineEventI(PIN_1PPS, PAL_EVENT_MODE_RISING_EDGE);
 
 	//Creates threads
 	chThdCreateStatic(waAntenna_RxThread, sizeof(waAntenna_RxThread), NORMALPRIO, Antenna_RxThread,

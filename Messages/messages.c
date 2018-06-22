@@ -54,7 +54,7 @@ inline int GetPayloadLength(int id){
 	//size of Id
 	int base=BaseMessageLength;
 	//sizeof timestamps
-	if(id>=FIRST_ERROR_ID)base=BaseLogLength;
+	if(id >= FIRST_ERROR_ID)base=BaseLogLength;
 	id%=ID_MSG_LOG_REEMIT_OFFSET;
 
 	switch(id){
@@ -89,11 +89,11 @@ int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
 	return nb;
 }
 
-int write_message(int(*writer)(uint8_t*,int),SerialPayload payload){
+int write_message(int(*writer)(uint8_t*,int),SerialPayload* payload){
 
 	uint8_t emit_buffer[MaxSerialMessageLength];
-	int tot=encodePayload(payload.buffer,emit_buffer,
-			GetPayloadLength(payload.simple_message.id));
+	int tot=encodePayload(payload->buffer,emit_buffer,
+			GetPayloadLength(payload->simple_message.id));
 	return writer(emit_buffer,tot);
 }
 

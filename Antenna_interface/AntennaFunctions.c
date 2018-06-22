@@ -7,22 +7,18 @@
 
 #include "AntennaThreads.h"
 
-int readAntennaMessage(uint8_t* message){
-	uint8_t buf [ANTENNA_MESSAGE_LENGTH];
-	memset(&buf,12,ANTENNA_MESSAGE_LENGTH);
-	//Read Header Byte
+int readAntennaMessage(uint8_t* message,int lenght){
+	memset(message,0,lenght);
 
-	int n=sdAsynchronousRead(&SD3,&buf[0],1);
+	//Read Header Byte
+	int n=sdAsynchronousRead(&SD3,&message[0],1);
 
 	if( n!=1 )
 		return -1;
-	if( buf[0]!=HEADER_ANTENNA[0] )
+	if( message[0]!=HEADER_ANTENNA[0] )
 		return 0;
 
-	while(n<ANTENNA_MESSAGE_LENGTH){
-		n+=sdAsynchronousRead(&SD3,&(buf[n]),ANTENNA_MESSAGE_LENGTH-n);
-	}
-	strncpy((char*)message,(char*)&(buf),ANTENNA_MESSAGE_LENGTH);
+	sdRead(&SD3,&(message[n]),lenght-n);
 
 	return 1;
 

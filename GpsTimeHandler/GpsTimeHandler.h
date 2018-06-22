@@ -11,6 +11,8 @@
 #include "Messages/messages.h"
 
 //GPS<->microcontroller SD1
+#define GPS_PIN_RX PAL_LINE(GPIOB, 7)
+#define GPS_PIN_TX PAL_LINE(GPIOB, 6)
 
 void StartGpsThread(objects_fifo_t* log);
 

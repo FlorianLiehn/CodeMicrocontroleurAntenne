@@ -131,7 +131,7 @@ uint8_t ComputeCRC(uint8_t * message, int nBytes);
 int GetPayloadLength(int id);
 int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length);
 
-int write_message(int(*writer)(uint8_t*,int),SerialPayload payload);
+int write_message(int(*writer)(uint8_t*,int),SerialPayload* payload);
 int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 
 //If on microcontroller (and not on PC)

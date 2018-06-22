@@ -11,14 +11,16 @@
 #include "Messages/messages.h"
 
 //PC<->microcontroller SD2
+#define PC_PIN_RX PAL_LINE(GPIOA, 3)
+#define PC_PIN_TX PAL_LINE(GPIOA, 2)
 
 
 void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj);
 
-inline int STM_PC_reader(uint8_t* buff,int n){
+static inline int STM_PC_reader(uint8_t* buff,int n){
 	return sdAsynchronousRead(&SD2,buff,n);}
-inline int STM_PC_writer(uint8_t* buff,int n){
+static inline int STM_PC_writer(uint8_t* buff,int n){
 	return sdAsynchronousWrite(&SD2,buff,n);}
 
 

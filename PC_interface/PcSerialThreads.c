@@ -31,7 +31,7 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//send message
-			write_message(STM_PC_writer,*(SerialPayload*)msg);
+			write_message(STM_PC_writer,(SerialPayload*)msg);
 
 			chFifoReturnObject(fifo_log_arg,msg);
 
@@ -73,7 +73,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 		}
 		else if(status>0){
 			if(HandleIncommingMessage(fifo_log_arg,fifo_order_arg,
-					traj_arg,incoming_message.simple_message)>=0)
+					traj_arg,incoming_message.simple_message) >= 0 )
 				phase=1-phase;
 		}
 
@@ -105,8 +105,8 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj){
 	//init port
 	//SD2 = PC A2 et A3
-	palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
-	palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+	palSetLineMode(PC_PIN_RX, PAL_MODE_ALTERNATE(7));
+	palSetLineMode(PC_PIN_TX, PAL_MODE_ALTERNATE(7));
 	sdStart(&SD2, &PcSerialConfig);
 
 	//Creates threads
