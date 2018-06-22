@@ -113,7 +113,9 @@ LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
 PROJECT_CSRC= PC_interface/PcSerialThreads.c		\
 			  PC_interface/PcSerialFunctions.c		\
 			  Antenna_interface/AntennaThreads.c	\
-			  Antenna_interface/AntennaFunctions.c
+			  Antenna_interface/AntennaFunctions.c	\
+			  GpsTimeHandler/GpsTimeHandler.c
+
 COMMON_CSRC= Messages/messages.c 
 CSRC = $(ALLCSRC) 		\
        $(TESTSRC) 		\

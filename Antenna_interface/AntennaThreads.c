@@ -36,7 +36,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 	chRegSetThreadName("Thread TX Antenna");
 
-	while (true) {
+	while (TRUE) {
 
 		msg_t state = chThdSuspendTimeoutS(&new_front_1pps,TIMEOUT_1PPS);
 		if(state==MSG_TIMEOUT){
@@ -76,7 +76,7 @@ THD_FUNCTION(Antenna_RxThread, arg){
 	chRegSetThreadName("Thread RX Antenna");
 
 	StampedMessage new_log;
-	while(true){
+	while(TRUE){
 
 		int status=readAntennaMessage(
 				(uint8_t*)&new_log.arguments.message_antenne);

@@ -8,10 +8,6 @@
 #ifndef PC_INTERFACE_PCSERIALTHREADS_H_
 #define PC_INTERFACE_PCSERIALTHREADS_H_
 
-#include <string.h>
-
-#include "hal.h"
-
 #include "Messages/messages.h"
 
 //PC<->microcontroller SD2

@@ -20,6 +20,7 @@
 //Threads definitions
 #include "PC_interface/PcSerialThreads.h"
 #include "Antenna_interface/AntennaThreads.h"
+#include "GpsTimeHandler/GpsTimeHandler.h"
 //Trajectory object
 #include "Trajectory/Trajectory.h"
 
@@ -64,13 +65,15 @@ int main(void) {
   chFifoObjectInit(&Fifo_order,sizeof(SimpleMessage),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 
-
+  ///////////Enable Threads///////////////
   //enable PC communication & create corresponding Threads
   StartPcThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable Antenna communication
   StartAntennaThreads(&Fifo_log, &Fifo_order,&current_traj);
+  //enable GPS Time Update
+  StartGpsThread(&Fifo_log);
 
-  while (true) {
+  while (TRUE) {
     chThdSleepMilliseconds(500);
   }
 }

@@ -24,7 +24,7 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 	int phase=0;
 	palSetPad(GPIOD, GPIOD_LED6);
-	while (true) {
+	while (TRUE) {
 
 		msg_t state = chFifoReceiveObjectI(fifo_log_arg,&msg);
 
@@ -63,7 +63,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	int phase=0;
 	int count=0;
 	palSetPad(GPIOD, GPIOD_LED3);
-	while (true) {
+	while (TRUE) {
 		count++;
 		int status=read_message(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
 
@@ -105,9 +105,9 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj){
 	//init port
 	//SD2 = PC A2 et A3
-	sdStart(&SD2, &PcSerialConfig);
 	palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
 	palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+	sdStart(&SD2, &PcSerialConfig);
 
 	//Creates threads
 	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
