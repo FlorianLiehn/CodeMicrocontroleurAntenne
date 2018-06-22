@@ -55,7 +55,7 @@ int main(void) {
   crcInit();
 
   //Init Trajectory table
-  InitTraj(&current_traj);
+  TrajInit(&current_traj);
 
   //Init Connections internes
   chFifoObjectInit(&Fifo_log,sizeof(StampedMessage),
