@@ -77,23 +77,41 @@ void intHandler(int dummy) {
     running = 0;
 }
 
-void write_test_message(int fd){
+void writeSerialMessage(int fd,int id, ARGS arguments){
 	inline int PC_Serial_writer(uint8_t* buff,int n)
-		{return write(fd,buff,n);}
+			{return write(fd,buff,n);}
 
-	StampedMessage test={
-		.id=ID_MSG_ORDER_SURVIE,
-	};
-
-	strcpy(test.arguments.message_antenne,
-			ANTENNA_SURVIE);
-	SerialPayload payload={.stamp_message=test};
-
-	int tot= write_message(PC_Serial_writer,payload);
+	SimpleMessage message={.id=id,.arguments=arguments};
+	int tot= write_message(PC_Serial_writer,
+			(SerialPayload){.simple_message=message});
 	printf("Message written! :%d\n",tot);
-
 }
 
+void write_test_message(int fd){
+	ARGS arguments;
+
+	arguments.traj_length.length[0]=1;
+	arguments.traj_length.length[1]=0;
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_LENGTH,arguments);
+
+	strcpy(arguments.message_antenne,
+			ANTENNA_SURVIE);
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_NEW_POINT,
+				(ARGS){.message_antenne=ANTENNA_SURVIE});
+
+
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_CHECK_CORRECT,arguments);
+}
+
+void replaceInString(char*buff,char old,char new,int length){
+	for(int i=0;i<length;i++)
+		if(buff[i]==old)
+			buff[i]=new;
+}
+int max(int a , int b){
+	if(a>b)return a;
+	return b;
+}
 
 void main(){
    signal(SIGINT, intHandler);
@@ -122,11 +140,15 @@ void main(){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
 		if(state>=0){
-			char log_ascci[12];
-			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,12);
-			printf("Message %02d:%s",
-				message.stamp_message.id%ID_MSG_LOG_REEMIT_OFFSET,
-				log_ascci);
+			int args_length=max(state-3-4-1,1);
+			char log_ascci[args_length];
+			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,
+					args_length);
+			replaceInString(log_ascci,'\r','\n',args_length);
+			replaceInString(log_ascci,'\0','o',args_length);
+			printf("Message id:%02d:",
+				message.stamp_message.id%ID_MSG_LOG_REEMIT_OFFSET);
+			for(int i=0;i<args_length;i++)printf("%c",log_ascci[i]);
 			printf("\tTime:");
 			uint32_t time=0;
 			for(int i=0;i<4;i++)

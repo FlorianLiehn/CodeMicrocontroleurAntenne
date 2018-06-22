@@ -21,7 +21,7 @@ typedef struct{
 }Trajectory;
 
 inline void InitTraj(Trajectory* traj){
-	traj->nb_point=-1;
+	traj->nb_point=-2;
 	traj->current_point=-1;
 	traj->locked=false;
 	memset(traj->table,0,MAX_TRAJ_LENGTH);

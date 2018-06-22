@@ -55,7 +55,6 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
 	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
-	(void)traj_arg;	   //unused for now
 
 	SerialPayload incoming_message;
 
@@ -73,13 +72,10 @@ static THD_FUNCTION(PC_RxThread, arg) {
 				incoming_message.simple_message.arguments);
 		}
 		else if(status>0){
-
 			if(HandleIncommingMessage(fifo_log_arg,fifo_order_arg,
-					traj_arg,incoming_message)>=0)
+					traj_arg,incoming_message.simple_message)>=0)
 				phase=1-phase;
-
 		}
-
 
 		if(phase){
 			palClearPad(GPIOD, GPIOD_LED3);

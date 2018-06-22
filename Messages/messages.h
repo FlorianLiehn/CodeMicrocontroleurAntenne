@@ -131,6 +131,10 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
 ////////////////////////Thread Inputs/////////////////////
 //Init args for Threads
+//Echo every receive command
+#define ECHO_COMMAND
+//echo every Order receive
+//#define ECHO_ORDER
 
 #include "hal.h"
 

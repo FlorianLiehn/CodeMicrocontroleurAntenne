@@ -81,7 +81,6 @@ THD_FUNCTION(Antenna_RxThread, arg){
 
 void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj){
-	(void)order;//unused for now
 	//init port
 	//SD3 = Antenna (PB10 = Tx, PB11 = Rx)
 	sdStart(&SD3, &AntennaSerialConfig);
