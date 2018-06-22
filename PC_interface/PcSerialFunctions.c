@@ -19,7 +19,7 @@ int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 	}
 
 #ifdef ECHO_COMMAND
-	//Re-Send order as Log message
+	//Re-Send command as Log message
 	WriteLogToFifo(fifo_log,
 			incoming_message.id+ID_MSG_LOG_REEMIT_OFFSET,
 		incoming_message.arguments);

@@ -134,7 +134,7 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
 //Echo every receive command
 #define ECHO_COMMAND
 //echo every Order receive
-//#define ECHO_ORDER
+#define ECHO_ORDER
 
 #include "hal.h"
 

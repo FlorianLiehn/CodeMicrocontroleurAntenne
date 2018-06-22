@@ -88,8 +88,11 @@ void writeSerialMessage(int fd,int id, ARGS arguments){
 }
 
 void write_test_message(int fd){
-	ARGS arguments;
 
+	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
+				(ARGS){.message_antenne=ANTENNA_SURVIE});
+
+	ARGS arguments;
 	arguments.traj_length.length[0]=1;
 	arguments.traj_length.length[1]=0;
 	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_LENGTH,arguments);
@@ -140,7 +143,7 @@ void main(){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
 		if(state>=0){
-			int args_length=max(state-3-4-1,1);
+			int args_length=max(state-3-4-1,0);
 			char log_ascci[args_length];
 			strncpy(log_ascci,message.stamp_message.arguments.message_antenne,
 					args_length);

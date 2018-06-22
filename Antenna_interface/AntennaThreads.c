@@ -38,6 +38,13 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 			input_message=*(SimpleMessage*)msg;
 			chFifoReturnObject(fifo_order_arg,msg);
 
+#ifdef ECHO_COMMAND
+			//Re-Send order as Log message
+			WriteLogToFifo(fifo_log_arg,
+					input_message.id+ID_MSG_LOG_REEMIT_OFFSET,
+					input_message.arguments);
+#endif
+
 			//send message
 			sdAsynchronousWrite(&SD3,
 					(uint8_t*)(input_message.arguments.message_antenne),
