@@ -38,7 +38,7 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 			input_message=*(SimpleMessage*)msg;
 			chFifoReturnObject(fifo_order_arg,msg);
 
-#ifdef ECHO_COMMAND
+#ifdef ECHO_ORDER
 			//Re-Send order as Log message
 			WriteLogToFifo(fifo_log_arg,
 					input_message.id+ID_MSG_LOG_REEMIT_OFFSET,
