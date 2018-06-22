@@ -12,7 +12,6 @@
 
 #include "Messages/messages.h"
 
-
 void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj);
 

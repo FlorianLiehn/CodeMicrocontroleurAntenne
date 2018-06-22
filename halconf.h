@@ -196,7 +196,7 @@
  * @note    Disabling this option saves both code and data space.
  */
 #if !defined(PAL_USE_CALLBACKS) || defined(__DOXYGEN__)
-#define PAL_USE_CALLBACKS                   FALSE
+#define PAL_USE_CALLBACKS                   TRUE
 #endif
 
 /**
@@ -418,7 +418,7 @@
  *          buffers.
  */
 #if !defined(SERIAL_BUFFERS_SIZE) || defined(__DOXYGEN__)
-#define SERIAL_BUFFERS_SIZE                 16
+#define SERIAL_BUFFERS_SIZE                 32*2
 #endif
 
 /*===========================================================================*/

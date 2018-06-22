@@ -15,6 +15,13 @@ const SerialConfig AntennaSerialConfig =  {
   0
 };
 
+//Reference between TX Antenna thread & EXT_1PPS_HANDLER
+static thread_reference_t new_front_1pps = NULL;
+void Handler1PPS(void*arg){
+	(void)arg;
+	chThdResumeI(&new_front_1pps, MSG_OK);
+}
+
 //TX Antenna thread
 THD_WORKING_AREA(waAntenna_TxThread, 128);
 static THD_FUNCTION(Antenna_TxThread, arg) {
@@ -93,6 +100,8 @@ void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 	sdStart(&SD3, &AntennaSerialConfig);
 	palSetPadMode(GPIOB, 10, PAL_MODE_ALTERNATE(7));
 	palSetPadMode(GPIOB, 11, PAL_MODE_ALTERNATE(7));
+	//1pps Ext interuption
+	palSetPadCallback( GPIOB,0,Handler1PPS,NULL);
 
 	//Creates threads
 	chThdCreateStatic(waAntenna_RxThread, sizeof(waAntenna_RxThread), NORMALPRIO, Antenna_RxThread,
