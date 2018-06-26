@@ -115,7 +115,23 @@ int max(int a , int b){
 	if(a>b)return a;
 	return b;
 }
-void write_log_message(StampedMessage message){
+
+void print_time(uint32_t millis){
+	int ms=millis%1000;
+	millis/=1000;
+
+	int s=millis%60;
+	millis/=60;
+
+	int m=millis%60;
+	millis/=60;
+
+	int h= millis;
+
+	printf("\t%2d:%2d:%2d.%3d\n",h,m,s,ms);
+}
+
+void print_log_message(StampedMessage message){
 	int args_length=GetPayloadLength(message.id);
 	args_length-=8;
 
@@ -132,8 +148,9 @@ void write_log_message(StampedMessage message){
 	for(int i=0;i<4;i++)millis+=message.millis[i]<<(8*i);
 	uint16_t year=0;
 	for(int i=0;i<2;i++)year+=message.year[i]<<(8*i);
-	printf("\tTime:y:%d m:%2d d:%2d %ums\n",
-		year,message.month,message.day,	millis);
+	printf("\tTime:y:%d m:%2d d:%2d",
+		year,message.month,message.day);
+	print_time(millis);
 
 }
 void main(){
@@ -164,13 +181,13 @@ void main(){
 
 		if(state >= 0){
 
-			write_log_message(message.stamp_message);
+			print_log_message(message.stamp_message);
 
 			if(state==0)printf("\tERROR ON CRC\n");
 
 			if(count++ >= 15){
 				count=0;
-				write_test_message(fd);
+				//write_test_message(fd);
 			}
 		}
 

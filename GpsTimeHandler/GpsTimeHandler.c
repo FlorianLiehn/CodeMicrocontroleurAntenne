@@ -16,15 +16,120 @@ static const SerialConfig GpsSerialConfig =  {
   0
 };
 
+static void SetFormatNMEAmessage(void){
+	const  int8_t id_message=0x08;
+	const int16_t pay_length=9;
+
+	char set_RMC[16];
+	int n=0;
+	//header
+	set_RMC[n++]=0xa0;//first  header
+	set_RMC[n++]=0xa1;//second header
+	//length
+	set_RMC[n++]=pay_length>>8;
+	set_RMC[n++]=pay_length&0xFF;
+
+	//message
+	const int offset_id_message=n;
+	set_RMC[n++]=id_message;//id
+	set_RMC[n++]=0;//GGA rate
+	set_RMC[n++]=0;//GSA rate
+	set_RMC[n++]=0;//GSV rate
+	set_RMC[n++]=0;//GLL rate
+	set_RMC[n++]=0;//RMC rate
+	set_RMC[n++]=0;//VTG rate
+	set_RMC[n++]=1;//ZDA rate -> Timming message
+	set_RMC[n++]=1;//Update SRAM & FLASH
+
+	//checksum
+	const int offset_id_checksum=n;
+	set_RMC[offset_id_checksum]=0;
+	for(int i=offset_id_message;i<n;i++)
+		set_RMC[n]^=set_RMC[i];
+	n++;
+	//ending of sequence
+	set_RMC[n++]=0x0d;//first  end tail \r
+	set_RMC[n++]=0x0a;//second end tail \n
+
+	sdWrite(&SD1,(uint8_t *)set_RMC,n);
+}
+
+static uint32_t GetMillisFromGpsBuffer(char*buf){
+	const int offset_hours=0;
+	const int offset_minutes=2;
+	const int offset_seconds=4;
+	const int offset_milliseconds=7;
+
+	int h=(buf[offset_hours+0]-CHAR_ZERO)*10+
+		   buf[offset_hours+1]-CHAR_ZERO;
+	int m=(buf[offset_minutes+0]-CHAR_ZERO)*10+
+		   buf[offset_minutes+1]-CHAR_ZERO;
+	int s=(buf[offset_seconds+0]-CHAR_ZERO)*10+
+		   buf[offset_seconds+1]-CHAR_ZERO;
+
+	int ms=(buf[offset_milliseconds+0]-CHAR_ZERO)*100+
+		   (buf[offset_milliseconds+1]-CHAR_ZERO)*10+
+		    buf[offset_milliseconds+2]-CHAR_ZERO;
+
+	return ((h*60+m)*60+s)*1000+ms;
+}
+
+static void SetRTCfromGpsBuffer(char* buf){
+	//TODO use correctly sscanf !
+	const int offset_id_day=	10;
+	const int offset_id_month=	14;
+	const int offset_id_year=	17;
+
+	//timestamps
+	RTCDateTime currentTime;
+	currentTime.millisecond=GetMillisFromGpsBuffer(buf);
+	currentTime.day=(buf[offset_id_day+0]-CHAR_ZERO)*10+
+					 buf[offset_id_day+1]-CHAR_ZERO;
+	currentTime.month=(buf[offset_id_month+0]-CHAR_ZERO)*10+
+			 	 	   buf[offset_id_month+1]-CHAR_ZERO;
+	currentTime.year=(buf[offset_id_year+0]-CHAR_ZERO)*1000+
+					 (buf[offset_id_year+1]-CHAR_ZERO)*100+
+					 (buf[offset_id_year+2]-CHAR_ZERO)*10+
+					  buf[offset_id_year+3]-CHAR_ZERO;
+	//set the new time
+	rtcSetTime(&RTCD1, &currentTime);
+
+}
 
 //TX Antenna thread
 THD_WORKING_AREA(waGpsThread, 128);
 static THD_FUNCTION(GpsThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
-	(void)fifo_log_arg;
+
+	char buf[ZDA_DATE_LENGTH];
+
+	SetFormatNMEAmessage();
+
 	while(TRUE){
-		chThdSleepMilliseconds(2);
+
+		memset(buf,0,ZDA_DATE_LENGTH);
+
+		int n=sdRead(&SD1,(uint8_t *)buf,1);
+		if(n==1 && buf[0]=='$'){
+			sdRead(&SD1,(uint8_t *)buf,gps_type_size);
+
+			if(strncmp(buf,GPS_MESSAGE_TYPE,gps_type_size)==0){
+
+				sdRead(&SD1,(uint8_t *)buf,ZDA_DATE_LENGTH);
+				SetRTCfromGpsBuffer(buf);
+
+			}
+			else{
+				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
+								(ARGS){});
+			}
+
+		}
+
+
+
+		chThdSleepMilliseconds(10);
 	}
 }
 
