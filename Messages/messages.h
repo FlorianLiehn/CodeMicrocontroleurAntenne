@@ -76,6 +76,14 @@ typedef struct {
 	uint8_t length[2];//0=LB 1=HB
 }Traj_length_args;
 
+//Args needed to set the date of a trajectory & log date
+typedef struct {
+	uint8_t year  [2];//uint8_t*2=uint16_t 0=LB 1=HB
+	uint8_t month;
+	uint8_t day;
+	uint8_t millis[4];//uint8_t*4=uint32_t 0=LB 3=HB
+}date_args;
+
 //Args with just a bool state
 typedef struct {
 	uint8_t value;
@@ -84,7 +92,7 @@ typedef struct {
 //Union of all args for all messages
 typedef union {
 	char message_antenne[ANTENNA_MESSAGE_LENGTH];
-	char date[ANTENNA_MESSAGE_LENGTH];
+	date_args date;
 	goto_args ARGS_goto;
 	Traj_length_args traj_length;
 	A_State_args state;
@@ -102,10 +110,7 @@ typedef struct {
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
-	uint8_t year  [2];//uint8_t*2=uint16_t 0=LB 1=HB
-	uint8_t month;
-	uint8_t day;
-	uint8_t millis[4];//uint8_t*4=uint32_t 0=LB 3=HB
+	date_args date;
 	ARGS arguments;
 }StampedMessage;
 

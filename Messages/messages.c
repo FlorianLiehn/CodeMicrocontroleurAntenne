@@ -143,12 +143,12 @@ void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 	rtcGetTime(&RTCD1, &currentTime);
 	//set millis
 	for(int i=0;i<4;i++)
-		new_message->millis[i]=(currentTime.millisecond>>(i*8))&0xFF;
-	new_message->day=currentTime.day;
-	new_message->month=currentTime.month;
+		new_message->date.millis[i]=(currentTime.millisecond>>(i*8))&0xFF;
+	new_message->date.day=currentTime.day;
+	new_message->date.month=currentTime.month;
 	//set year
 	for(int i=0;i<2;i++){
-		new_message->year[i]=(currentTime.year>>(i*8))&0xFF;
+		new_message->date.year[i]=(currentTime.year>>(i*8))&0xFF;
 	}
 
 	chFifoSendObjectI(fifo_log,(void*)new_message);

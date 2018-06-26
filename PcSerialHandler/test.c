@@ -145,11 +145,11 @@ void print_log_message(StampedMessage message){
 	for(int i=0;i<args_length;i++)printf("%c",log_ascci[i]);
 
 	uint32_t millis=0;
-	for(int i=0;i<4;i++)millis+=message.millis[i]<<(8*i);
+	for(int i=0;i<4;i++)millis+=message.date.millis[i]<<(8*i);
 	uint16_t year=0;
-	for(int i=0;i<2;i++)year+=message.year[i]<<(8*i);
+	for(int i=0;i<2;i++)year+=message.date.year[i]<<(8*i);
 	printf("\tTime:y:%d m:%2d d:%2d",
-		year,message.month,message.day);
+		year,message.date.month,message.date.day);
 	print_time(millis);
 
 }
