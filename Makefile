@@ -114,7 +114,8 @@ PROJECT_CSRC= PC_interface/PcSerialThreads.c		\
 			  PC_interface/PcSerialFunctions.c		\
 			  Antenna_interface/AntennaThreads.c	\
 			  Antenna_interface/AntennaFunctions.c	\
-			  GpsTimeHandler/GpsTimeHandler.c
+			  GpsTimeHandler/GpsTimeHandler.c		\
+			  $(CHIBIOS)/os/various/syscalls.c
 
 COMMON_CSRC= Messages/messages.c 
 CSRC = $(ALLCSRC) 		\

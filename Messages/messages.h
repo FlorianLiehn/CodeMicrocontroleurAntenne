@@ -35,6 +35,7 @@ enum ID_MSG{
 	ID_MSG_ORDER_CALAGE,
 	ID_MSG_ORDER_GOTO,
 	ID_MSG_ORDER_ANTENNA,
+	ID_MSG_ORDER_DO_TRAJ_AT_DATE,
 
 	ID_MSG_ORDER_TRAJ_SET_LENGTH=FIRST_ORDER_TRAJ_ID,
 	ID_MSG_ORDER_TRAJ_SET_NEW_POINT,
@@ -47,6 +48,7 @@ enum ID_MSG{
 	ID_MSG_ALERT_BAD_MESSAGE_ID,
 	ID_MSG_ALERT_NO_1PPS,
 	ID_MSG_ALERT_WRONG_GPS_MESSAGE,
+	ID_MSG_ALERT_MESSAGE_DROPPED,
 
 	//>128 log id max
 	ID_MSG_LOG_ANTENNA_RETURN=FIRST_LOG_ID,
@@ -76,9 +78,10 @@ typedef struct {
 	uint8_t length[2];//0=LB 1=HB
 }Traj_length_args;
 
+#define YEAR_OFFSET 1980
 //Args needed to set the date of a trajectory & log date
 typedef struct {
-	uint8_t year  [2];//uint8_t*2=uint16_t 0=LB 1=HB
+	uint8_t year;//since YEAR_OFFSET
 	uint8_t month;
 	uint8_t day;
 	uint8_t millis[4];//uint8_t*4=uint32_t 0=LB 3=HB
@@ -161,6 +164,7 @@ typedef struct {
 }Threads_args;
 
 void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
+void convertDateArgs2RTCDateTime(RTCDateTime* time,date_args date_arg);
 #endif
 
 #endif /* MESSAGES_MESSAGES_H_ */

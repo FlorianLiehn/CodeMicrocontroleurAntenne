@@ -70,6 +70,9 @@ inline int GetPayloadLength(int id){
 		return (sizeof(Traj_length_args)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_LOG_TRAJ_RESPONSE_CORRECT:
 		return (sizeof(A_State_args)/sizeof(uint8_t))+base;//Args size + base
+	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
+		return (sizeof(date_args)/sizeof(uint8_t))+base;//Args size + base
+
 
 	default:
 		return sizeof(ARGS)/sizeof(uint8_t)+base;
@@ -147,11 +150,23 @@ void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 	new_message->date.day=currentTime.day;
 	new_message->date.month=currentTime.month;
 	//set year
-	for(int i=0;i<2;i++){
-		new_message->date.year[i]=(currentTime.year>>(i*8))&0xFF;
-	}
+	new_message->date.year=currentTime.year;
+
 
 	chFifoSendObjectI(fifo_log,(void*)new_message);
+}
+
+void convertDateArgs2RTCDateTime(RTCDateTime* time,date_args date_arg){
+
+	time->year=date_arg.year;
+	time->month=date_arg.month;
+	time->day=date_arg.day;
+
+	time->millisecond=0;
+	for(int i=0;i<4;i++)
+		time->millisecond+=(date_arg.millis[i])<<(8*i);
+
+
 }
 
 #endif
