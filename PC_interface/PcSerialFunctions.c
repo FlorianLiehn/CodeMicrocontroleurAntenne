@@ -86,6 +86,7 @@ int HandleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 		//TODO handle ALL commun orders
 		break;
 	case ID_MSG_ORDER_ANTENNA:
+	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
 		break;
 	default:
 		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,

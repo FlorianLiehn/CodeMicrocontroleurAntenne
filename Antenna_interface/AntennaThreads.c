@@ -24,6 +24,8 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
 	(void)traj_arg;	   //unused for now
 
+	int state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
+
 	void* msg;
 	SimpleMessage input_message;
 
@@ -31,15 +33,18 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 	while (TRUE) {
 
-		msg_t state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
-		if(state==MSG_TIMEOUT){
+		//1Hz rate + GPS synchro
+		msg_t msg_state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
+		if(msg_state==MSG_TIMEOUT){
 			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
 				(ARGS){});
 		}
 
-		state = chFifoReceiveObjectI(fifo_order_arg,&msg);
+		//read fifo order
+		msg_state = chFifoReceiveObjectI(fifo_order_arg,&msg);
 
-		if(state==MSG_OK){
+		//process message
+		if(msg_state==MSG_OK){
 			//free fifo
 			input_message=*(SimpleMessage*)msg;
 			chFifoReturnObject(fifo_order_arg,msg);
@@ -51,12 +56,25 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 					input_message.arguments);
 #endif
 
-			//send message
-			sdAsynchronousWrite(&SD3,
-					(uint8_t*)(input_message.arguments.message_antenne),
-					ANTENNA_MESSAGE_LENGTH);
+			//TODO Emergency
+			if(state==STATE_ANTENNA_TRANSMISSION_NOMINAL){
+				nominalBehaviour(&state,fifo_log_arg,traj_arg,&input_message);
+			}
+			else{
+				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_MESSAGE_DROPPED,
+						input_message.arguments);
+			}
 		}
-		chThdSleepMilliseconds(2);
+
+		switch(state){
+		case STATE_ANTENNA_TRANSMISSION_WAITING_TIME:
+			waitingBehaviour(&state,fifo_log_arg,traj_arg);
+			break;
+		case STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ:
+			trackingBehaviour(&state,fifo_log_arg,traj_arg);
+			break;
+		}
+
 	}
 }
 

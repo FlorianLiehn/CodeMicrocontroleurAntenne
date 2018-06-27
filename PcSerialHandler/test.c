@@ -89,6 +89,22 @@ void writeSerialMessage(int fd,int id, ARGS arguments){
 
 void write_test_message(int fd){
 
+	date_args date;
+	date.year=2018-YEAR_OFFSET;
+	date.month=6;
+	date.day=26;
+	uint32_t millis= (15*60+26)*60*1000;
+	for(int i=0;i<4;i++)
+		date.millis[i]=(millis>>(8*i))&0xFF;
+
+	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
+				(ARGS){.message_antenne=ANTENNA_SURVIE});
+	writeSerialMessage(fd,ID_MSG_ORDER_DO_TRAJ_AT_DATE,
+				(ARGS){.date=date});
+	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
+				(ARGS){.message_antenne=ANTENNA_SURVIE});
+
+	/*
 	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
 				(ARGS){.message_antenne=ANTENNA_SURVIE});
 
@@ -103,17 +119,13 @@ void write_test_message(int fd){
 				(ARGS){.message_antenne=ANTENNA_SURVIE});
 
 
-	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_CHECK_CORRECT,arguments);
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_CHECK_CORRECT,arguments);*/
 }
 
 void replaceInString(char*buff,char old,char new,int length){
 	for(int i=0;i<length;i++)
 		if(buff[i]==old)
 			buff[i]=new;
-}
-int max(int a , int b){
-	if(a>b)return a;
-	return b;
 }
 
 void print_time(uint32_t millis){
@@ -146,10 +158,9 @@ void print_log_message(StampedMessage message){
 
 	uint32_t millis=0;
 	for(int i=0;i<4;i++)millis+=message.date.millis[i]<<(8*i);
-	uint16_t year=0;
-	for(int i=0;i<2;i++)year+=message.date.year[i]<<(8*i);
+
 	printf("\tTime:y:%d m:%2d d:%2d",
-		year,message.date.month,message.date.day);
+ message.date.year+YEAR_OFFSET,message.date.month,message.date.day);
 	print_time(millis);
 
 }
@@ -176,6 +187,7 @@ void main(){
 	printf("C'est parti! %s\n",portname);
 	int count=0;
 	SerialPayload message;
+
 	while(running){
 		int state=read_message(PC_Serial_reader,message.buffer);
 
@@ -187,7 +199,7 @@ void main(){
 
 			if(count++ >= 15){
 				count=0;
-				//write_test_message(fd);
+				write_test_message(fd);
 			}
 		}
 
