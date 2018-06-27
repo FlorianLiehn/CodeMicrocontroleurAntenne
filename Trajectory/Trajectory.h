@@ -16,6 +16,7 @@ typedef struct{
 	int _nb_point;
 	bool _locked;
 	int _current_point;
+	RTCDateTime _init_date;
 	//Table of pointing messages
 	uint8_t _table[MAX_TRAJ_LENGTH][ANTENNA_MESSAGE_LENGTH];
 }Trajectory;
@@ -24,6 +25,7 @@ static inline void TrajInit(Trajectory* traj){
 	traj->_nb_point=-2;
 	traj->_current_point=-1;
 	traj->_locked=false;
+	rtcGetTime(&RTCD1,&(traj->_init_date));
 	memset(traj->_table,0,MAX_TRAJ_LENGTH);
 }
 
@@ -40,6 +42,13 @@ static inline void TrajAddPoint(Trajectory* traj,uint8_t*point){
 
 static inline bool CheckTrajCorrectLength(Trajectory* traj){
 	return traj->_current_point==traj->_nb_point;
+}
+
+static inline void getTrajDate(Trajectory* traj,RTCDateTime* date){
+	*date=(traj->_init_date);
+}
+static inline void setTrajDate(Trajectory* traj,RTCDateTime* date){
+	traj->_init_date=*date;
 }
 
 #endif /* TRAJECTORY_H_ */
