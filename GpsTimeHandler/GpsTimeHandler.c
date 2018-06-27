@@ -91,6 +91,7 @@ static void SetRTCfromGpsBuffer(char* buf){
 					 (buf[offset_id_year+1]-CHAR_ZERO)*100+
 					 (buf[offset_id_year+2]-CHAR_ZERO)*10+
 					  buf[offset_id_year+3]-CHAR_ZERO;
+	currentTime.year-=YEAR_OFFSET;
 	//set the new time
 	rtcSetTime(&RTCD1, &currentTime);
 
@@ -121,14 +122,12 @@ static THD_FUNCTION(GpsThread, arg) {
 
 			}
 			else{
+				ARGS empty_args;
 				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
-								(ARGS){});
+								empty_args);
 			}
 
 		}
-
-
-
 		chThdSleepMilliseconds(10);
 	}
 }
