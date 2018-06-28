@@ -83,13 +83,13 @@ void writeSerialMessage(int fd,int id, ARGS arguments){
 
 	SimpleMessage message={.id=id,.arguments=arguments};
 	SerialPayload seriMessage={.simple_message=message};
-	int tot= write_message(PC_Serial_writer,&seriMessage);
+	int tot= writeMessage(PC_Serial_writer,&seriMessage);
 	printf("Message written! :%d\n",tot);
 }
 
 void write_test_message(int fd){
 
-	date_args date;
+	DateArgs date;
 	date.year=2018-YEAR_OFFSET;
 	date.month=6;
 	date.day=26;
@@ -144,7 +144,7 @@ void print_time(uint32_t millis){
 }
 
 void print_log_message(StampedMessage message){
-	int args_length=GetPayloadLength(message.id);
+	int args_length=getPayloadLength(message.id);
 	args_length-=8;
 
 	char log_ascci[args_length];
@@ -189,7 +189,7 @@ void main(){
 	SerialPayload message;
 
 	while(running){
-		int state=read_message(PC_Serial_reader,message.buffer);
+		int state=readMessage(PC_Serial_reader,message.buffer);
 
 		if(state >= 0){
 

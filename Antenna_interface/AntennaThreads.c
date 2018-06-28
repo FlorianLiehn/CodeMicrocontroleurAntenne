@@ -19,9 +19,9 @@ const SerialConfig antennaSerialConfig =  {
 THD_WORKING_AREA(waAntennaTxThread, 128);
 static THD_FUNCTION(antennaTxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
-	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
+	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((ThreadsArgs*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((ThreadsArgs*)arg)->traj_arg;
 	(void)traj_arg;	   //unused for now
 
 	int state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
@@ -36,7 +36,7 @@ static THD_FUNCTION(antennaTxThread, arg) {
 		//1Hz rate + GPS synchro
 		msg_t msg_state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
 		if(msg_state==MSG_TIMEOUT){
-			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
+			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
 				(ARGS){});
 		}
 
@@ -51,20 +51,20 @@ static THD_FUNCTION(antennaTxThread, arg) {
 
 #ifdef ECHO_ORDER
 			//Re-Send order as Log message
-			WriteLogToFifo(fifo_log_arg,
+			writeLogToFifo(fifo_log_arg,
 					input_message.id+ID_MSG_LOG_REEMIT_OFFSET,
 					input_message.arguments);
 #endif
 
 			if(testEmergencyStop(&state,&input_message)<=0){
-				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_ANTENNA_EMERGENCY,
+				writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_ANTENNA_EMERGENCY,
 						input_message.arguments);
 			}
 			else if(state==STATE_ANTENNA_TRANSMISSION_NOMINAL){
 				nominalBehaviour(&state,fifo_log_arg,traj_arg,&input_message);
 			}
 			else{
-				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_MESSAGE_DROPPED,
+				writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_MESSAGE_DROPPED,
 						input_message.arguments);
 			}
 		}
@@ -103,13 +103,13 @@ THD_FUNCTION(antennaRxThread, arg){
 		if(status==0){
 			//new bad Antenna response return
 
-			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
+			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_BAD_ANTENNA_RESPONSE,
 				new_log.arguments);
 
 		}
 		else if(status>0){
 			//new Antenna log return
-			WriteLogToFifo(fifo_log_arg,ID_MSG_LOG_ANTENNA_RETURN,
+			writeLogToFifo(fifo_log_arg,ID_MSG_LOG_ANTENNA_RETURN,
 							new_log.arguments);
 		}
 
@@ -133,6 +133,6 @@ void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 	chThdCreateStatic(waAntennaRxThread, sizeof(waAntennaRxThread), NORMALPRIO, antennaRxThread,
 														   (void*)log);
 	chThdCreateStatic(waAntennaTxThread, sizeof(waAntennaTxThread), NORMALPRIO, antennaTxThread,
-			   (void*)&(Threads_args){log, order, traj });
+			   (void*)&(ThreadsArgs){log, order, traj });
 
 }

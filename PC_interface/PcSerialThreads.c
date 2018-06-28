@@ -31,7 +31,7 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//send message
-			write_message(STM_PC_writer,(SerialPayload*)msg);
+			writeMessage(STM_PC_writer,(SerialPayload*)msg);
 
 			chFifoReturnObject(fifo_log_arg,msg);
 
@@ -52,9 +52,9 @@ static THD_FUNCTION(PC_TxThread, arg) {
 THD_WORKING_AREA(waPC_RxThread, 128);
 static THD_FUNCTION(PC_RxThread, arg) {
 
-	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
-	Trajectory* traj_arg=((Threads_args*)arg)->traj_arg;
+	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((ThreadsArgs*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((ThreadsArgs*)arg)->traj_arg;
 
 	SerialPayload incoming_message;
 
@@ -65,10 +65,10 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	palSetPad(GPIOD, GPIOD_LED3);
 	while (TRUE) {
 		count++;
-		int status=read_message(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
+		int status=readMessage(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
-			WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_CRC_ERROR,
+			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_CRC_ERROR,
 				incoming_message.simple_message.arguments);
 		}
 		else if(status>0){
@@ -92,7 +92,7 @@ static THD_FUNCTION(PC_RxThread, arg) {
 			strncpy(ping.message_antenne,"TEST0MESSAGE",12);
 			ping.message_antenne[4]+=(count/20)%10;
 
-			WriteLogToFifo(fifo_log_arg,ID_MSG_LOG_PING,
+			writeLogToFifo(fifo_log_arg,ID_MSG_LOG_PING,
 				ping);
 		}
 
@@ -111,7 +111,7 @@ void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 
 	//Creates threads
 	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
-			   (void*)&(Threads_args){log, order, traj });
+			   (void*)&(ThreadsArgs){log, order, traj });
 	chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
 														   (void*)log);
 

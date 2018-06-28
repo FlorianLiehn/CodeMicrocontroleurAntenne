@@ -68,16 +68,16 @@ enum ID_MSG{
 typedef struct {
 	uint8_t elevation;
 	uint8_t azimut;
-}goto_args;
+}GotoArgs;
 
 //No args needed for some commands
 typedef struct {
-}none_args;
+}NoneArgs;
 
 //Args needed for setting traj length
 typedef struct {
 	uint8_t length[2];//0=LB 1=HB
-}Traj_length_args;
+}TrajLengthArgs;
 
 #define YEAR_OFFSET 1980
 //Args needed to set the date of a trajectory & log date
@@ -86,21 +86,21 @@ typedef struct {
 	uint8_t month;
 	uint8_t day;
 	uint8_t millis[4];//uint8_t*4=uint32_t 0=LB 3=HB
-}date_args;
+}DateArgs;
 
 //Args with just a bool state
 typedef struct {
 	uint8_t value;
-}A_State_args;
+}A_StateArgs;
 
 //Union of all args for all messages
 typedef union {
 	char message_antenne[ANTENNA_MESSAGE_LENGTH];
-	date_args date;
-	goto_args ARGS_goto;
-	Traj_length_args traj_length;
-	A_State_args state;
-	none_args NO_ARGS;
+	DateArgs date;
+	GotoArgs ARGS_goto;
+	TrajLengthArgs traj_length;
+	A_StateArgs state;
+	NoneArgs NO_ARGS;
 }ARGS;
 
 //////////////////MESSAGES DEFINITION//////////////////
@@ -114,21 +114,21 @@ typedef struct {
 //log or reply from microcontroller
 typedef struct {
 	uint8_t id;//fill with ORDER enum
-	date_args date;
+	DateArgs date;
 	ARGS arguments;
 }StampedMessage;
 
-#define BaseMessageLength (int)( (sizeof(SimpleMessage )-sizeof(ARGS))/(sizeof(char)) )
-#define BaseLogLength     (int)( (sizeof(StampedMessage)-sizeof(ARGS))/(sizeof(char)) )
+#define BASE_MESSAGE_LENGTH (int)( (sizeof(SimpleMessage )-sizeof(ARGS))/(sizeof(char)) )
+#define BASE_LOG_LENGTH     (int)( (sizeof(StampedMessage)-sizeof(ARGS))/(sizeof(char)) )
 
-#define MaxPayloadMessageLength (int)(sizeof(StampedMessage)/(sizeof(char)))
-#define MaxSerialMessageLength (int)(1+1+MaxPayloadMessageLength+1)
-							//INIT+length_Payload+[Payload]+CRC
+#define MAX_PAYLOAD_MESSAGE_LENGTH (int)(sizeof(StampedMessage)/(sizeof(char)))
+#define MAX_SERIAL_MESSAGE_LENGTH (int)(1+1+MAX_PAYLOAD_MESSAGE_LENGTH+1)
+									//INIT+length_Payload+[Payload]  +CRC
 
 typedef union {
 	StampedMessage stamp_message;
 	SimpleMessage simple_message;
-	uint8_t buffer[MaxPayloadMessageLength];
+	uint8_t buffer[MAX_PAYLOAD_MESSAGE_LENGTH];
 }SerialPayload;
 
 
@@ -136,13 +136,13 @@ typedef union {
 
 //CRC table computation
 void crcInit(void);
-uint8_t ComputeCRC(uint8_t * message, int nBytes);
+uint8_t computeCRC(uint8_t * message, int nBytes);
 
-int GetPayloadLength(int id);
+int getPayloadLength(int id);
 int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length);
 
-int write_message(int(*writer)(uint8_t*,int),SerialPayload* payload);
-int read_message(int(*reader)(uint8_t*,int),uint8_t* message);
+int writeMessage(int(*writer)(uint8_t*,int),SerialPayload* payload);
+int readMessage(int(*reader)(uint8_t*,int),uint8_t* message);
 
 //If on microcontroller (and not on PC)
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
@@ -162,10 +162,10 @@ typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
 	Trajectory* traj_arg;
-}Threads_args;
+}ThreadsArgs;
 
-void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
-void convertDateArgs2RTCDateTime(RTCDateTime* time,date_args date_arg);
+void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
+void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg);
 #endif
 
 #endif /* MESSAGES_MESSAGES_H_ */

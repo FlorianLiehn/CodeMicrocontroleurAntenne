@@ -43,7 +43,7 @@ void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 			ANTENNA_MESSAGE_LENGTH);
 		return;
 	default:
-		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
+		writeLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 				input_message->arguments);
 	}
 
@@ -62,13 +62,13 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	ARGS empty_args;
 	if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING ||
 			current_sec>target_sec){
-		WriteLogToFifo(fifo_log,
+		writeLogToFifo(fifo_log,
 			ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
 			empty_args);
 		*state=STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ;
 	}
 	else{
-		WriteLogToFifo(fifo_log,60,empty_args);
+		writeLogToFifo(fifo_log,60,empty_args);
 	}
 
 }

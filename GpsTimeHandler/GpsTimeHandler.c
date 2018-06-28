@@ -123,7 +123,7 @@ static THD_FUNCTION(gpsThread, arg) {
 			}
 			else{
 				ARGS empty_args;
-				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
+				writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
 								empty_args);
 			}
 

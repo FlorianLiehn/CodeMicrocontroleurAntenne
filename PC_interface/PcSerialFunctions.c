@@ -13,14 +13,14 @@ int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 	//Wrong ID ( error or log )
 	if(incoming_message.id >= FIRST_ERROR_ID){
 
-		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
+		writeLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 			incoming_message.arguments);
 		return -1;
 	}
 
 #ifdef ECHO_COMMAND
 	//Re-Send command as Log message
-	WriteLogToFifo(fifo_log,
+	writeLogToFifo(fifo_log,
 			incoming_message.id+ID_MSG_LOG_REEMIT_OFFSET,
 		incoming_message.arguments);
 #endif
@@ -53,13 +53,13 @@ int HandleTrajectory(objects_fifo_t*  fifo_log,
 		trajInit(traj);
 		return 0;
 	case ID_MSG_ORDER_TRAJ_CHECK_CORRECT:
-		WriteLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
-				(ARGS){.state=(A_State_args){
+		writeLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
+				(ARGS){.state=(A_StateArgs){
 						 .value=trajCheckCorrectLength(traj)}
 					  });
 		return 0;
 	default:
-		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
+		writeLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 				incoming_traj_message.arguments);
 		return -1;
 	}
@@ -89,7 +89,7 @@ int HandleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
 		break;
 	default:
-		WriteLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
+		writeLogToFifo(fifo_log,ID_MSG_ALERT_BAD_MESSAGE_ID,
 			incoming_message.arguments);
 		return -1;
 	}

@@ -36,7 +36,7 @@ void crcInit(void){
     }
 }
 
-uint8_t ComputeCRC(uint8_t* message, int nBytes)
+uint8_t computeCRC(uint8_t* message, int nBytes)
 {
     uint8_t data;
     uint8_t remainder = 0;
@@ -50,11 +50,11 @@ uint8_t ComputeCRC(uint8_t* message, int nBytes)
     return (remainder);
 }
 
-inline int GetPayloadLength(int id){
+inline int getPayloadLength(int id){
 	//size of Id
-	int base=BaseMessageLength;
+	int base=BASE_MESSAGE_LENGTH;
 	//sizeof timestamps
-	if(id >= FIRST_ERROR_ID)base=BaseLogLength;
+	if(id >= FIRST_ERROR_ID)base=BASE_LOG_LENGTH;
 	id%=ID_MSG_LOG_REEMIT_OFFSET;
 
 	switch(id){
@@ -66,13 +66,13 @@ inline int GetPayloadLength(int id){
 	case ID_MSG_ALERT_NO_1PPS:
 	case ID_MSG_ALERT_WRONG_GPS_MESSAGE:
 	case ID_MSG_ALERT_ANTENNA_EMERGENCY:
-		return (sizeof(none_args)/sizeof(uint8_t))+base;//Args size + base
+		return (sizeof(NoneArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_ORDER_TRAJ_SET_LENGTH:
-		return (sizeof(Traj_length_args)/sizeof(uint8_t))+base;//Args size + base
+		return (sizeof(TrajLengthArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_LOG_TRAJ_RESPONSE_CORRECT:
-		return (sizeof(A_State_args)/sizeof(uint8_t))+base;//Args size + base
+		return (sizeof(A_StateArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
-		return (sizeof(date_args)/sizeof(uint8_t))+base;//Args size + base
+		return (sizeof(DateArgs)/sizeof(uint8_t))+base;//Args size + base
 
 
 	default:
@@ -89,23 +89,23 @@ int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
 	for(int i=0;i<payload_length;i++){
 		*(msg+(nb++))=payload[i];
 	}
-	uint8_t crc=ComputeCRC((uint8_t*)payload,payload_length);
+	uint8_t crc=computeCRC((uint8_t*)payload,payload_length);
 	*(msg+(nb++))=crc;//CRC to check the communication
 	return nb;
 }
 
-int write_message(int(*writer)(uint8_t*,int),SerialPayload* payload){
+int writeMessage(int(*writer)(uint8_t*,int),SerialPayload* payload){
 
-	uint8_t emit_buffer[MaxSerialMessageLength];
+	uint8_t emit_buffer[MAX_SERIAL_MESSAGE_LENGTH];
 	int tot=encodePayload(payload->buffer,emit_buffer,
-			GetPayloadLength(payload->simple_message.id));
+			getPayloadLength(payload->simple_message.id));
 	return writer(emit_buffer,tot);
 }
 
-int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
+int readMessage(int(*reader)(uint8_t*,int),uint8_t* message){
 
-	uint8_t buf [MaxSerialMessageLength];
-    memset (message, 0, MaxPayloadMessageLength);
+	uint8_t buf [MAX_SERIAL_MESSAGE_LENGTH];
+    memset (message, 0, MAX_PAYLOAD_MESSAGE_LENGTH);
     //Read Header Byte
 	int n=reader(buf,1);
 
@@ -115,7 +115,7 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	while(n==1)
 		n+=reader(&(buf[n]),1);//read nb
 	int tot=(int)(buf[1]);
-	if(tot>MaxPayloadMessageLength)tot=MaxPayloadMessageLength;
+	if(tot>MAX_PAYLOAD_MESSAGE_LENGTH)tot=MAX_PAYLOAD_MESSAGE_LENGTH;
 
 	//Read Payload + CRC
 	while(n<tot+3){
@@ -124,7 +124,7 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 	for(int i=0;i<tot;i++)
 		message[i]=buf[i+2];//copy even 0
 	//Check CRC
-	uint8_t crc=ComputeCRC(message,tot);
+	uint8_t crc=computeCRC(message,tot);
 
 	if(crc!=buf[tot+3-1]){
 		return 0;
@@ -135,7 +135,7 @@ int read_message(int(*reader)(uint8_t*,int),uint8_t* message){
 
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
 
-void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
+void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 
 	StampedMessage* new_message=(StampedMessage*)
 			chFifoTakeObjectI(fifo_log);
@@ -143,21 +143,21 @@ void WriteLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 	new_message->id=id;
 	new_message->arguments=args;
 	//timestamps
-	RTCDateTime currentTime;
-	rtcGetTime(&RTCD1, &currentTime);
+	RTCDateTime current_time;
+	rtcGetTime(&RTCD1, &current_time);
 	//set millis
 	for(int i=0;i<4;i++)
-		new_message->date.millis[i]=(currentTime.millisecond>>(i*8))&0xFF;
-	new_message->date.day=currentTime.day;
-	new_message->date.month=currentTime.month;
+		new_message->date.millis[i]=(current_time.millisecond>>(i*8))&0xFF;
+	new_message->date.day=current_time.day;
+	new_message->date.month=current_time.month;
 	//set year
-	new_message->date.year=currentTime.year;
+	new_message->date.year=current_time.year;
 
 
 	chFifoSendObjectI(fifo_log,(void*)new_message);
 }
 
-void convertDateArgs2RTCDateTime(RTCDateTime* time,date_args date_arg){
+void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg){
 
 	time->year=date_arg.year;
 	time->month=date_arg.month;
