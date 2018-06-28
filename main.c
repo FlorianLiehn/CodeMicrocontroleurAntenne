@@ -69,7 +69,7 @@ int main(void) {
   //enable PC communication & create corresponding Threads
   StartPcThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable Antenna communication
-  StartAntennaThreads(&Fifo_log, &Fifo_order,&current_traj);
+  startAntennaThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable GPS Time Update
   StartGpsThread(&Fifo_log);
 

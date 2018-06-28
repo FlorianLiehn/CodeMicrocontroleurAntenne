@@ -20,7 +20,7 @@
 
 #define PIN_1PPS PAL_LINE(GPIOB,0)
 
-void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
+void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj);
 
 

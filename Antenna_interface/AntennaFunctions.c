@@ -25,14 +25,14 @@ int  testEmergencyStop(int *state,SimpleMessage* input_message){
 void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 		Trajectory* traj,SimpleMessage* input_message){
 
-	RTCDateTime Time;
+	RTCDateTime time;
 	switch(input_message->id){
 
 	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
 
-		convertDateArgs2RTCDateTime(&Time,
+		convertDateArgs2RTCDateTime(&time,
 				input_message->arguments.date);
-		setTrajDate(traj,&Time);
+		setTrajDate(traj,&time);
 
 		*state=STATE_ANTENNA_TRANSMISSION_WAITING_TIME;
 		return;
@@ -51,13 +51,13 @@ void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 
 void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 
-	RTCDateTime currentTime;
-	rtcGetTime(&RTCD1, &currentTime);
-	uint32_t current_sec=getTimeUnixSecFromRTCTime(&currentTime);
+	RTCDateTime current_time;
+	rtcGetTime(&RTCD1, &current_time);
+	uint32_t current_sec=getTimeUnixSecFromRTCTime(&current_time);
 
-	RTCDateTime targetTime;
-	getTrajDate(traj,&targetTime);
-	uint32_t target_sec=getTimeUnixSecFromRTCTime(&targetTime);
+	RTCDateTime target_time;
+	getTrajDate(traj,&target_time);
+	uint32_t target_sec=getTimeUnixSecFromRTCTime(&target_time);
 
 	ARGS empty_args;
 	if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING ||

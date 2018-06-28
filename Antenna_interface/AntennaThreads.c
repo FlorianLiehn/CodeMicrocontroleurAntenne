@@ -8,7 +8,7 @@
 #include "AntennaThreads.h"
 
 //Interface uC<->Antenna (Port SD3: RS-422)
-const SerialConfig AntennaSerialConfig =  {
+const SerialConfig antennaSerialConfig =  {
   19200,
   0,
   USART_CR2_STOP1_BITS | USART_CR2_LINEN,
@@ -16,8 +16,8 @@ const SerialConfig AntennaSerialConfig =  {
 };
 
 //TX Antenna thread
-THD_WORKING_AREA(waAntenna_TxThread, 128);
-static THD_FUNCTION(Antenna_TxThread, arg) {
+THD_WORKING_AREA(waAntennaTxThread, 128);
+static THD_FUNCTION(antennaTxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((Threads_args*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((Threads_args*)arg)->fifo_order_arg;
@@ -87,8 +87,8 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 
 
 //RX Antenna thread
-THD_WORKING_AREA(waAntenna_RxThread, 128);
-THD_FUNCTION(Antenna_RxThread, arg){
+THD_WORKING_AREA(waAntennaRxThread, 128);
+THD_FUNCTION(antennaRxThread, arg){
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 
 	chRegSetThreadName("Thread RX Antenna");
@@ -118,21 +118,21 @@ THD_FUNCTION(Antenna_RxThread, arg){
 
 }
 
-void StartAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
+void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj){
 	//init port
 	//SD3 = Antenna (PB10 = Tx, PB11 = Rx)
 	palSetLineMode(ANTENNA_PIN_RX, PAL_MODE_ALTERNATE(7));
 	palSetLineMode(ANTENNA_PIN_TX, PAL_MODE_ALTERNATE(7));
-	sdStart(&SD3, &AntennaSerialConfig);
+	sdStart(&SD3, &antennaSerialConfig);
 	//1pps Ext interuption
 	palSetLineMode(	    PIN_1PPS, PAL_MODE_INPUT_PULLDOWN );
 	palEnableLineEventI(PIN_1PPS, PAL_EVENT_MODE_RISING_EDGE);
 
 	//Creates threads
-	chThdCreateStatic(waAntenna_RxThread, sizeof(waAntenna_RxThread), NORMALPRIO, Antenna_RxThread,
+	chThdCreateStatic(waAntennaRxThread, sizeof(waAntennaRxThread), NORMALPRIO, antennaRxThread,
 														   (void*)log);
-	chThdCreateStatic(waAntenna_TxThread, sizeof(waAntenna_TxThread), NORMALPRIO, Antenna_TxThread,
+	chThdCreateStatic(waAntennaTxThread, sizeof(waAntennaTxThread), NORMALPRIO, antennaTxThread,
 			   (void*)&(Threads_args){log, order, traj });
 
 }
