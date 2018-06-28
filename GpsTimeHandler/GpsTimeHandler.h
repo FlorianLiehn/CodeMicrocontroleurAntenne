@@ -25,7 +25,7 @@ static const int gps_type_size=sizeof(GPS_MESSAGE_TYPE)/sizeof(char)-1;//-'\0'
 #define GPS_PIN_RX PAL_LINE(GPIOB, 7)
 #define GPS_PIN_TX PAL_LINE(GPIOB, 6)
 
-void StartGpsThread(objects_fifo_t* log);
+void startGpsThread(objects_fifo_t* log);
 
 
 #endif /* GPSTIMEHANDLER_H_ */

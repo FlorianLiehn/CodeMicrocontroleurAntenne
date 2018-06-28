@@ -71,7 +71,7 @@ int main(void) {
   //enable Antenna communication
   startAntennaThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable GPS Time Update
-  StartGpsThread(&Fifo_log);
+  startGpsThread(&Fifo_log);
 
   while (TRUE) {
     chThdSleepMilliseconds(500);

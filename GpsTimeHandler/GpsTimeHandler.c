@@ -9,14 +9,14 @@
 
 
 //Interface uC<->Gps(Port SD1)
-static const SerialConfig GpsSerialConfig =  {
+static const SerialConfig gpsSerialConfig =  {
   115200,
   0,
   USART_CR2_STOP1_BITS /*| USART_CR2_LINEN*/,
   0
 };
 
-static void SetFormatNMEAmessage(void){
+static void setFormatNMEAmessage(void){
 	const  int8_t id_message=0x08;
 	const int16_t pay_length=9;
 
@@ -54,7 +54,7 @@ static void SetFormatNMEAmessage(void){
 	sdWrite(&SD1,(uint8_t *)set_RMC,n);
 }
 
-static uint32_t GetMillisFromGpsBuffer(char*buf){
+static uint32_t getMillisFromGpsBuffer(char*buf){
 	const int offset_hours=0;
 	const int offset_minutes=2;
 	const int offset_seconds=4;
@@ -74,38 +74,38 @@ static uint32_t GetMillisFromGpsBuffer(char*buf){
 	return ((h*60+m)*60+s)*1000+ms;
 }
 
-static void SetRTCfromGpsBuffer(char* buf){
+static void setRTCfromGpsBuffer(char* buf){
 	//TODO use correctly sscanf !
 	const int offset_id_day=	10;
 	const int offset_id_month=	14;
 	const int offset_id_year=	17;
 
 	//timestamps
-	RTCDateTime currentTime;
-	currentTime.millisecond=GetMillisFromGpsBuffer(buf);
-	currentTime.day=(buf[offset_id_day+0]-CHAR_ZERO)*10+
-					 buf[offset_id_day+1]-CHAR_ZERO;
-	currentTime.month=(buf[offset_id_month+0]-CHAR_ZERO)*10+
-			 	 	   buf[offset_id_month+1]-CHAR_ZERO;
-	currentTime.year=(buf[offset_id_year+0]-CHAR_ZERO)*1000+
-					 (buf[offset_id_year+1]-CHAR_ZERO)*100+
-					 (buf[offset_id_year+2]-CHAR_ZERO)*10+
-					  buf[offset_id_year+3]-CHAR_ZERO;
-	currentTime.year-=YEAR_OFFSET;
+	RTCDateTime current_time;
+	current_time.millisecond=getMillisFromGpsBuffer(buf);
+	current_time.day=(buf[offset_id_day+0]-CHAR_ZERO)*10+
+					  buf[offset_id_day+1]-CHAR_ZERO;
+	current_time.month=(buf[offset_id_month+0]-CHAR_ZERO)*10+
+			 	 	    buf[offset_id_month+1]-CHAR_ZERO;
+	current_time.year=(buf[offset_id_year+0]-CHAR_ZERO)*1000+
+					  (buf[offset_id_year+1]-CHAR_ZERO)*100+
+					  (buf[offset_id_year+2]-CHAR_ZERO)*10+
+					   buf[offset_id_year+3]-CHAR_ZERO;
+	current_time.year-=YEAR_OFFSET;
 	//set the new time
-	rtcSetTime(&RTCD1, &currentTime);
+	rtcSetTime(&RTCD1, &current_time);
 
 }
 
 //TX Antenna thread
 THD_WORKING_AREA(waGpsThread, 128);
-static THD_FUNCTION(GpsThread, arg) {
+static THD_FUNCTION(gpsThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 
 	char buf[ZDA_DATE_LENGTH];
 
-	SetFormatNMEAmessage();
+	setFormatNMEAmessage();
 
 	while(TRUE){
 
@@ -118,7 +118,7 @@ static THD_FUNCTION(GpsThread, arg) {
 			if(strncmp(buf,GPS_MESSAGE_TYPE,gps_type_size)==0){
 
 				sdRead(&SD1,(uint8_t *)buf,ZDA_DATE_LENGTH);
-				SetRTCfromGpsBuffer(buf);
+				setRTCfromGpsBuffer(buf);
 
 			}
 			else{
@@ -132,14 +132,14 @@ static THD_FUNCTION(GpsThread, arg) {
 	}
 }
 
-void StartGpsThread(objects_fifo_t* log){
+void startGpsThread(objects_fifo_t* log){
 	//init port
 	//SD1 = GPS : USART 1 (PB6 = Tx, PB7 = Rx)
 	palSetLineMode(GPS_PIN_RX, PAL_MODE_ALTERNATE(7));
 	palSetLineMode(GPS_PIN_TX, PAL_MODE_ALTERNATE(7));
-	sdStart(&SD1, &GpsSerialConfig);
+	sdStart(&SD1, &gpsSerialConfig);
 
 	//Creates threads
 	chThdCreateStatic(waGpsThread, sizeof(waGpsThread), NORMALPRIO,
-								GpsThread,(void*)log);
+								gpsThread,(void*)log);
 }
