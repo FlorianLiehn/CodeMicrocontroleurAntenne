@@ -41,21 +41,21 @@ int HandleTrajectory(objects_fifo_t*  fifo_log,
 
 	switch(incoming_traj_message.id){
 	case ID_MSG_ORDER_TRAJ_SET_LENGTH:
-		TrajSetLength(traj,
+		trajSetLength(traj,
 				incoming_traj_message.arguments.traj_length.length[0]+
 			   (incoming_traj_message.arguments.traj_length.length[1]<<8) );
 		return 0;
 	case ID_MSG_ORDER_TRAJ_SET_NEW_POINT:
-		TrajAddPoint(traj,
+		trajAddPoint(traj,
 				(uint8_t*)incoming_traj_message.arguments.message_antenne);
 		return 0;
 	case ID_MSG_ORDER_TRAJ_REINI:
-		TrajInit(traj);
+		trajInit(traj);
 		return 0;
 	case ID_MSG_ORDER_TRAJ_CHECK_CORRECT:
 		WriteLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
 				(ARGS){.state=(A_State_args){
-						 .value=CheckTrajCorrectLength(traj)}
+						 .value=trajCheckCorrectLength(traj)}
 					  });
 		return 0;
 	default:

@@ -21,7 +21,7 @@ typedef struct{
 	uint8_t _table[MAX_TRAJ_LENGTH][ANTENNA_MESSAGE_LENGTH];
 }Trajectory;
 
-static inline void TrajInit(Trajectory* traj){
+static inline void trajInit(Trajectory* traj){
 	traj->_nb_point=-2;
 	traj->_current_point=-1;
 	traj->_locked=false;
@@ -29,18 +29,18 @@ static inline void TrajInit(Trajectory* traj){
 	memset(traj->_table,0,MAX_TRAJ_LENGTH);
 }
 
-static inline void TrajSetLength(Trajectory* traj,int length){
+static inline void trajSetLength(Trajectory* traj,int length){
 	traj->_nb_point=length;
 	traj->_current_point=0;
 }
 
-static inline void TrajAddPoint(Trajectory* traj,uint8_t*point){
+static inline void trajAddPoint(Trajectory* traj,uint8_t*point){
 	for(int i=0;i<ANTENNA_MESSAGE_LENGTH;i++)
 		traj->_table[traj->_current_point][i]=point[i];
 	traj->_current_point++;
 }
 
-static inline bool CheckTrajCorrectLength(Trajectory* traj){
+static inline bool trajCheckCorrectLength(Trajectory* traj){
 	return traj->_current_point==traj->_nb_point;
 }
 
