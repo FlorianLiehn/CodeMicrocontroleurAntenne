@@ -7,6 +7,21 @@
 
 #include "AntennaThreads.h"
 
+int  testEmergencyStop(int *state,SimpleMessage* input_message){
+	if(input_message->id==ID_MSG_ORDER_ANTENNA &&
+		strncmp(input_message->arguments.message_antenne,
+				ANTENNA_SURVIE,
+				ANTENNA_MESSAGE_LENGTH) == 0 ){
+		//send message
+		sdAsynchronousWrite(&SD3,
+			(uint8_t*)(input_message->arguments.message_antenne),
+			ANTENNA_MESSAGE_LENGTH);
+		*state=STATE_ANTENNA_EMERGENCY;
+		return -1;
+	}
+	return 1;
+}
+
 void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 		Trajectory* traj,SimpleMessage* input_message){
 

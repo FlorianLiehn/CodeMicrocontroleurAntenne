@@ -56,8 +56,11 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 					input_message.arguments);
 #endif
 
-			//TODO Emergency
-			if(state==STATE_ANTENNA_TRANSMISSION_NOMINAL){
+			if(testEmergencyStop(&state,&input_message)<=0){
+				WriteLogToFifo(fifo_log_arg,ID_MSG_ALERT_ANTENNA_EMERGENCY,
+						input_message.arguments);
+			}
+			else if(state==STATE_ANTENNA_TRANSMISSION_NOMINAL){
 				nominalBehaviour(&state,fifo_log_arg,traj_arg,&input_message);
 			}
 			else{
@@ -72,6 +75,10 @@ static THD_FUNCTION(Antenna_TxThread, arg) {
 			break;
 		case STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ:
 			trackingBehaviour(&state,fifo_log_arg,traj_arg);
+			break;
+		case STATE_ANTENNA_EMERGENCY:
+			chThdSleepSeconds(EMERGENCY_SEC_TIMEOUT);
+			state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 			break;
 		}
 
