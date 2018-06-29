@@ -32,7 +32,7 @@
 #define MIN_ENCODER_X -MAX_ENCODER_X
 #define MAX_ENCODER_Y 31435
 #define MIN_ENCODER_Y -MAX_ENCODER_Y
-
+//TODO Try with the reference value
 #define ENCODER_X_ANGLE_IN_A_STEP (17./6000)
 #define ENCODER_Y_ANGLE_IN_A_STEP (51./20000)
 
