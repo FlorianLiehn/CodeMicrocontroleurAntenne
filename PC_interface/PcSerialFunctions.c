@@ -7,7 +7,7 @@
 
 #include "PcSerialThreads.h"
 
-int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+int handleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 						Trajectory* traj,SimpleMessage incoming_message){
 
 	//Wrong ID ( error or log )
@@ -27,14 +27,14 @@ int HandleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 
 	//Handle Trajectory
 	if(incoming_message.id >= FIRST_ORDER_TRAJ_ID){
-		return  HandleTrajectory(fifo_log,traj,incoming_message);
+		return  handleTrajectory(fifo_log,traj,incoming_message);
 	}
 
-	return HandleCommunMessage(fifo_log,fifo_order,incoming_message);
+	return handleCommunMessage(fifo_log,fifo_order,incoming_message);
 }
 
 
-int HandleTrajectory(objects_fifo_t*  fifo_log,
+int handleTrajectory(objects_fifo_t*  fifo_log,
 			Trajectory* traj,SimpleMessage incoming_traj_message){
 
 	//TODO handle lock when On
@@ -65,7 +65,7 @@ int HandleTrajectory(objects_fifo_t*  fifo_log,
 	}
 }
 
-int HandleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+int handleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 								SimpleMessage incoming_message){
 
 	switch(incoming_message.id){

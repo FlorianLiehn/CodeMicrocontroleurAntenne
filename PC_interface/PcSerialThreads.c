@@ -7,15 +7,15 @@
 
 #include "PcSerialThreads.h"
 
-const SerialConfig PcSerialConfig =  {
+const SerialConfig pcSerialConfig =  {
   115200,
   0,
   USART_CR2_STOP1_BITS /*| USART_CR2_LINEN*/,
   0
 };
 
-THD_WORKING_AREA(waPC_TxThread, 128);
-static THD_FUNCTION(PC_TxThread, arg) {
+THD_WORKING_AREA(waPcTxThread, 128);
+static THD_FUNCTION(pcTxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 	void* msg;
@@ -31,7 +31,7 @@ static THD_FUNCTION(PC_TxThread, arg) {
 
 		if(state==MSG_OK){
 			//send message
-			writeMessage(STM_PC_writer,(SerialPayload*)msg);
+			writeMessage(stmPcWriter,(SerialPayload*)msg);
 
 			chFifoReturnObject(fifo_log_arg,msg);
 
@@ -49,8 +49,8 @@ static THD_FUNCTION(PC_TxThread, arg) {
 	}
 }
 
-THD_WORKING_AREA(waPC_RxThread, 128);
-static THD_FUNCTION(PC_RxThread, arg) {
+THD_WORKING_AREA(waPcRxThread, 128);
+static THD_FUNCTION(pcRxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
 	objects_fifo_t*  fifo_order_arg=((ThreadsArgs*)arg)->fifo_order_arg;
@@ -65,14 +65,14 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	palSetPad(GPIOD, GPIOD_LED3);
 	while (TRUE) {
 		count++;
-		int status=readMessage(STM_PC_reader,(uint8_t*)&incoming_message.buffer);
+		int status=readMessage(stmPcReader,(uint8_t*)&incoming_message.buffer);
 
 		if(status==0){//If CRC is wrong create a log
 			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_CRC_ERROR,
 				incoming_message.simple_message.arguments);
 		}
 		else if(status>0){
-			if(HandleIncommingMessage(fifo_log_arg,fifo_order_arg,
+			if(handleIncommingMessage(fifo_log_arg,fifo_order_arg,
 					traj_arg,incoming_message.simple_message) >= 0 )
 				phase=1-phase;
 		}
@@ -101,18 +101,18 @@ static THD_FUNCTION(PC_RxThread, arg) {
 	}
 }
 
-void StartPcThreads(objects_fifo_t* log, objects_fifo_t* order,
+void startPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj){
 	//init port
 	//SD2 = PC A2 et A3
 	palSetLineMode(PC_PIN_RX, PAL_MODE_ALTERNATE(7));
 	palSetLineMode(PC_PIN_TX, PAL_MODE_ALTERNATE(7));
-	sdStart(&SD2, &PcSerialConfig);
+	sdStart(&SD2, &pcSerialConfig);
 
 	//Creates threads
-	chThdCreateStatic(waPC_RxThread, sizeof(waPC_RxThread), NORMALPRIO, PC_RxThread,
+	chThdCreateStatic(waPcRxThread, sizeof(waPcRxThread), NORMALPRIO, pcRxThread,
 			   (void*)&(ThreadsArgs){log, order, traj });
-	chThdCreateStatic(waPC_TxThread, sizeof(waPC_TxThread), NORMALPRIO, PC_TxThread,
+	chThdCreateStatic(waPcTxThread, sizeof(waPcTxThread), NORMALPRIO, pcTxThread,
 														   (void*)log);
 
 }
