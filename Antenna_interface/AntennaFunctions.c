@@ -63,7 +63,7 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING ||
 			current_sec>target_sec){
 		writeLogToFifo(fifo_log,
-			ID_MSG_LOG_TRAJ_RESPONSE_CORRECT,
+				ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY,
 			empty_args);
 		*state=STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ;
 	}

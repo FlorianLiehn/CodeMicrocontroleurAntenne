@@ -66,6 +66,7 @@ inline int getPayloadLength(int id){
 	case ID_MSG_ALERT_NO_1PPS:
 	case ID_MSG_ALERT_WRONG_GPS_MESSAGE:
 	case ID_MSG_ALERT_ANTENNA_EMERGENCY:
+	case ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY:
 		return (sizeof(NoneArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_ORDER_TRAJ_SET_LENGTH:
 		return (sizeof(TrajLengthArgs)/sizeof(uint8_t))+base;//Args size + base
