@@ -32,7 +32,12 @@ void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 
 		convertDateArgs2RTCDateTime(&time,
 				input_message->arguments.date);
+		//prepare antenna
 		setTrajDate(traj,&time);
+		char first_target[ANTENNA_MESSAGE_LENGTH];
+		trajPrepareTargeting(traj,first_target);
+		//set in position
+		sdAsynchronousWrite(&SD3,(uint8_t*)first_target,ANTENNA_MESSAGE_LENGTH);
 
 		*state=STATE_ANTENNA_TRANSMISSION_WAITING_TIME;
 		return;
@@ -60,11 +65,17 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	uint32_t target_sec=getTimeUnixSecFromRTCTime(&target_time);
 
 	ARGS empty_args;
-	if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING ||
-			current_sec>target_sec){
+	if(current_sec>target_sec){//too late
+		writeLogToFifo(fifo_log,
+				ID_MSG_ALERT_TRAJECTORY_DROPPED,
+			empty_args);
+		*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
+	}
+	else if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING){
 		writeLogToFifo(fifo_log,
 				ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY,
 			empty_args);
+		//change state
 		*state=STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ;
 	}
 	else{
@@ -74,10 +85,20 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 }
 
 void trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
-	(void)fifo_log;
-	(void)traj;
 
-	*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
+	char target[ANTENNA_MESSAGE_LENGTH];
+	trajGetNextTarget(traj,target);
+
+	//execute targeting
+	sdAsynchronousWrite(&SD3,(uint8_t*)target,ANTENNA_MESSAGE_LENGTH);
+
+	if( trajCheckCorrectLength(traj) ){
+		ARGS empty_args;
+		writeLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_FINISH_TRAJECTORY,empty_args);
+
+		trajInit(traj);
+		*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
+	}
 }
 
 int readAntennaMessage(uint8_t* message,int lenght){
