@@ -76,7 +76,7 @@ static uint32_t getMillisFromGpsBuffer(char*buf){
 
 static void setRTCfromGpsBuffer(char* buf){
 	//TODO use correctly sscanf !
-	const int offset_id_day=	10;
+	const int offset_id_day=	11;
 	const int offset_id_month=	14;
 	const int offset_id_year=	17;
 
