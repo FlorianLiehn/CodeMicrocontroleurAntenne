@@ -74,9 +74,13 @@ int handleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 		incoming_message.id= ID_MSG_ORDER_ANTENNA;
 		strcpy(incoming_message.arguments.message_antenne,ANTENNA_SURVIE);
 		break;
-	case ID_MSG_ORDER_REINI:
+	case ID_MSG_ORDER_DESACTIVATE:
 		incoming_message.id= ID_MSG_ORDER_ANTENNA;
 		strcpy(incoming_message.arguments.message_antenne,ANTENNA_DESACTIVATE);
+		break;
+	case ID_MSG_ORDER_REINI:
+		incoming_message.id= ID_MSG_ORDER_ANTENNA;
+		strcpy(incoming_message.arguments.message_antenne,ANTENNA_REINI);
 		break;
 	case ID_MSG_ORDER_CALAGE:
 		incoming_message.id= ID_MSG_ORDER_ANTENNA;

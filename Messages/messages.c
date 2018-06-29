@@ -59,6 +59,7 @@ inline int getPayloadLength(int id){
 
 	switch(id){
 	case ID_MSG_ORDER_SURVIE:
+	case ID_MSG_ORDER_DESACTIVATE:
 	case ID_MSG_ORDER_REINI:
 	case ID_MSG_ORDER_CALAGE:
 	case ID_MSG_ORDER_TRAJ_REINI:
@@ -67,6 +68,8 @@ inline int getPayloadLength(int id){
 	case ID_MSG_ALERT_WRONG_GPS_MESSAGE:
 	case ID_MSG_ALERT_ANTENNA_EMERGENCY:
 	case ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY:
+	case ID_MSG_LOG_TRAJ_FINISH_TRAJECTORY:
+	case ID_MSG_ALERT_TRAJECTORY_DROPPED:
 		return (sizeof(NoneArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_ORDER_TRAJ_SET_LENGTH:
 		return (sizeof(TrajLengthArgs)/sizeof(uint8_t))+base;//Args size + base
