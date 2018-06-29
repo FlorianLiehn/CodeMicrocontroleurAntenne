@@ -417,8 +417,9 @@
  * @note    The default is 16 bytes for both the transmission and receive
  *          buffers.
  */
+//TODO PROTECT BUFFER EXPLOSION !
 #if !defined(SERIAL_BUFFERS_SIZE) || defined(__DOXYGEN__)
-#define SERIAL_BUFFERS_SIZE                 32*2
+#define SERIAL_BUFFERS_SIZE                 32*10
 #endif
 
 /*===========================================================================*/

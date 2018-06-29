@@ -89,37 +89,35 @@ void writeSerialMessage(int fd,int id, ARGS arguments){
 
 void write_test_message(int fd){
 
+	//reini traj
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_REINI,(ARGS){});
+
+	//set the traj
+	int tot=20;
+	ARGS arguments;
+	arguments.traj_length.length[0]=(tot>>0)&0XFF;
+	arguments.traj_length.length[1]=(tot>>8)&0XFF;
+	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_LENGTH,arguments);
+
+	for(int i=0;i<tot;i++){
+		writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_NEW_POINT,
+				(ARGS){.message_antenne=ANTENNA_DESACTIVATE});
+		usleep(25*1000);
+	}
+
+	//set target date
 	DateArgs date;
 	date.year=2018-YEAR_OFFSET;
 	date.month=6;
-	date.day=26;
-	uint32_t millis= (15*60+26)*60*1000;
+	date.day=29;
+	uint32_t millis= (12*60+05)*60*1000;
 	for(int i=0;i<4;i++)
 		date.millis[i]=(millis>>(8*i))&0xFF;
 
-	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
-				(ARGS){.message_antenne=ANTENNA_SURVIE});
 	writeSerialMessage(fd,ID_MSG_ORDER_DO_TRAJ_AT_DATE,
 				(ARGS){.date=date});
-	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
-				(ARGS){.message_antenne=ANTENNA_SURVIE});
-
-	/*
-	writeSerialMessage(fd,ID_MSG_ORDER_SURVIE,
-				(ARGS){.message_antenne=ANTENNA_SURVIE});
-
-	ARGS arguments;
-	arguments.traj_length.length[0]=1;
-	arguments.traj_length.length[1]=0;
-	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_LENGTH,arguments);
-
-	strcpy(arguments.message_antenne,
-			ANTENNA_SURVIE);
-	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_SET_NEW_POINT,
-				(ARGS){.message_antenne=ANTENNA_SURVIE});
 
 
-	writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_CHECK_CORRECT,arguments);*/
 }
 
 void replaceInString(char*buff,char old,char new,int length){
@@ -188,6 +186,8 @@ void main(){
 	int count=0;
 	SerialPayload message;
 
+	write_test_message(fd);
+
 	while(running){
 		int state=readMessage(PC_Serial_reader,message.buffer);
 
@@ -197,9 +197,11 @@ void main(){
 
 			if(state==0)printf("\tERROR ON CRC\n");
 
-			if(count++ >= 15){
+			if(count++ >= 25){
 				count=0;
-				write_test_message(fd);
+				//write_test_message(fd);
+				//check the traj
+				writeSerialMessage(fd,ID_MSG_ORDER_TRAJ_CHECK_CORRECT,(ARGS){});
 			}
 		}
 
