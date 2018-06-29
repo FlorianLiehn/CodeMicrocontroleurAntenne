@@ -8,21 +8,11 @@
 #ifndef MESSAGES_MESSAGES_H_
 #define MESSAGES_MESSAGES_H_
 
-#include <stdint.h>
-#include <string.h>
+#include "../TrameAntennaConstructor/TrameAntennaConstructor.h"
 
 #define FIFO_BUFFER_SIZE 20
 #define POLYNOMIAL_CRC 0xE1 //EYE...
 #define HEADER_BYTE '('
-
-#define ANTENNA_MESSAGE_LENGTH 12
-
-#define HEADER_ANTENNA "\x16" //22=0x16=SYN
-
-#define ANTENNA_SURVIE			HEADER_ANTENNA"8400000000\r"
-#define ANTENNA_DESACTIVATE		HEADER_ANTENNA"0000000000\r"
-#define ANTENNA_REINI			HEADER_ANTENNA"8000000000\r"
-#define ANTENNA_CALLAGE			HEADER_ANTENNA"8100000000\r"
 
 #define FIRST_ORDER_TRAJ_ID 30
 #define FIRST_ERROR_ID 50

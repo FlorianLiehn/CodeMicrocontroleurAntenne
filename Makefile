@@ -117,7 +117,9 @@ PROJECT_CSRC= PC_interface/PcSerialThreads.c		\
 			  GpsTimeHandler/GpsTimeHandler.c		\
 			  $(CHIBIOS)/os/various/syscalls.c
 
-COMMON_CSRC= Messages/messages.c 
+COMMON_CSRC= Messages/messages.c \
+			 TrameAntennaConstructor/TrameAntennaConstructor.c
+
 CSRC = $(ALLCSRC) 		\
        $(TESTSRC) 		\
        $(PROJECT_CSRC) 	\
@@ -220,7 +222,7 @@ ULIBS =
 # End of user defines
 ##############################################################################
 all:
-	gcc -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC)
+	gcc -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC) -lm 
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk

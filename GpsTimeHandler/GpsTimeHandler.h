@@ -19,7 +19,6 @@ static const int gps_type_size=sizeof(GPS_MESSAGE_TYPE)/sizeof(char)-1;//-'\0'
 
 #define ZDA_DATE_LENGTH 21
 #define ZDA_HOURS_LENGHT 10
-#define CHAR_ZERO '0'
 
 //GPS<->microcontroller SD1
 #define GPS_PIN_RX PAL_LINE(GPIOB, 7)
