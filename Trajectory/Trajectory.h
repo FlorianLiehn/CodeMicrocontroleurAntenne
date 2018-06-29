@@ -13,10 +13,12 @@
 #define MAX_TRAJ_LENGTH 20*60 //max= 20min
 
 typedef struct{
-	int _nb_point;
 	bool _locked;
-	int _current_point;
+
 	RTCDateTime _init_date;
+
+	int _nb_point;
+	int _current_point;
 	//Table of pointing messages
 	uint8_t _table[MAX_TRAJ_LENGTH][ANTENNA_MESSAGE_LENGTH];
 }Trajectory;
@@ -47,8 +49,22 @@ static inline bool trajCheckCorrectLength(Trajectory* traj){
 static inline void getTrajDate(Trajectory* traj,RTCDateTime* date){
 	*date=(traj->_init_date);
 }
+
 static inline void setTrajDate(Trajectory* traj,RTCDateTime* date){
 	traj->_init_date=*date;
+}
+
+static inline void trajPrepareTargeting(Trajectory* traj,char*first_target){
+	traj->_current_point=0;
+	for(int i=0;i<ANTENNA_MESSAGE_LENGTH;i++)
+		*(first_target+i)=traj->_table[traj->_current_point][i];
+}
+
+static inline void trajGetNextTarget(Trajectory* traj,char*target){
+
+	for(int i=0;i<ANTENNA_MESSAGE_LENGTH;i++)
+		*(target+i)=traj->_table[traj->_current_point][i];
+	traj->_current_point++;
 }
 
 #endif /* TRAJECTORY_H_ */
