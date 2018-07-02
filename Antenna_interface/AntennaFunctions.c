@@ -79,7 +79,7 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 		*state=STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ;
 	}
 	else{
-		writeLogToFifo(fifo_log,60,empty_args);
+		writeLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_WAITING_TRAJECTORY,empty_args);
 	}
 
 }
