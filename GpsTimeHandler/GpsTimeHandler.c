@@ -111,7 +111,7 @@ static THD_FUNCTION(gpsThread, arg) {
 
 		memset(buf,0,ZDA_DATE_LENGTH);
 
-		int n=sdRead(&SD1,(uint8_t *)buf,1);
+		int n=sdReadTimeout(&SD1,(uint8_t *)buf,1,TIME_OUT_READ_GPS);
 		if(n==1 && buf[0]=='$'){
 			sdRead(&SD1,(uint8_t *)buf,gps_type_size);
 
@@ -127,6 +127,11 @@ static THD_FUNCTION(gpsThread, arg) {
 								empty_args);
 			}
 
+		}
+		else if(n==0){
+			ARGS empty_args;
+			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
+							empty_args);
 		}
 		chThdSleepMilliseconds(10);
 	}

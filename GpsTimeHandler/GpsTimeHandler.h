@@ -10,6 +10,8 @@
 
 #include "Messages/messages.h"
 
+#define TIME_OUT_READ_GPS TIME_MS2I(1050)
+
 #define TIME_BETWEEN_TIME_UPDATE 		TIME_S2I(3600)
 #define TIME_BETWEEN_TIME_UPDATE_FAIL	TIME_S2I(5)
 
