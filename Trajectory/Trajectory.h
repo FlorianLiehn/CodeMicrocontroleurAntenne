@@ -54,17 +54,16 @@ static inline void setTrajDate(Trajectory* traj,RTCDateTime* date){
 	traj->_init_date=*date;
 }
 
-static inline void trajPrepareTargeting(Trajectory* traj,char*first_target){
-	traj->_current_point=0;
-	for(int i=0;i<ANTENNA_MESSAGE_LENGTH;i++)
-		*(first_target+i)=traj->_table[traj->_current_point][i];
-}
-
 static inline void trajGetNextTarget(Trajectory* traj,char*target){
 
 	for(int i=0;i<ANTENNA_MESSAGE_LENGTH;i++)
 		*(target+i)=traj->_table[traj->_current_point][i];
 	traj->_current_point++;
+}
+
+static inline void trajPrepareTargeting(Trajectory* traj,char*first_target){
+	traj->_current_point=0;
+	trajGetNextTarget(traj,first_target);
 }
 
 #endif /* TRAJECTORY_H_ */

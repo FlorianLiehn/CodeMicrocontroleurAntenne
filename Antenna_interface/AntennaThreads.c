@@ -69,15 +69,16 @@ static THD_FUNCTION(antennaTxThread, arg) {
 			}
 		}
 
-		switch(state){
-		case STATE_ANTENNA_TRANSMISSION_WAITING_TIME:
+		if(state==STATE_ANTENNA_TRANSMISSION_WAITING_TIME)
 			waitingBehaviour(&state,fifo_log_arg,traj_arg);
-			break;
+
+		switch(state){
 		case STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ:
 			trackingBehaviour(&state,fifo_log_arg,traj_arg);
 			break;
 		case STATE_ANTENNA_EMERGENCY:
 			chThdSleepSeconds(EMERGENCY_SEC_TIMEOUT);
+			//TODO Drop all messages in fifo ( multiple Emergency loop)
 			state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 			break;
 		}
