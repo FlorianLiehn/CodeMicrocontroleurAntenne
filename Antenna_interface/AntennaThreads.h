@@ -12,7 +12,8 @@
 
 //Time out if no 1pps receive
 #define TIMEOUT_1PPS  TIME_MS2I(1005)
-#define ANTICIPATION_TIME_BEFORE_TRACKING 2
+#define ANTICIPATION_TIME_BEFORE_TRACKING 2 + 1 + 1
+							//2s anticip +1 error RTC + 1anticp next 1pps
 #define EMERGENCY_SEC_TIMEOUT 10
 
 #define ANTENNA_PIN_RX PAL_LINE(GPIOB,11)

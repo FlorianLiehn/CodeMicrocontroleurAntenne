@@ -69,10 +69,10 @@ static THD_FUNCTION(antennaTxThread, arg) {
 			}
 		}
 
-		if(state==STATE_ANTENNA_TRANSMISSION_WAITING_TIME)
-			waitingBehaviour(&state,fifo_log_arg,traj_arg);
-
 		switch(state){
+		case STATE_ANTENNA_TRANSMISSION_WAITING_TIME:
+			waitingBehaviour(&state,fifo_log_arg,traj_arg);
+			break;
 		case STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ:
 			trackingBehaviour(&state,fifo_log_arg,traj_arg);
 			break;
