@@ -70,6 +70,7 @@ inline int getPayloadLength(int id){
 	case ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY:
 	case ID_MSG_LOG_TRAJ_WAITING_TRAJECTORY:
 	case ID_MSG_LOG_TRAJ_FINISH_TRAJECTORY:
+	case ID_MSG_LOG_EXIT_EMERGENCY:
 	case ID_MSG_ALERT_TRAJECTORY_DROPPED:
 		return (sizeof(NoneArgs)/sizeof(uint8_t))+base;//Args size + base
 	case ID_MSG_ORDER_TRAJ_SET_LENGTH:
