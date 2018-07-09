@@ -42,8 +42,7 @@ static void setFormatNMEAmessage(void){
 	set_RMC[n++]=1;//Update SRAM & FLASH
 
 	//checksum
-	const int offset_id_checksum=n;
-	set_RMC[offset_id_checksum]=0;
+	set_RMC[n]=0;
 	for(int i=offset_id_message;i<n;i++)
 		set_RMC[n]^=set_RMC[i];
 	n++;
