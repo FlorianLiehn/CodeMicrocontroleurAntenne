@@ -24,7 +24,7 @@ static inline int stmPcWriter(uint8_t* buff,int n){
 	return sdAsynchronousWrite(&SD2,buff,n);}
 
 
-int handleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+int handleIncomingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 						Trajectory* traj,SimpleMessage incoming_message);
 int handleTrajectory(objects_fifo_t*  fifo_log,
 			Trajectory* traj,SimpleMessage incoming_traj_message);

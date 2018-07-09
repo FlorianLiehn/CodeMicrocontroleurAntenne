@@ -7,7 +7,7 @@
 
 #include "PcSerialThreads.h"
 
-int handleIncommingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
+int handleIncomingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 						Trajectory* traj,SimpleMessage incoming_message){
 
 	//Wrong ID ( error or log )

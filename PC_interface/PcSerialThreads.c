@@ -72,7 +72,7 @@ static THD_FUNCTION(pcRxThread, arg) {
 				incoming_message.simple_message.arguments);
 		}
 		else if(status>0){
-			if(handleIncommingMessage(fifo_log_arg,fifo_order_arg,
+			if(handleIncomingMessage(fifo_log_arg,fifo_order_arg,
 					traj_arg,incoming_message.simple_message) >= 0 )
 				phase=1-phase;
 		}
