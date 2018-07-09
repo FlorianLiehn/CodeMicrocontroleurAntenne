@@ -33,10 +33,12 @@ enum STATE_ANTENNA_TRANSMISSION{
 };
 
 int  testEmergencyStop(int *state,SimpleMessage* input_message);
-void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
+void   nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 		Trajectory* traj,SimpleMessage* input_message);
-void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
-void trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
+void   waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
+void  trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
+void emergencyBehaviour(int *state,objects_fifo_t*  fifo_log,
+								objects_fifo_t*  fifo_order);
 
 
 int readAntennaMessage(uint8_t* message,int lenght);
