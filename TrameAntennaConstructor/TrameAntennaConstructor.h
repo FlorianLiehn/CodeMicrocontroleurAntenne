@@ -47,7 +47,7 @@ enum MODE_ANTENNA{
 #define MIN_ENCODER_X -MAX_ENCODER_X
 #define MAX_ENCODER_Y 31435
 #define MIN_ENCODER_Y -MAX_ENCODER_Y
-//TODO Try with the reference value
+
 #define ENCODER_X_STEP_BY_ANGLE 6000./17
 #define ENCODER_Y_STEP_BY_ANGLE 20000./51
 
