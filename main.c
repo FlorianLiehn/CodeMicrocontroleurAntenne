@@ -38,8 +38,8 @@ objects_fifo_t Fifo_order;
 Trajectory current_traj;
 
 //pinout userbutton & timeout
-#define USER_BUTTON_PIN PAL_LINE(GPIOA,0)
-#define USER_BUTTON_TIMEOUT_MS TIME_MS2I(500)
+#define READ_USER_BUTTON palReadPad(GPIOA,GPIOA_BUTTON)
+#define USER_BUTTON_TIMEOUT_MS 150
 
 /*
  * Application entry point.
@@ -55,10 +55,6 @@ int main(void) {
    */
   halInit();
   chSysInit();
-
-  //Init User button -> EMERGENCY PROCEDURE
-  palSetLineMode(USER_BUTTON_PIN, PAL_MODE_INPUT_PULLDOWN);
-  palEnableLineEventI(USER_BUTTON_PIN, PAL_EVENT_MODE_RISING_EDGE);
 
   //Init CRC table
   crcInit();
@@ -81,16 +77,28 @@ int main(void) {
   //enable GPS Time Update
   startGpsThread(&Fifo_log);
 
+
+  palSetPad(GPIOD, GPIOD_LED6);
+  int phase=0;
   while (TRUE) {
-	msg_t msg_state = palWaitLineTimeoutS(
-			USER_BUTTON_PIN,USER_BUTTON_TIMEOUT_MS);
-	if(msg_state==MSG_OK){
+		chThdSleepMilliseconds(USER_BUTTON_TIMEOUT_MS);
+	if(READ_USER_BUTTON){
+		phase=1-phase;
+		if(phase){
+			palClearPad(GPIOD, GPIOD_LED6);
+			palSetPad(GPIOD, GPIOD_LED5);
+		}
+		else{
+			palSetPad(GPIOD, GPIOD_LED6);
+			palClearPad(GPIOD, GPIOD_LED5);
+		}
 		//EMERGENCY USER COMMAND
 		SimpleMessage* new_order=(SimpleMessage*)chFifoTakeObjectI(&Fifo_order);
 		new_order->id=ID_MSG_ORDER_ANTENNA;
 		strncpy(new_order->arguments.message_antenne,ANTENNA_SURVIE,
 				ANTENNA_MESSAGE_LENGTH);
 		chFifoSendObjectI(&Fifo_order,  (void*)new_order);
+
 	}
   }
 }

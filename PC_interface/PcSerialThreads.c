@@ -22,8 +22,6 @@ static THD_FUNCTION(pcTxThread, arg) {
 
 	chRegSetThreadName("Thread TX PC");
 
-	int phase=0;
-	palSetPad(GPIOD, GPIOD_LED6);
 	while (TRUE) {
 
 		msg_t state = chFifoReceiveObjectI(fifo_log_arg,&msg);
@@ -35,15 +33,6 @@ static THD_FUNCTION(pcTxThread, arg) {
 
 			chFifoReturnObject(fifo_log_arg,msg);
 
-			phase=1-phase;
-			if(phase){
-				palClearPad(GPIOD, GPIOD_LED6);
-				palSetPad(GPIOD, GPIOD_LED5);
-			}
-			else{
-				palSetPad(GPIOD, GPIOD_LED6);
-				palClearPad(GPIOD, GPIOD_LED5);
-			}
 		}
 		chThdSleepMilliseconds(2);
 	}
