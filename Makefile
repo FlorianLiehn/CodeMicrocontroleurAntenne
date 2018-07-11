@@ -223,6 +223,11 @@ ULIBS =
 ##############################################################################
 all:
 	gcc -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC) -lm 
+	gcc -o build/ComServer					\
+		CodesPC/ComServer/ComServer.c 		\
+		CodesPC/ComServer/ReaderLoger.c 	\
+		CodesPC/ComServer/ServerEmitter.c	\
+		-lpthread
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
