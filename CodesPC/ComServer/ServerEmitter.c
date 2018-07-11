@@ -9,8 +9,8 @@
 
 void *threadServerEmitter(void *arg){
 
-	(void)arg;//not used for now
 	printf("Emitter thread init!\n");
+	int fd=*(int*)arg;
 
 	pthread_exit(NULL);
 
