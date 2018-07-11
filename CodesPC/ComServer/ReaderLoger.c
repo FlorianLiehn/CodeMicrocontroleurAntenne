@@ -5,7 +5,7 @@
  *      Author: liehnfl
  */
 
-#include "../../CodesPC/ComServer/ComServer.h"
+#include "ComServer.h"
 
 void replaceInString(char*buff,char old,char new,int length){
 	for(int i=0;i<length;i++)
@@ -52,7 +52,9 @@ void print_log_message(StampedMessage message){
 
 void *threadReaderLoger(void *arg){
 
+#ifdef PC_DEBUG
 	printf("Reader thread init!\n");
+#endif
 	int fd=*(int*)arg;
 	//create a intermediar reader function
 	inline int PcSerialReader(uint8_t* buff,int n)
@@ -63,7 +65,9 @@ void *threadReaderLoger(void *arg){
 	while(1){
 		int state=readMessage(PcSerialReader,message.buffer);
 		if(state >= 0){
+#ifdef PC_DEBUG
 			print_log_message(message.stamp_message);
+#endif
 			//TODO log the message To file
 			//TODO Same if error with alert
 			if(state==0)printf("\tERROR ON CRC\n");
