@@ -12,6 +12,6 @@ void *threadServerEmitter(void *arg){
 	(void)arg;//not used for now
 	printf("Emitter thread init!\n");
 
-    pthread_exit(NULL);
+	pthread_exit(NULL);
 
 }

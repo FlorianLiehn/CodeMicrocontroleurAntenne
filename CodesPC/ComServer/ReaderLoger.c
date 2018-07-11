@@ -16,6 +16,6 @@ void *threadReaderLoger(void *arg){
 		sleep(1);
 	}
 
-    pthread_exit(NULL);
+	pthread_exit(NULL);
 
 }
