@@ -15,6 +15,4 @@
 #define SERVER_EMISSION_NAME ????
 #define LOG_FILE_NAME ????
 
-#define MICROCONTROLER_PORT "/dev/ttyACM0"
-
 #endif /* CODESPC_PCPARAMETERS_H_ */

@@ -11,7 +11,10 @@
 void *threadReaderLoger(void *arg){
 
 	(void)arg;//not used for now
-	printf("Reader thread init!\n");
+	while(1){
+		printf("Reader thread init!\n");
+		sleep(1);
+	}
 
     pthread_exit(NULL);
 

@@ -9,8 +9,12 @@
 #define CODESPC_COMSERVER_COMSERVER_H_
 
 #include <pthread.h>
+#include <signal.h>
 
 #include "../../CodesPC/PcParameters.h"
+
+#define MICROCONTROLER_PORT "/dev/ttyACM0"
+#define US_EXIT_LOOP 1000*500
 
 //define 2 threads Read Write
 void *threadReaderLoger(void *arg);

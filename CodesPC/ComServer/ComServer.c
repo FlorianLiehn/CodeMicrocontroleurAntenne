@@ -7,19 +7,30 @@
 
 #include "../../CodesPC/ComServer/ComServer.h"
 
+
+void cancelHandler(int dummy,int*running) {
+    *running = 0;
+}
+
 int main(){
+	//stop procedure : Ctrl+C
+	int running=1;
+	void sigHandler(int dummy){cancelHandler(dummy,&running);}
+	signal(SIGINT, sigHandler);
+
 	//init Thread Read Write
     pthread_t thRead,thWrite;
-
     if(pthread_create(&thRead , NULL,threadReaderLoger  , NULL) == -1 ||
        pthread_create(&thWrite, NULL,threadServerEmitter, NULL) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;
     }
-
-    //not normal issue
-    pthread_join(thRead, NULL);
-    pthread_join(thWrite, NULL);
+    //Threads running
+    while(running){
+    	usleep(US_EXIT_LOOP);
+    }
+    //cancel & error
+    pthread_cancel(thRead );
+    pthread_cancel(thWrite);
     perror("threads finished");
-
 }
