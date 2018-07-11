@@ -7,7 +7,7 @@
 
 #include "../../CodesPC/ComServer/ComServer.h"
 
-int set_interface_attribs (int fd, int speed, int parity, int should_block)
+int setInterfaceAttribs (int fd, int speed, int parity, int should_block)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
@@ -72,7 +72,7 @@ int main(){
 			 MICROCONTROLER_PORT, strerror (errno));
 		return EXIT_FAILURE;
 	}
-	set_interface_attribs(fd, B115200, 0,0);
+	setInterfaceAttribs(fd, B115200, 0,0);
 
 	//init Thread Read Write
 	pthread_t thRead,thWrite;
