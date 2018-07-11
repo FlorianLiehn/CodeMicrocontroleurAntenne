@@ -229,6 +229,8 @@ all:
 		CodesPC/ComServer/ServerEmitter.c	\
 		$(COMMON_CSRC)						\
 		-lpthread -lm
+	gcc -o build/EmergencyStop CodesPC/EasyComTools/AskSurvie.c	\
+		$(COMMON_CSRC)	-lm
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
