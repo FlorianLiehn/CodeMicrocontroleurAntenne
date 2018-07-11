@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../Messages/messages.h"
+
 #define SERVER_EMISSION_NAME ????
 #define LOG_FILE_NAME ????
 

@@ -227,7 +227,8 @@ all:
 		CodesPC/ComServer/ComServer.c 		\
 		CodesPC/ComServer/ReaderLoger.c 	\
 		CodesPC/ComServer/ServerEmitter.c	\
-		-lpthread
+		$(COMMON_CSRC)						\
+		-lpthread -lm
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
