@@ -168,7 +168,7 @@ MCU  = cortex-m4
 
 #TRGT = arm-elf-
 TRGT = arm-none-eabi-
-CC   = $(TRGT)gcc
+CC   = $(TRGT)gcc -std=gnu99
 CPPC = $(TRGT)g++
 # Enable loading with g++ only if you need C++ runtime support.
 # NOTE: You can use C++ even without C++ support if you are careful. C++
@@ -222,14 +222,14 @@ ULIBS =
 # End of user defines
 ##############################################################################
 all:
-	gcc -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC) -lm 
-	gcc -o build/ComServer					\
+	gcc -std=gnu99 -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC) -lm 
+	gcc -std=gnu99 -o build/ComServer					\
 		CodesPC/ComServer/ComServer.c 		\
 		CodesPC/ComServer/ReaderLoger.c 	\
 		CodesPC/ComServer/ServerEmitter.c	\
 		$(COMMON_CSRC)						\
 		-lpthread -lm
-	gcc -o build/EmergencyStop CodesPC/EasyComTools/AskSurvie.c	\
+	gcc -std=gnu99 -o build/EmergencyStop CodesPC/EasyComTools/AskSurvie.c	\
 		$(COMMON_CSRC)	-lm
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
