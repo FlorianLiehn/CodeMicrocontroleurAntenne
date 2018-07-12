@@ -231,6 +231,17 @@ all:
 		-lpthread -lm
 	gcc -std=gnu99 -o build/EmergencyStop CodesPC/EasyComTools/AskSurvie.c	\
 		$(COMMON_CSRC)	-lm
+	gcc -o build/Calage CodesPC/EasyComTools/AskCalage.c	\
+		$(COMMON_CSRC)	-lm
+	gcc -o build/DeactivatePower CodesPC/EasyComTools/AskDeactivatePower.c	\
+		$(COMMON_CSRC)	-lm
+	gcc -o build/Reinitialisation CodesPC/EasyComTools/AskReinitialisation.c	\
+		$(COMMON_CSRC)	-lm
+	gcc -o build/Standby CodesPC/EasyComTools/AskStandby.c	\
+		$(COMMON_CSRC)	-lm
+	gcc -o build/GoTo CodesPC/EasyComTools/AskGoTo.c	\
+		$(COMMON_CSRC)	-lm
+		
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
