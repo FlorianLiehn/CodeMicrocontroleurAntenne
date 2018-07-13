@@ -31,7 +31,9 @@ void *threadServerEmitter(void *arg){
 	while(1){
 		int pipe_port=open(PIPE_NAME, O_RDONLY);
 		//read the pipe for a new message
-        read(pipe_port, payload.buffer, MAX_PAYLOAD_MESSAGE_LENGTH);
+        if(read(pipe_port, payload.buffer, MAX_PAYLOAD_MESSAGE_LENGTH)
+			<MAX_PAYLOAD_MESSAGE_LENGTH)
+		continue;
 
 #ifdef PC_DEBUG
         printf("New message from pipe id%d:%s",
