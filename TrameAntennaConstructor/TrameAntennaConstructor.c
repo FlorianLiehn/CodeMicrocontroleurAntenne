@@ -63,17 +63,18 @@ void computeAntennaMessage(char*message, uint8_t puissance,uint8_t mode,
 	*(message+(n++))=CHAR_ZERO+puissance;
 	*(message+(n++))=CHAR_ZERO+mode;
 	//X&Y
-	int32_t X, Y;
-	char X_send[INT16_ASCCI_HEX_LENGTH];char Y_send[INT16_ASCCI_HEX_LENGTH];
-	computeXYencoderFromAzEl((int16_t*)&X, (int16_t*)&Y, az, el);
+	int16_t X, Y;
+	computeXYencoderFromAzEl(&X, &Y, az, el);
 
-	sprintf(X_send,"%04X", (uint16_t)(X &~ (0xFFFF0000) ) );
-	sprintf(Y_send,"%04X", (uint16_t)(Y &~ (0xFFFF0000) ) );
-
+	//Write X
+	char Pos_send[INT16_ASCCI_HEX_LENGTH+1];//+ '\0'
+	snprintf(Pos_send,INT16_ASCCI_HEX_LENGTH+1,"%04X", (uint16_t)X );
 	for(int i=0;i<INT16_ASCCI_HEX_LENGTH;i++)
-		*(message+(n++))=X_send[i];
+		*(message+(n++))=Pos_send[i];
+	//Write Y
+	snprintf(Pos_send,INT16_ASCCI_HEX_LENGTH+1,"%04X", (uint16_t)Y );
 	for(int i=0;i<INT16_ASCCI_HEX_LENGTH;i++)
-		*(message+(n++))=Y_send[i];
-
+		*(message+(n++))=Pos_send[i];
+	//End Byte
 	*(message+(n++))=TAIL_ANTENNA[0];
 }
