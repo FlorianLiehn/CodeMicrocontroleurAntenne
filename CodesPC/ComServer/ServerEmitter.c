@@ -24,26 +24,32 @@ void *threadServerEmitter(void *arg){
 	printf("Emitter thread init!\n");
 #endif
 	int micro_port=*(int*)arg;
-    // Creating the named file(FIFO)
-    mkfifo(PIPE_NAME, PIPE_PERMISSION);
-    SerialPayload payload;
+	// Creating the named file(FIFO)
+	mkfifo(PIPE_NAME, PIPE_PERMISSION);
+	SerialPayload payload;
+	int pipe_port=open(PIPE_NAME, O_RDONLY);
+
+	if(pipe_port<0){
+		fprintf(stderr,"Fail to open fifo %s",PIPE_NAME,50);
+		pthread_exit(NULL);
+	}
 
 	while(1){
-		int pipe_port=open(PIPE_NAME, O_RDONLY);
+		memset(payload.buffer, 1, MAX_PAYLOAD_MESSAGE_LENGTH);
 		//read the pipe for a new message
-        if(read(pipe_port, payload.buffer, MAX_PAYLOAD_MESSAGE_LENGTH)
-			<MAX_PAYLOAD_MESSAGE_LENGTH)
+		if(read(pipe_port, payload.buffer, MAX_PAYLOAD_MESSAGE_LENGTH)
+			!=MAX_PAYLOAD_MESSAGE_LENGTH){
 		continue;
+		}
 
 #ifdef PC_DEBUG
-        printf("New message from pipe id%d:%s",
-        		payload.simple_message.id,
-				payload.simple_message.arguments.message_antenne);
+		printf("New message from pipe id%d:%s\n\n\n",
+			payload.simple_message.id,
+			payload.simple_message.arguments.message_antenne);
 #endif
 		writeSerialMessage(micro_port,payload);
-
-        close(pipe_port);
 	}
+	close(pipe_port);
 
 	pthread_exit(NULL);
 
