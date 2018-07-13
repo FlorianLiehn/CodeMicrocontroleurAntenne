@@ -30,7 +30,7 @@ void *threadServerEmitter(void *arg){
 	int pipe_port=open(PIPE_NAME, O_RDONLY);
 
 	if(pipe_port<0){
-		fprintf(stderr,"Fail to open fifo %s",PIPE_NAME,50);
+		fprintf(stderr,"Fail to open fifo %s",PIPE_NAME);
 		pthread_exit(NULL);
 	}
 
