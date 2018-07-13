@@ -29,7 +29,7 @@ int main(int argc,char**argv){
 	write(pipe_port, ((SerialPayload){.simple_message=message}).buffer,
     		MAX_SERIAL_MESSAGE_LENGTH );
 	close(pipe_port);
-	printf("Goto az:%.2f el:%.2f message written\n",az,el);
-	printf("message written: %12s\n",message.arguments.message_antenne);
+	printf("Goto az:%.2f el:%.2f\nmessage written:\n",az,el);
+	printf("%12s\n",message.arguments.message_antenne);
 	return 0;
 }

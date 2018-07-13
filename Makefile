@@ -229,17 +229,15 @@ all:
 		CodesPC/ComServer/ServerEmitter.c	\
 		$(COMMON_CSRC)						\
 		-lpthread -lm
-	gcc -std=gnu99 -o build/EmergencyStop CodesPC/EasyComTools/AskSurvie.c	\
+	gcc -std=gnu99 -o build/fonction_survie CodesPC/EasyComTools/AskSurvie.c	\
 		$(COMMON_CSRC)	-lm
-	gcc -o build/Calage CodesPC/EasyComTools/AskCalage.c	\
+	gcc -std=gnu99 -o build/fonction_calage CodesPC/EasyComTools/AskCalage.c	\
 		$(COMMON_CSRC)	-lm
-	gcc -o build/DeactivatePower CodesPC/EasyComTools/AskDeactivatePower.c	\
+	gcc -std=gnu99 -o build/fonction_desactiver_puissance CodesPC/EasyComTools/AskDeactivatePower.c	\
 		$(COMMON_CSRC)	-lm
-	gcc -o build/Reinitialisation CodesPC/EasyComTools/AskReinitialisation.c	\
+	gcc -std=gnu99 -o build/fonction_standby CodesPC/EasyComTools/AskStandby.c	\
 		$(COMMON_CSRC)	-lm
-	gcc -o build/Standby CodesPC/EasyComTools/AskStandby.c	\
-		$(COMMON_CSRC)	-lm
-	gcc -o build/GoTo CodesPC/EasyComTools/AskGoTo.c	\
+	gcc -std=gnu99 -o build/fonction_pointage CodesPC/EasyComTools/AskGoTo.c	\
 		$(COMMON_CSRC)	-lm
 		
 
