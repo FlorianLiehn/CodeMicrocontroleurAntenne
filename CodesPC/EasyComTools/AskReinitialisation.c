@@ -15,6 +15,7 @@ int main(void){
 	SimpleMessage message;
 	//deactivate power
 	message.id=ID_MSG_ORDER_DESACTIVATE;
+	memset(message.arguments.message_antenne,0,ANTENNA_MESSAGE_LENGTH);
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);

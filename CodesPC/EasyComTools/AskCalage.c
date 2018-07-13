@@ -13,6 +13,7 @@ int main(void){
 
 	SimpleMessage message;
 	message.id=ID_MSG_ORDER_CALAGE;
+	memset(message.arguments.message_antenne,0,ANTENNA_MESSAGE_LENGTH);
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);
