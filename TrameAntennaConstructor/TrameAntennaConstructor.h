@@ -36,8 +36,9 @@ enum MODE_ANTENNA{
 	MODE_ANTENNA_SPEED,
 	MODE_ANTENNA_POSITION,
 };
-#define PUISSANCE_ACTIVATE 8
-#define PUISSANCE_DESACTIVATE 0
+#define PUISSANCE_STATUS 	4
+#define PUISSANCE_ACTIVATE 	8
+#define PUISSANCE_DESACTIVATE 	0
 
 #define MAX_EL_ANGLE 90
 #define MIN_EL_ANGLE 10
@@ -55,6 +56,7 @@ void computeXYencoderFromAzEl(int16_t* X,int16_t* Y,double az,double el);
 
 #define INT16_ASCCI_HEX_LENGTH 4
 #define CHAR_ZERO '0'
+#define CHAR_A_OFFSET 'A'- CHAR_ZERO -10
 void computeAntennaMessage(char*message, uint8_t puissance,uint8_t mode,
 							double az, double el);
 

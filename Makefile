@@ -239,6 +239,8 @@ all:
 		$(COMMON_CSRC)	-lm
 	gcc -std=gnu99 -o build/fonction_pointage CodesPC/EasyComTools/AskGoTo.c	\
 		$(COMMON_CSRC)	-lm
+	gcc -std=gnu99 -o build/fonction_statut_etendu CodesPC/EasyComTools/AskStatus.c	\
+		$(COMMON_CSRC)	-lm
 		
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
