@@ -59,8 +59,8 @@ void computeAntennaMessage(char*message, uint8_t puissance,uint8_t mode,
 	int n=0;
 	//SYN
 	*(message+(n++))=HEADER_ANTENNA[0];
-	//MODE
-	*(message+(n++))=CHAR_ZERO+puissance;
+	//MODE			0 to 9		A to F
+	*(message+(n++))=CHAR_ZERO+puissance + (puissance/10)*( CHAR_A_OFFSET ) ;
 	*(message+(n++))=CHAR_ZERO+mode;
 	//X&Y
 	int16_t X, Y;
