@@ -13,7 +13,7 @@
 #include <dirent.h>
 #include <inttypes.h>
 
-#define REP_SUIVI "../../Fichiers_de_designations/"
+#define REP_SUIVI "./Fichiers_de_designations/"
 #define PRIO_FILE REP_SUIVI"Prio.txt"
 #define REP_CORTEX_CONFIG ???? //TODO connect to cortex IHM
 

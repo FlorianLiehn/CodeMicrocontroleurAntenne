@@ -116,6 +116,8 @@ PROJECT_CSRC= PC_interface/PcSerialThreads.c		\
 			  Antenna_interface/AntennaFunctions.c	\
 			  GpsTimeHandler/GpsTimeHandler.c		\
 			  $(CHIBIOS)/os/various/syscalls.c
+			  
+PC_CSRC= CodesPC/Targeting.c
 
 COMMON_CSRC= Messages/messages.c \
 			 TrameAntennaConstructor/TrameAntennaConstructor.c
@@ -230,18 +232,19 @@ all:
 		$(COMMON_CSRC)						\
 		-lpthread -lm
 	gcc -std=gnu99 -o build/fonction_survie CodesPC/EasyComTools/AskSurvie.c	\
-		$(COMMON_CSRC)	-lm
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 	gcc -std=gnu99 -o build/fonction_calage CodesPC/EasyComTools/AskCalage.c	\
-		$(COMMON_CSRC)	-lm
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 	gcc -std=gnu99 -o build/fonction_desactiver_puissance CodesPC/EasyComTools/AskDeactivatePower.c	\
-		$(COMMON_CSRC)	-lm
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 	gcc -std=gnu99 -o build/fonction_standby CodesPC/EasyComTools/AskStandby.c	\
-		$(COMMON_CSRC)	-lm
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 	gcc -std=gnu99 -o build/fonction_pointage CodesPC/EasyComTools/AskGoTo.c	\
-		$(COMMON_CSRC)	-lm
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 	gcc -std=gnu99 -o build/fonction_statut_etendu CodesPC/EasyComTools/AskStatus.c	\
-		$(COMMON_CSRC)	-lm
-		
+		$(COMMON_CSRC) $(PC_CSRC) -lm
+	gcc -std=gnu99 -o build/supervision CodesPC/Automate/Automate.c \
+		$(COMMON_CSRC) $(PC_CSRC) -lm
 
 RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk
