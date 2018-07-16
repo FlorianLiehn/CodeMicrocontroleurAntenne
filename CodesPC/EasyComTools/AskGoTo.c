@@ -19,17 +19,15 @@ int main(int argc,char**argv){
 	//init pipe
 	mkfifo(PIPE_NAME, PIPE_PERMISSION);
 
-	SimpleMessage message;
-	message.id=ID_MSG_ORDER_ANTENNA;
-	computeAntennaMessage(message.arguments.message_antenne,
+	ARGS argument;
+	computeAntennaMessage(argument.message_antenne,
 			PUISSANCE_ACTIVATE,MODE_ANTENNA_POSITION,az,el);
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);
-	write(pipe_port, ((SerialPayload){.simple_message=message}).buffer,
-    		MAX_SERIAL_MESSAGE_LENGTH );
+    writeMessageToPipe(pipe_port,ID_MSG_ORDER_ANTENNA,argument);
 	close(pipe_port);
 	printf("Goto az:%.2f el:%.2f\nmessage written:\n",az,el);
-	printf("%12s\n",message.arguments.message_antenne);
+	printf("%12s\n",argument.message_antenne);
 	return 0;
 }
