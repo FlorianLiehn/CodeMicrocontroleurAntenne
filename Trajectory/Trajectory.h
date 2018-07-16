@@ -10,8 +10,6 @@
 
 #include "Messages/messages.h"
 
-#define MAX_TRAJ_LENGTH 20*60 //max= 20min
-
 typedef struct{
 	bool _locked;
 
