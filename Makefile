@@ -224,8 +224,7 @@ ULIBS =
 # End of user defines
 ##############################################################################
 all:
-	gcc -std=gnu99 -o build/ConnectionSerial PcSerialHandler/test.c $(COMMON_CSRC) -lm 
-	gcc -std=gnu99 -o build/ComServer					\
+	gcc -std=gnu99 -o build/ComServer		\
 		CodesPC/ComServer/ComServer.c 		\
 		CodesPC/ComServer/ReaderLoger.c 	\
 		CodesPC/ComServer/ServerEmitter.c	\
