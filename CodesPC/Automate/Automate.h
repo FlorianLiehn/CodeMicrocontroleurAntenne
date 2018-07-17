@@ -13,16 +13,16 @@
 #include <dirent.h>
 #include <inttypes.h>
 
-//#define ENABLE_COM
+#define ENABLE_COM
 
 #define REP_SUIVI "./Fichiers_de_designations/"
-#define REP_CORTEX_CONFIG "./Fichier_de_configuration/"
+#define REP_CORTEX_CONFIG "../IHM Cortex/Fichier_de_configuration/"
 #define PRIO_FILE REP_SUIVI "Prio.txt"
 #define CORTEX_CONFIG_FILE_EXTENTION ".txt"
 #define CORTEX_CONFIG_PREFIX_DATE "Date de passage"
-#define CORTEX_CONFIG_FORMAT_DATE CORTEX_CONFIG_PREFIX_DATE" : %Y-%m-%d-%H-%M-%S;\n"
+#define CORTEX_CONFIG_FORMAT_DATE CORTEX_CONFIG_PREFIX_DATE" = %Y-%m-%d-%H-%M-%S;\n"
 #define CORTEX_CONFIG_PREFIX_DURATION "Durree de suivi"
-#define CORTEX_CONFIG_FORMAT_DURATION CORTEX_CONFIG_PREFIX_DURATION" : %d;\n"
+#define CORTEX_CONFIG_FORMAT_DURATION CORTEX_CONFIG_PREFIX_DURATION" = %d;\n"
 
 #define CORTEX_CONFIG_MAX_LINES 100
 
