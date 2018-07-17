@@ -7,6 +7,51 @@
 
 #include "Automate.h"
 
+void updateDateDurationInLine(char* line,File_Target* target){
+	if( strncmp(line,CORTEX_CONFIG_PREFIX_DATE,
+								strlen(CORTEX_CONFIG_PREFIX_DATE))==0){
+		struct tm begin_time=*gmtime(&target->beginning);
+		//Correct conversion problem(UTC: tm->time_t->tm)
+		begin_time.tm_hour+=1;
+		strftime(line,MAX_FILE_NAME_LENGTH,
+			CORTEX_CONFIG_FORMAT_DATE,&begin_time);
+	}
+	else if(strncmp(line,CORTEX_CONFIG_PREFIX_DURATION,
+								strlen(CORTEX_CONFIG_PREFIX_DURATION))==0){
+		sprintf(line,CORTEX_CONFIG_FORMAT_DURATION,
+			(int)difftime(target->ending,target->beginning));
+	}
+}
+
+void updateCortexConfigFile(char * path,File_Target* target){
+	//path
+	char buf[MAX_FILE_NAME_LENGTH];
+	strcpy(buf,path);
+	strcat(buf,target->mission_name);
+	strcat(buf,CORTEX_CONFIG_FILE_EXTENTION);
+	//open it
+	FILE *ptr_file =fopen(buf, "r");
+	if(!ptr_file){
+		fprintf(stderr,"Can't open file:%s\nerror:%s\n",
+				PRIO_FILE,strerror (errno));
+		exit(0);
+	}
+	//read old config file
+	char config_file[CORTEX_CONFIG_MAX_LINES][MAX_FILE_NAME_LENGTH];
+	int tot=0;
+	while (fgets(config_file[tot++],MAX_FILE_NAME_LENGTH, ptr_file)!=NULL){
+		//change date & duration
+		updateDateDurationInLine(config_file[tot-1],target);
+	}
+	fclose(ptr_file);
+	//rewrite it
+	ptr_file =fopen(buf, "w");
+	for(int i=0;i<tot;i++)
+		fwrite(config_file[i],sizeof(char),strlen(config_file[i]),ptr_file);
+	fclose(ptr_file);
+	printf("Modify file : %s\n",buf);
+}
+
 void updateTargetsTime(File_Target* targets,int*tot,time_t current_time,int*next){
 	//reini targets
 	*tot=0;*next=-1;
@@ -186,6 +231,7 @@ void main(void){
 #ifdef PC_DEBUG
 	    	printf("Next :%s\n",possibles_targets[next].file);
 #endif
+	    	updateCortexConfigFile(REP_CORTEX_CONFIG,&possibles_targets[next]);
 #ifdef ENABLE_COM
 	    	//do the targeting
 	    	targetingFromFile(possibles_targets[next].file);

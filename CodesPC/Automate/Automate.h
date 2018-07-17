@@ -17,7 +17,14 @@
 
 #define REP_SUIVI "./Fichiers_de_designations/"
 #define REP_CORTEX_CONFIG "./Fichier_de_configuration/"
-#define PRIO_FILE REP_SUIVI"Prio.txt"
+#define PRIO_FILE REP_SUIVI "Prio.txt"
+#define CORTEX_CONFIG_FILE_EXTENTION ".txt"
+#define CORTEX_CONFIG_PREFIX_DATE "Date de passage"
+#define CORTEX_CONFIG_FORMAT_DATE CORTEX_CONFIG_PREFIX_DATE" : %Y-%m-%d-%H-%M-%S;\n"
+#define CORTEX_CONFIG_PREFIX_DURATION "Durree de suivi"
+#define CORTEX_CONFIG_FORMAT_DURATION CORTEX_CONFIG_PREFIX_DURATION" : %d;\n"
+
+#define CORTEX_CONFIG_MAX_LINES 100
 
 #define PREPARATION_TIME 15*60	//15 min
 #define CHECKING_LOOP_TIME 10	//10 s
@@ -34,6 +41,10 @@ typedef struct {
 	time_t ending;
 	int priority_level;
 }File_Target;
+
+//modify Cortex param file
+void updateDateDurationInLine(char* line,File_Target* target);
+void updateCortexConfigFile(char * path,File_Target* target);
 
 //update the targets
 void updateTargetsTime(File_Target* targets,int*tot,time_t current_time,int*next);
