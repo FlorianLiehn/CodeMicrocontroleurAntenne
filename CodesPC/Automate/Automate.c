@@ -32,7 +32,9 @@ int readMissions(char missions[MAX_MISSION][MAX_FILE_NAME_LENGTH]){
 
 	while (fgets(buf,MAX_FILE_NAME_LENGTH, ptr_file)!=NULL){
 			//Skip commented line
-			if(buf[0]=='#')continue;
+			if(buf[0]=='#' ||
+			   buf[0]=='\n'||
+			   buf[0]==' ')continue;
 
 			strcpy(missions[nb_mission],REP_SUIVI);
 			strcat(missions[nb_mission],buf);
