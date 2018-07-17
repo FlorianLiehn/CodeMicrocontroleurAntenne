@@ -8,7 +8,6 @@
 #ifndef CODESPC_COMSERVER_COMSERVER_H_
 #define CODESPC_COMSERVER_COMSERVER_H_
 
-#include <errno.h>
 #include <pthread.h>
 #include <signal.h>
 #include <termios.h>

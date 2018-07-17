@@ -13,9 +13,11 @@
 #include <dirent.h>
 #include <inttypes.h>
 
+//#define ENABLE_COM
+
 #define REP_SUIVI "./Fichiers_de_designations/"
+#define REP_CORTEX_CONFIG "./Fichier_de_configuration/"
 #define PRIO_FILE REP_SUIVI"Prio.txt"
-#define REP_CORTEX_CONFIG ???? //TODO connect to cortex IHM
 
 #define PREPARATION_TIME 15*60	//15 min
 #define CHECKING_LOOP_TIME 10	//10 s
@@ -26,6 +28,7 @@
 #define TM_STRUCT_YEAR_OFFSET 1900
 #define TM_STRUCT_MONTH_OFFSET 1
 typedef struct {
+	char mission_name[MAX_FILE_NAME_LENGTH];
 	char file[MAX_FILE_NAME_LENGTH];
 	time_t beginning;
 	time_t ending;

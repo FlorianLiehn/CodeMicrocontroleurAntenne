@@ -24,6 +24,12 @@ int readMissions(char missions[MAX_MISSION][MAX_FILE_NAME_LENGTH]){
 	int nb_mission=0;
 	char buf [MAX_FILE_NAME_LENGTH];
 	FILE *ptr_file =fopen(PRIO_FILE, "r");
+	if(!ptr_file){
+		fprintf(stderr,"Can't open file:%s\nerror:%s\n",
+				PRIO_FILE,strerror (errno));
+		exit(0);
+	}
+
 	while (fgets(buf,MAX_FILE_NAME_LENGTH, ptr_file)!=NULL){
 			//Skip commented line
 			if(buf[0]=='#')continue;
@@ -32,9 +38,12 @@ int readMissions(char missions[MAX_MISSION][MAX_FILE_NAME_LENGTH]){
 			strcat(missions[nb_mission],buf);
 			//replace \n by /
 			missions[nb_mission][strlen(missions[nb_mission])-1]='/';
+#ifdef PC_DEBUG
 			printf("Mission %d:%s\n",nb_mission,missions[nb_mission]);
+#endif
 			nb_mission++;
 	}
+	fclose(ptr_file);
 	return nb_mission;
 }
 
@@ -43,9 +52,11 @@ void loadTargetsFromDir(File_Target* targets,int* tot ,char* mission_path,int pr
 	//open directory
 	DIR*mission_dir=opendir(mission_path);
 	if(!mission_dir){
-		fprintf(stderr,"Can't open dir:%s\n",mission_path);
+		fprintf(stderr,"Can't open dir:%s\nerror:%s\n",
+				mission_path,strerror (errno));
 		exit(0);
 	}
+
 	//read files
 	struct dirent*target_file;
 	while((target_file=readdir(mission_dir))!=NULL){
@@ -54,12 +65,15 @@ void loadTargetsFromDir(File_Target* targets,int* tot ,char* mission_path,int pr
 					target_file->d_name,current_time,next);
 		}
 	}
+
 	closedir(mission_dir);
 }
 
 void loadTargetsFromFile(File_Target* targets,int* tot,char* target_path,int prio,
 						char*file_name,time_t current_time,int*next){
 	targets[*tot]=(File_Target){.priority_level=prio};
+	//mission name
+	sscanf(target_path,REP_SUIVI"%[^/]s",targets[*tot].mission_name);
 	//path
 	strcpy(targets[*tot].file,target_path);
 	strcat(targets[*tot].file,file_name);
@@ -83,7 +97,12 @@ void loadTargetsFromFile(File_Target* targets,int* tot,char* target_path,int pri
 void extractTimeFromFile(char * path,time_t* begin,time_t* end){
 	//init
 	*begin=*end=0;
-	FILE *ptr_file =fopen(path, "r");
+	FILE *ptr_file = fopen(path, "r");
+	if(!ptr_file){
+		fprintf(stderr,"Can't open file:%s\nerror:%s\n",
+				path,strerror (errno));
+		exit(0);
+	}
 
 	//read (first = begin date)
 	char buf[MAX_FILE_LINE_LENGTH];
@@ -96,6 +115,7 @@ void extractTimeFromFile(char * path,time_t* begin,time_t* end){
 		}
 		strcpy(last_uncommented_line,buf);
 	}
+	fclose(ptr_file);
 	//read last uncommented line (end)
 	extractTimeFromLine(last_uncommented_line,end);
 }
@@ -153,25 +173,33 @@ void main(void){
 	//init variable
 	File_Target possibles_targets[MAX_TARGETS];
 	int tot,next;
-
-	//while(1){
+	while(1){
 		//get current date & update targets
 		time_t now=mktime(gmtime(&(time_t){time(NULL)}));
+
 		updateTargetsTime(possibles_targets,&tot,now,&next);
 		//Check if next targeting is correct
 		checkForNextTargeting(possibles_targets,tot,&next);
 		if(next>=0){
+#ifdef PC_DEBUG
 	    	printf("Next :%s\n",possibles_targets[next].file);
+#endif
+#ifdef ENABLE_COM
 	    	//do the targeting
 	    	targetingFromFile(possibles_targets[next].file);
 	    	//sleep(=> unactivate until end of targetting)
 			now=mktime(gmtime(&(time_t){time(NULL)}));
 			sleep( MAX(difftime(possibles_targets[next].ending,now),0) );
+#else
+	    	sleep(CHECKING_LOOP_TIME);
+#endif
 		}
 		else{
+#ifdef PC_DEBUG
 	    	printf("No next targets\n");
-	    	//sleep(CHECKING_LOOP_TIME);
+#endif
+	    	sleep(CHECKING_LOOP_TIME);
 		}
-	//}
+	}
 	printf("Exit\n");
 }
