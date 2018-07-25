@@ -49,7 +49,9 @@ void updateCortexConfigFile(char * path,File_Target* target){
 	for(int i=0;i<tot;i++)
 		fwrite(config_file[i],sizeof(char),strlen(config_file[i]),ptr_file);
 	fclose(ptr_file);
+#ifdef PC_DEBUG
 	printf("Modify file : %s\n",buf);
+#endif
 }
 
 void updateTargetsTime(File_Target* targets,int*tot,time_t current_time,int*next){
@@ -101,12 +103,11 @@ void loadTargetsFromDir(File_Target* targets,int* tot ,char* mission_path,int pr
 	if(!mission_dir){
 		fprintf(stderr,"Can't open dir:%s\nerror:%s\n",
 				mission_path,strerror (errno));
-		exit(0);
 	}
 
 	//read files
 	struct dirent*target_file;
-	while((target_file=readdir(mission_dir))!=NULL){
+	while(mission_dir && (target_file=readdir(mission_dir))!=NULL){
 		if(target_file->d_type==DT_REG && target_file->d_name[0]!='.'){
 			loadTargetsFromFile(targets,tot,mission_path,prio,
 					target_file->d_name,current_time,next);
@@ -131,7 +132,6 @@ void loadTargetsFromFile(File_Target* targets,int* tot,char* target_path,int pri
 	//check if near
 	double waiting_time=difftime(targets[*tot].beginning,current_time);
 	if( 0 < waiting_time && waiting_time < PREPARATION_TIME ){
-		printf("NEW:%f\n",difftime(targets[*tot].beginning,current_time));
 		//if no next or earlier
 		if(*next<0 || difftime(targets[*tot ].beginning,
 							   targets[*next].beginning) < 0 ){
@@ -204,8 +204,10 @@ void checkForNextTargeting(File_Target* targets,int tot,int* next){
 			//check the new date
 			time_t now=mktime(gmtime(&(time_t){time(NULL)}));
 			if(difftime(targets[i].beginning,now)<PREPARATION_TIME){
+#ifdef PC_DEBUG
 				//re-check with the new targets
 				printf("Collision %d VS %d\n",*next,i);
+#endif
 				*next=i;
 				return checkForNextTargeting(targets, tot,next);
 			}
