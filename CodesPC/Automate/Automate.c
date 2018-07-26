@@ -33,7 +33,7 @@ void updateCortexConfigFile(char * path,File_Target* target){
 	FILE *ptr_file =fopen(buf, "r");
 	if(!ptr_file){
 		fprintf(stderr,"Can't open file:%s\nerror:%s\n",
-				PRIO_FILE,strerror (errno));
+				buf,strerror (errno));
 		exit(0);
 	}
 	//read old config file
