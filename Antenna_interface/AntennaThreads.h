@@ -28,6 +28,11 @@ enum STATE_ANTENNA_TRANSMISSION{
 	STATE_ANTENNA_EMERGENCY,
 };
 
+static inline int stmAntennaReader(uint8_t* buff,int n){
+	return sdRead(&SD3,buff,n);}
+static inline int stmAntennaWriter(uint8_t* buff,int n){
+	return sdWrite(&SD3,buff,n);}
+
 void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 						Trajectory* traj);
 

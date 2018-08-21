@@ -19,9 +19,9 @@ void startPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj);
 
 static inline int stmPcReader(uint8_t* buff,int n){
-	return sdAsynchronousRead(&SD2,buff,n);}
+	return sdRead(&SD2,buff,n);}
 static inline int stmPcWriter(uint8_t* buff,int n){
-	return sdAsynchronousWrite(&SD2,buff,n);}
+	return sdWrite(&SD2,buff,n);}
 
 
 int handleIncomingMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,

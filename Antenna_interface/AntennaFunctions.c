@@ -33,13 +33,13 @@ void  nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
 		char first_target[ANTENNA_MESSAGE_LENGTH];
 		trajPrepareTargeting(traj,first_target);
 		//set in position
-		sdAsynchronousWrite(&SD3,(uint8_t*)first_target,ANTENNA_MESSAGE_LENGTH);
+		stmAntennaWriter((uint8_t*)first_target,ANTENNA_MESSAGE_LENGTH);
 
 		*state=STATE_ANTENNA_TRANSMISSION_WAITING_TIME;
 		return;
 	case ID_MSG_ORDER_ANTENNA:
 		//send message
-		sdAsynchronousWrite(&SD3,
+		stmAntennaWriter(
 			(uint8_t*)(input_message->arguments.message_antenne),
 			ANTENNA_MESSAGE_LENGTH);
 		return;
@@ -87,7 +87,7 @@ void trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	trajGetNextTarget(traj,target);
 
 	//execute targeting
-	sdAsynchronousWrite(&SD3,(uint8_t*)target,ANTENNA_MESSAGE_LENGTH);
+	stmAntennaWriter((uint8_t*)target,ANTENNA_MESSAGE_LENGTH);
 
 	if( trajCheckCorrectLength(traj) ){
 		writeLogToFifo(fifo_log,
@@ -102,8 +102,7 @@ void trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 void emergencyBehaviour(int *state,objects_fifo_t*  fifo_log,
 						objects_fifo_t*  fifo_order){
 	//send emergency message to antenna
-	sdAsynchronousWrite(&SD3,(uint8_t*)ANTENNA_SURVIE,
-							  ANTENNA_MESSAGE_LENGTH);
+	stmAntennaWriter((uint8_t*)ANTENNA_SURVIE,ANTENNA_MESSAGE_LENGTH);
 	//Wait for the end of the emergency
 	chThdSleepSeconds(EMERGENCY_SEC_TIMEOUT);
 
@@ -120,14 +119,14 @@ int readAntennaMessage(uint8_t* message,int lenght){
 	memset(message,0,lenght);
 
 	//Read Header Byte
-	int n=sdAsynchronousRead(&SD3,&message[0],1);
+	int n=stmAntennaReader(&message[0],1);
 
 	if( n!=1 )
 		return -1;
 	if( message[0]!=HEADER_ANTENNA[0] )
 		return 0;
 
-	sdRead(&SD3,&(message[n]),lenght-n);
+	stmAntennaReader(&(message[n]),lenght-n);
 
 	return 1;
 
