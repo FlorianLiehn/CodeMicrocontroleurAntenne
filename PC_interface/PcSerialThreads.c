@@ -24,7 +24,7 @@ static THD_FUNCTION(pcTxThread, arg) {
 
 	while (TRUE) {
 
-		msg_t state = chFifoReceiveObjectTimeoutS(fifo_log_arg,&msg,
+		msg_t state = chFifoReceiveObjectTimeout(fifo_log_arg,&msg,
 													TIME_INFINITE);
 
 
@@ -86,8 +86,6 @@ static THD_FUNCTION(pcRxThread, arg) {
 			writeLogToFifo(fifo_log_arg,ID_MSG_LOG_PING,
 				ping);
 		}
-
-		chThdSleepMilliseconds(25);
 
 	}
 }

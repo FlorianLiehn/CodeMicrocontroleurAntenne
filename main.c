@@ -67,13 +67,13 @@ int main(void) {
 
   //Init internals connections (FIFOs)
   //init fifo with fifo pointer, size of object, size of fifo,
-  // 0 alignment , object table(as pointer) and msg table
+  // 1 alignment , object table(as pointer) and msg table
   //Log Fifo
   chFifoObjectInit(&Fifo_log,sizeof(StampedMessage),
-		  FIFO_BUFFER_SIZE,0,(void*)logs_buffer,msg_log_buffer);
+		  FIFO_BUFFER_SIZE,1U,(void*)logs_buffer,msg_log_buffer);
   //order Fifo
   chFifoObjectInit(&Fifo_order,sizeof(SimpleMessage),
-		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
+		  FIFO_BUFFER_SIZE,1U,(void*)orders_buffer,msg_order_buffer);
 
   ///////////Enable Threads///////////////
   //Each thread need to be connected to different objects

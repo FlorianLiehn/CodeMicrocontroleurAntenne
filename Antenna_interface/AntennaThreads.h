@@ -12,6 +12,7 @@
 
 //Time out if no 1pps receive (wait 1005 ms
 #define TIMEOUT_1PPS  TIME_MS2I(1005)
+#define ANTENNA_READ_TIMEOUT TIME_MS2I(25)
 #define ANTICIPATION_TIME_BEFORE_TRACKING 2 + 1 + 1
 							//2s anticip +1 error RTC + 1anticp next 1pps
 #define EMERGENCY_SEC_TIMEOUT 10
@@ -29,7 +30,7 @@ enum STATE_ANTENNA_TRANSMISSION{
 };
 
 static inline int stmAntennaReader(uint8_t* buff,int n){
-	return sdRead(&SD3,buff,n);}
+	return sdReadTimeout(&SD3,buff,n,ANTENNA_READ_TIMEOUT);}
 static inline int stmAntennaWriter(uint8_t* buff,int n){
 	return sdWrite(&SD3,buff,n);}
 

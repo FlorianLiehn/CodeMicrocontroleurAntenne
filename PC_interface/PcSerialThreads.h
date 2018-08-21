@@ -14,12 +14,13 @@
 #define PC_PIN_RX PAL_LINE(GPIOA, 3)
 #define PC_PIN_TX PAL_LINE(GPIOA, 2)
 
+#define PC_READ_TIMEOUT TIME_MS2I(25)
 
 void startPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 					Trajectory* traj);
 
 static inline int stmPcReader(uint8_t* buff,int n){
-	return sdRead(&SD2,buff,n);}
+	return n=sdReadTimeout(&SD2,buff,n,PC_READ_TIMEOUT);}
 static inline int stmPcWriter(uint8_t* buff,int n){
 	return sdWrite(&SD2,buff,n);}
 

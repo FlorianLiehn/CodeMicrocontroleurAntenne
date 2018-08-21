@@ -35,14 +35,14 @@ static THD_FUNCTION(antennaTxThread, arg) {
 	while (TRUE) {
 
 		//1Hz rate + GPS synchro
-		msg_t msg_state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
+		msg_t msg_state = palWaitLineTimeout(PIN_1PPS,TIMEOUT_1PPS);
 		if(msg_state==MSG_TIMEOUT){
 			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
 				(ARGS){0});
 		}
 
 		//read fifo order
-		msg_state = chFifoReceiveObjectTimeoutS(fifo_order_arg,&msg,
+		msg_state = chFifoReceiveObjectTimeout(fifo_order_arg,&msg,
 													TIME_IMMEDIATE);
 
 		//process message
