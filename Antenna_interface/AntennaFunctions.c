@@ -60,22 +60,23 @@ void  waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	getTrajDate(traj,&target_time);
 	uint32_t target_sec=getTimeUnixSecFromRTCTime(&target_time);
 
-	ARGS empty_args;
 	if(current_sec>target_sec){//too late
 		writeLogToFifo(fifo_log,
-				ID_MSG_ALERT_TRAJECTORY_DROPPED,
-			empty_args);
+			ID_MSG_ALERT_TRAJECTORY_DROPPED,
+			(ARGS) {0});
 		*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 	}
 	else if(target_sec-current_sec<=ANTICIPATION_TIME_BEFORE_TRACKING){
 		writeLogToFifo(fifo_log,
-				ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY,
-			empty_args);
+			ID_MSG_LOG_TRAJ_BEGIN_TRAJECTORY,
+			(ARGS) {0});
 		//change state
 		*state=STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ;
 	}
 	else{
-		writeLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_WAITING_TRAJECTORY,empty_args);
+		writeLogToFifo(fifo_log,
+			ID_MSG_LOG_TRAJ_WAITING_TRAJECTORY,
+			(ARGS) {0});
 	}
 
 }

@@ -17,10 +17,10 @@ static const SerialConfig gpsSerialConfig =  {
 };
 
 static void setFormatNMEAmessage(void){
-	const  int8_t id_message=0x08;
-	const int16_t pay_length=9;
+	const  uint8_t id_message=0x08;
+	const uint16_t pay_length=9;
 
-	char set_RMC[16];
+	uint8_t set_RMC[16];
 	int n=0;
 	//header
 	set_RMC[n++]=0xa0;//first  header
@@ -50,7 +50,7 @@ static void setFormatNMEAmessage(void){
 	set_RMC[n++]=0x0d;//first  end tail \r
 	set_RMC[n++]=0x0a;//second end tail \n
 
-	sdWrite(&SD1,(uint8_t *)set_RMC,n);
+	sdWrite(&SD1,set_RMC,n);
 }
 
 static uint32_t getMillisFromGpsBuffer(char*buf){
@@ -121,16 +121,14 @@ static THD_FUNCTION(gpsThread, arg) {
 
 			}
 			else{
-				ARGS empty_args;
 				writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
-								empty_args);
+								(ARGS){0});
 			}
 
 		}
 		else if(n==0){
-			ARGS empty_args;
 			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
-							empty_args);
+					(ARGS){0});
 		}
 		chThdSleepMilliseconds(10);
 	}
