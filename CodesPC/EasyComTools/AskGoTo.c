@@ -16,18 +16,20 @@ int main(int argc,char**argv){
 	double az=atof(argv[1]);
 	double el=atof(argv[2]);
 
-	//init pipe
-	mkfifo(PIPE_NAME, PIPE_PERMISSION);
-
 	ARGS argument;
 	computeAntennaMessage(argument.message_antenne,
 			PUISSANCE_ACTIVATE,MODE_ANTENNA_POSITION,az,el);
+	printf("Goto az:%.2f el:%.2f\nmessage:\n",az,el);
+	printf("%12s\n",argument.message_antenne);
+
+	//init pipe
+	mkfifo(PIPE_NAME, PIPE_PERMISSION);
+
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);
     writeMessageToPipe(pipe_port,ID_MSG_ORDER_ANTENNA,argument);
 	close(pipe_port);
-	printf("Goto az:%.2f el:%.2f\nmessage written:\n",az,el);
-	printf("%12s\n",argument.message_antenne);
+	printf("Message written\n");
 	return 0;
 }
