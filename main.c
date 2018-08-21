@@ -24,7 +24,10 @@
 //Trajectory object
 #include "Trajectory/Trajectory.h"
 
-//CONNECTIONS INTERNES
+//INTERNALS CONNECTIONS
+//To initialize Fifo, it need 2 arrays: msg table & object table
+//here the object stored in fifo is StampedMessage object
+
 // FIFO that contain all logs and will be send to PC
 msg_t  msg_log_buffer[FIFO_BUFFER_SIZE];
 StampedMessage  logs_buffer[FIFO_BUFFER_SIZE];
@@ -56,20 +59,26 @@ int main(void) {
   halInit();
   chSysInit();
 
-  //Init CRC table
+  //Init static CRC table
   crcInit();
 
-  //Init Trajectory table
+  //Init Trajectory table explain!
   trajInit(&current_traj);
 
-  //Init Connections internes
+  //Init internals connections (FIFOs)
+  //init fifo with fifo pointer, size of object, size of fifo,
+  // 0 alignment , object table(as pointer) and msg table
+  //Log Fifo
   chFifoObjectInit(&Fifo_log,sizeof(StampedMessage),
 		  FIFO_BUFFER_SIZE,0,(void*)logs_buffer,msg_log_buffer);
-
+  //order Fifo
   chFifoObjectInit(&Fifo_order,sizeof(SimpleMessage),
 		  FIFO_BUFFER_SIZE,0,(void*)orders_buffer,msg_order_buffer);
 
   ///////////Enable Threads///////////////
+  //Each thread need to be connected to different objects
+  //They all used log fifo pointer for example
+
   //enable PC communication & create corresponding Threads
   startPcThreads(&Fifo_log, &Fifo_order,&current_traj);
   //enable Antenna communication
@@ -77,26 +86,35 @@ int main(void) {
   //enable GPS Time Update
   startGpsThread(&Fifo_log);
 
+  ///////////main program///////////////
+  //will handle User Button(Blue)
 
+  //Init Led 1 On Led 2 Off
   palSetPad(GPIOD, GPIOD_LED6);
+  palClearPad(GPIOD, GPIOD_LED5);
   int phase=0;
+  //infinite loop
   while (TRUE) {
 		chThdSleepMilliseconds(USER_BUTTON_TIMEOUT_MS);
 	if(READ_USER_BUTTON){
 		phase=1-phase;
 		if(phase){
+			//Led 1 Off Led 2 On
 			palClearPad(GPIOD, GPIOD_LED6);
 			palSetPad(GPIOD, GPIOD_LED5);
 		}
 		else{
+			//Led 1 On  Led 2 Off
 			palSetPad(GPIOD, GPIOD_LED6);
 			palClearPad(GPIOD, GPIOD_LED5);
 		}
 		//EMERGENCY USER COMMAND
+		//create a emergency message
 		SimpleMessage* new_order=(SimpleMessage*)chFifoTakeObjectI(&Fifo_order);
 		new_order->id=ID_MSG_ORDER_ANTENNA;
 		strncpy(new_order->arguments.message_antenne,ANTENNA_SURVIE,
 				ANTENNA_MESSAGE_LENGTH);
+		//send the message with order fifo
 		chFifoSendObjectI(&Fifo_order,  (void*)new_order);
 
 	}
