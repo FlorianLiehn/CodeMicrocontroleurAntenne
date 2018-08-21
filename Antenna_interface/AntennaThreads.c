@@ -18,11 +18,12 @@ const SerialConfig antennaSerialConfig =  {
 //TX Antenna thread
 THD_WORKING_AREA(waAntennaTxThread, 512);
 static THD_FUNCTION(antennaTxThread, arg) {
-
-	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((ThreadsArgs*)arg)->fifo_order_arg;
-	Trajectory* traj_arg=((ThreadsArgs*)arg)->traj_arg;
-	(void)traj_arg;	   //unused for now
+	//initialisation
+	objects_fifo_t*  fifo_log_arg  =((ProtectedThreadsArgs*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((ProtectedThreadsArgs*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((ProtectedThreadsArgs*)arg)->traj_arg;
+	//free the semaphore
+	chBSemSignal(& ((ProtectedThreadsArgs*)arg) ->protect_sem);
 
 	int state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 
@@ -129,9 +130,20 @@ void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
 	palEnableLineEventI(PIN_1PPS, PAL_EVENT_MODE_RISING_EDGE);
 
 	//Creates threads
+	//init Rx thread
 	chThdCreateStatic(waAntennaRxThread, sizeof(waAntennaRxThread), NORMALPRIO, antennaRxThread,
-														   (void*)log);
+			   (void*)log);
+
+	//init Tx thread
+	//args
+	ProtectedThreadsArgs th_args={
+		.fifo_log_arg=log,.fifo_order_arg=order,.traj_arg=traj,
+		.protect_sem= _BSEMAPHORE_DATA(th_args.protect_sem, 1)
+	};
+	//thread creation
 	chThdCreateStatic(waAntennaTxThread, sizeof(waAntennaTxThread), NORMALPRIO, antennaTxThread,
-			   (void*)&(ThreadsArgs){log, order, traj });
+			   (void*)& th_args);
+	//wait the initialation of Tx Thread
+	chBSemWait(&th_args.protect_sem);
 
 }

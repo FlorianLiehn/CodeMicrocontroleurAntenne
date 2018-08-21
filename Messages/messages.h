@@ -162,7 +162,9 @@ typedef struct {
 	objects_fifo_t* fifo_log_arg;
 	objects_fifo_t* fifo_order_arg;
 	Trajectory* traj_arg;
-}ThreadsArgs;
+	// binary sémaphore protect the structure
+	binary_semaphore_t protect_sem;
+}ProtectedThreadsArgs;
 
 void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
 void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg);

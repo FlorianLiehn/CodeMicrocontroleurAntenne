@@ -40,10 +40,12 @@ static THD_FUNCTION(pcTxThread, arg) {
 
 THD_WORKING_AREA(waPcRxThread, 512);
 static THD_FUNCTION(pcRxThread, arg) {
-
-	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((ThreadsArgs*)arg)->fifo_order_arg;
-	Trajectory* traj_arg=((ThreadsArgs*)arg)->traj_arg;
+	//initialisation
+	objects_fifo_t*  fifo_log_arg  =((ProtectedThreadsArgs*)arg)->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=((ProtectedThreadsArgs*)arg)->fifo_order_arg;
+	Trajectory* traj_arg=((ProtectedThreadsArgs*)arg)->traj_arg;
+	//free the semaphore
+	chBSemSignal(& ((ProtectedThreadsArgs*)arg) ->protect_sem);
 
 	SerialPayload incoming_message;
 
@@ -99,9 +101,18 @@ void startPcThreads(objects_fifo_t* log, objects_fifo_t* order,
 	sdStart(&SD2, &pcSerialConfig);
 
 	//Creates threads
-	chThdCreateStatic(waPcRxThread, sizeof(waPcRxThread), NORMALPRIO, pcRxThread,
-			   (void*)&(ThreadsArgs){log, order, traj });
 	chThdCreateStatic(waPcTxThread, sizeof(waPcTxThread), NORMALPRIO, pcTxThread,
-														   (void*)log);
+			(void*)log);
+	//init Tx thread
+	//args
+	ProtectedThreadsArgs th_args={
+		.fifo_log_arg=log,.fifo_order_arg=order,.traj_arg=traj,
+		.protect_sem= _BSEMAPHORE_DATA(th_args.protect_sem, 1)
+	};
+	//thread creation
+	chThdCreateStatic(waPcRxThread, sizeof(waPcRxThread), NORMALPRIO, pcRxThread,
+			(void*)& th_args);
+	//wait the initialation of Tx Thread
+	chBSemWait(&th_args.protect_sem);
 
 }
