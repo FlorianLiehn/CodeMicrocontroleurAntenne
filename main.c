@@ -43,6 +43,8 @@ Trajectory current_traj;
 //pinout userbutton & timeout
 #define READ_USER_BUTTON palReadPad(GPIOA,GPIOA_BUTTON)
 #define USER_BUTTON_TIMEOUT_MS 150
+#define PIN_LED_USER_BUTTON1 PAL_LINE(GPIOD, GPIOD_LED6)
+#define PIN_LED_USER_BUTTON2 PAL_LINE(GPIOD, GPIOD_LED5)
 
 /*
  * Application entry point.
@@ -90,33 +92,23 @@ int main(void) {
   //will handle User Button(Blue)
 
   //Init Led 1 On Led 2 Off
-  palSetPad(GPIOD, GPIOD_LED6);
-  palClearPad(GPIOD, GPIOD_LED5);
-  int phase=0;
+  palToggleLine(PIN_LED_USER_BUTTON1);
   //infinite loop
   while (TRUE) {
 		chThdSleepMilliseconds(USER_BUTTON_TIMEOUT_MS);
 	if(READ_USER_BUTTON){
-		phase=1-phase;
-		if(phase){
-			//Led 1 Off Led 2 On
-			palClearPad(GPIOD, GPIOD_LED6);
-			palSetPad(GPIOD, GPIOD_LED5);
-		}
-		else{
-			//Led 1 On  Led 2 Off
-			palSetPad(GPIOD, GPIOD_LED6);
-			palClearPad(GPIOD, GPIOD_LED5);
-		}
+		//change leds
+		palToggleLine(PIN_LED_USER_BUTTON1);
+		palToggleLine(PIN_LED_USER_BUTTON2);
 		//EMERGENCY USER COMMAND
 		//create a emergency message
 		SimpleMessage* new_order=(SimpleMessage*)
-				chFifoTakeObjectTimeoutS(&Fifo_order,TIME_IMMEDIATE);
+				chFifoTakeObjectTimeout(&Fifo_order,TIME_IMMEDIATE);
 		new_order->id=ID_MSG_ORDER_ANTENNA;
 		strncpy(new_order->arguments.message_antenne,ANTENNA_SURVIE,
 				ANTENNA_MESSAGE_LENGTH);
 		//send the message with order fifo
-		chFifoSendObjectS(&Fifo_order,  (void*)new_order);
+		chFifoSendObject(&Fifo_order,  (void*)new_order);
 
 	}
   }

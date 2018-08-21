@@ -14,6 +14,9 @@
 #define PC_PIN_RX PAL_LINE(GPIOA, 3)
 #define PC_PIN_TX PAL_LINE(GPIOA, 2)
 
+#define PIN_LED_PING_BUTTON1 PAL_LINE(GPIOD, GPIOD_LED3)
+#define PIN_LED_PING_BUTTON2 PAL_LINE(GPIOD, GPIOD_LED4)
+
 #define PC_READ_TIMEOUT TIME_MS2I(25)
 
 void startPcThreads(objects_fifo_t* log, objects_fifo_t* order,

@@ -51,9 +51,8 @@ static THD_FUNCTION(pcRxThread, arg) {
 
 	chRegSetThreadName("Thread RX PC");
 
-	int phase=0;
 	int count=0;
-	palSetPad(GPIOD, GPIOD_LED3);
+	palToggleLine(PIN_LED_PING_BUTTON1);
 	while (TRUE) {
 		count++;
 		int status=readMessage(stmPcReader,(uint8_t*)&incoming_message.buffer);
@@ -64,21 +63,13 @@ static THD_FUNCTION(pcRxThread, arg) {
 		}
 		else if(status>0){
 			if(handleIncomingMessage(fifo_log_arg,fifo_order_arg,
-					traj_arg,incoming_message.simple_message) >= 0 )
-				phase=1-phase;
-		}
-
-		if(phase){
-			palClearPad(GPIOD, GPIOD_LED3);
-			palSetPad(GPIOD, GPIOD_LED4);
-		}
-		else{
-			palSetPad(GPIOD, GPIOD_LED3);
-			palClearPad(GPIOD, GPIOD_LED4);
+					traj_arg,incoming_message.simple_message) >= 0 ){
+				palToggleLine(PIN_LED_PING_BUTTON1);
+				palToggleLine(PIN_LED_PING_BUTTON2);
+			}
 		}
 
 		if(count%20==0){
-
 			ARGS ping;
 			strncpy(ping.message_antenne,"TEST0MESSAGE",12);
 			ping.message_antenne[4]+=(count/20)%10;
