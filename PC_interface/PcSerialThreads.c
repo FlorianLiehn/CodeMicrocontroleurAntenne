@@ -24,7 +24,8 @@ static THD_FUNCTION(pcTxThread, arg) {
 
 	while (TRUE) {
 
-		msg_t state = chFifoReceiveObjectI(fifo_log_arg,&msg);
+		msg_t state = chFifoReceiveObjectTimeoutS(fifo_log_arg,&msg,
+													TIME_INFINITE);
 
 
 		if(state==MSG_OK){
@@ -34,7 +35,6 @@ static THD_FUNCTION(pcTxThread, arg) {
 			chFifoReturnObject(fifo_log_arg,msg);
 
 		}
-		chThdSleepMilliseconds(2);
 	}
 }
 

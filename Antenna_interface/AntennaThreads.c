@@ -42,7 +42,8 @@ static THD_FUNCTION(antennaTxThread, arg) {
 		}
 
 		//read fifo order
-		msg_state = chFifoReceiveObjectI(fifo_order_arg,&msg);
+		msg_state = chFifoReceiveObjectTimeoutS(fifo_order_arg,&msg,
+													TIME_IMMEDIATE);
 
 		//process message
 		if(msg_state==MSG_OK){

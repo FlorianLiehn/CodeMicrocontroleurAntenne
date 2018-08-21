@@ -110,12 +110,13 @@ int main(void) {
 		}
 		//EMERGENCY USER COMMAND
 		//create a emergency message
-		SimpleMessage* new_order=(SimpleMessage*)chFifoTakeObjectI(&Fifo_order);
+		SimpleMessage* new_order=(SimpleMessage*)
+				chFifoTakeObjectTimeoutS(&Fifo_order,TIME_IMMEDIATE);
 		new_order->id=ID_MSG_ORDER_ANTENNA;
 		strncpy(new_order->arguments.message_antenne,ANTENNA_SURVIE,
 				ANTENNA_MESSAGE_LENGTH);
 		//send the message with order fifo
-		chFifoSendObjectI(&Fifo_order,  (void*)new_order);
+		chFifoSendObjectS(&Fifo_order,  (void*)new_order);
 
 	}
   }

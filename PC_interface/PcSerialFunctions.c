@@ -99,8 +99,9 @@ int handleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 	}
 
 	//Send to Antenna Executer
-	SimpleMessage* new_order=(SimpleMessage*)chFifoTakeObjectI(fifo_order);
+	SimpleMessage* new_order=(SimpleMessage*)
+			chFifoTakeObjectTimeoutS(fifo_order,TIME_IMMEDIATE);
 	*new_order=incoming_message;
-	chFifoSendObjectI(fifo_order,  (void*)new_order);
+	chFifoSendObjectS(fifo_order,  (void*)new_order);
 	return 0;
 }

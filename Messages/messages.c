@@ -144,7 +144,7 @@ int readMessage(read_write_callback_t reader,uint8_t* message){
 void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 
 	StampedMessage* new_message=(StampedMessage*)
-			chFifoTakeObjectI(fifo_log);
+		chFifoTakeObjectTimeoutS(fifo_log,TIME_IMMEDIATE);
 
 	new_message->id=id;
 	new_message->arguments=args;
@@ -160,7 +160,7 @@ void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 	new_message->date.year=current_time.year;
 
 
-	chFifoSendObjectI(fifo_log,(void*)new_message);
+	chFifoSendObjectS(fifo_log,(void*)new_message);
 }
 
 void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg){
