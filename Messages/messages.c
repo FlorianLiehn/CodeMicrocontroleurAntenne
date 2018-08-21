@@ -10,11 +10,11 @@
 #define TOPBIT (1 << (WIDTH - 1))
 
 //https://barrgroup.com/Embedded-Systems/How-To/CRC-Calculation-C-Code
-static uint8_t crcTable[256]={};
+static uint8_t crcTable[CRC_TABLE_LENGTH]={};
 void crcInit(void){
 	uint8_t  remainder;
     //Compute the remainder of each possible dividend.
-    for (int dividend = 0; dividend < 256; ++dividend)
+    for (int dividend = 0; dividend < CRC_TABLE_LENGTH; ++dividend)
     {
         // Start with the dividend followed by zeros.
         remainder = dividend << (WIDTH - 8);
@@ -87,7 +87,7 @@ inline int getPayloadLength(int id){
 
 }
 
-int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
+size_t encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
 
 	int nb=0;
 	*(msg+(nb++))=HEADER_BYTE;//Header
@@ -100,7 +100,7 @@ int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length){
 	return nb;
 }
 
-int writeMessage(int(*writer)(uint8_t*,int),SerialPayload* payload){
+int writeMessage(read_write_callback_t writer,SerialPayload* payload){
 
 	uint8_t emit_buffer[MAX_SERIAL_MESSAGE_LENGTH];
 	int tot=encodePayload(payload->buffer,emit_buffer,
@@ -108,7 +108,7 @@ int writeMessage(int(*writer)(uint8_t*,int),SerialPayload* payload){
 	return writer(emit_buffer,tot);
 }
 
-int readMessage(int(*reader)(uint8_t*,int),uint8_t* message){
+int readMessage(read_write_callback_t reader,uint8_t* message){
 
 	uint8_t buf [MAX_SERIAL_MESSAGE_LENGTH];
     memset (message, 0, MAX_PAYLOAD_MESSAGE_LENGTH);

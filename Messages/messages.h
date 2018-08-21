@@ -132,14 +132,17 @@ typedef union {
 //////////////////MESSAGES ENCODE/DECODE//////////////////
 
 //CRC table computation
+#define CRC_TABLE_LENGTH 256
 void crcInit(void);
 uint8_t computeCRC(uint8_t * message, int nBytes);
 
 int getPayloadLength(int id);
-int encodePayload(uint8_t* payload,uint8_t* msg,int payload_length);
+size_t encodePayload(uint8_t* payload,uint8_t* msg,int payload_length);
 
-int writeMessage(int(*writer)(uint8_t*,int),SerialPayload* payload);
-int readMessage(int(*reader)(uint8_t*,int),uint8_t* message);
+//write read definition
+typedef int(*read_write_callback_t)(uint8_t*,int);
+int writeMessage(read_write_callback_t writer,SerialPayload* payload);
+int readMessage(read_write_callback_t reader,uint8_t* message);
 
 //If on microcontroller (and not on PC)
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
