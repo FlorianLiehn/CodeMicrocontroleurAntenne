@@ -17,7 +17,7 @@ int main(void){
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);
-    writeMessageToPipe(pipe_port,ID_MSG_ORDER_SURVIE,(ARGS){});
+    writeMessageToPipe(pipe_port,ID_MSG_ORDER_SURVIE,(ARGS){0});
     close(pipe_port);
 	printf("Survie message written\n");
 	return 0;

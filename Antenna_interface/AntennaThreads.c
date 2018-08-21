@@ -37,7 +37,7 @@ static THD_FUNCTION(antennaTxThread, arg) {
 		msg_t msg_state = palWaitLineTimeoutS(PIN_1PPS,TIMEOUT_1PPS);
 		if(msg_state==MSG_TIMEOUT){
 			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_NO_1PPS,
-				(ARGS){});
+				(ARGS){0});
 		}
 
 		//read fifo order

@@ -13,7 +13,7 @@ int main(void){
 
 	printf("Connection to Emitter pipe\n");
 	int pipe_port=open(PIPE_NAME, O_WRONLY);
-    writeMessageToPipe(pipe_port,ID_MSG_ORDER_CALAGE,(ARGS){});
+    writeMessageToPipe(pipe_port,ID_MSG_ORDER_CALAGE,(ARGS){0});
     close(pipe_port);
 	printf("Calage message written\n");
 	return 0;

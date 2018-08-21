@@ -58,16 +58,16 @@ void executeTargeting(char traj[MAX_TRAJ_LENGTH][ANTENNA_MESSAGE_LENGTH],
 						int length,int pipe_port,DateArgs date_begin){
 
 	//reinitialisation: antenna
-	writeMessageToPipe(pipe_port,ID_MSG_ORDER_DESACTIVATE,(ARGS){});
+	writeMessageToPipe(pipe_port,ID_MSG_ORDER_DESACTIVATE,(ARGS){0});
 	sleep(TIME_BEFORE_REINI_AND_CALAGE);
-	writeMessageToPipe(pipe_port,ID_MSG_ORDER_REINI,(ARGS){});
+	writeMessageToPipe(pipe_port,ID_MSG_ORDER_REINI,(ARGS){0});
 	sleep(TIME_BEFORE_REINI_AND_CALAGE);
 	//calage
-	writeMessageToPipe(pipe_port,ID_MSG_ORDER_CALAGE,(ARGS){});
+	writeMessageToPipe(pipe_port,ID_MSG_ORDER_CALAGE,(ARGS){0});
 	usleep(TIME_BEFORE2ORDERS);
 	//load trajectory on microcontroleur during calage
 	//reinitialisation: traj
-	writeMessageToPipe(pipe_port,ID_MSG_ORDER_TRAJ_REINI,(ARGS){});
+	writeMessageToPipe(pipe_port,ID_MSG_ORDER_TRAJ_REINI,(ARGS){0});
 	usleep(TIME_BEFORE2ORDERS);
 	//set length
 	ARGS arguments;
