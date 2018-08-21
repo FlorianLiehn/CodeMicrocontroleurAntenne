@@ -16,7 +16,7 @@ const SerialConfig antennaSerialConfig =  {
 };
 
 //TX Antenna thread
-THD_WORKING_AREA(waAntennaTxThread, 128);
+THD_WORKING_AREA(waAntennaTxThread, 512);
 static THD_FUNCTION(antennaTxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;
@@ -86,7 +86,7 @@ static THD_FUNCTION(antennaTxThread, arg) {
 
 
 //RX Antenna thread
-THD_WORKING_AREA(waAntennaRxThread, 128);
+THD_WORKING_AREA(waAntennaRxThread, 512);
 THD_FUNCTION(antennaRxThread, arg){
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
 

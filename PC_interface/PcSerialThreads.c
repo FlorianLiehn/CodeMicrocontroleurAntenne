@@ -14,7 +14,7 @@ const SerialConfig pcSerialConfig =  {
   0
 };
 
-THD_WORKING_AREA(waPcTxThread, 128);
+THD_WORKING_AREA(waPcTxThread, 512);
 static THD_FUNCTION(pcTxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
@@ -38,7 +38,7 @@ static THD_FUNCTION(pcTxThread, arg) {
 	}
 }
 
-THD_WORKING_AREA(waPcRxThread, 128);
+THD_WORKING_AREA(waPcRxThread, 512);
 static THD_FUNCTION(pcRxThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =((ThreadsArgs*)arg)->fifo_log_arg;

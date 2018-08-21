@@ -97,7 +97,7 @@ static void setRTCfromGpsBuffer(char* buf){
 }
 
 //TX Antenna thread
-THD_WORKING_AREA(waGpsThread, 128);
+THD_WORKING_AREA(waGpsThread, 512);
 static THD_FUNCTION(gpsThread, arg) {
 
 	objects_fifo_t*  fifo_log_arg  =(objects_fifo_t*)arg;
