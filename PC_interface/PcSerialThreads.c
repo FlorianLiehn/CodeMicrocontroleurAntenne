@@ -68,15 +68,16 @@ static THD_FUNCTION(pcRxThread, arg) {
 				palToggleLine(PIN_LED_PING_BUTTON2);
 			}
 		}
-
+#ifdef ECHO_PING
 		if(count%20==0){
 			ARGS ping;
-			strncpy(ping.message_antenne,"TEST0MESSAGE",12);
+			strncpy(ping.message_antenne,ECHO_PING,12);
 			ping.message_antenne[4]+=(count/20)%10;
 
 			writeLogToFifo(fifo_log_arg,ID_MSG_LOG_PING,
 				ping);
 		}
+#endif
 
 	}
 }

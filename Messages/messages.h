@@ -153,6 +153,8 @@ int readMessage(read_write_callback_t reader,uint8_t* message);
 //#define ECHO_COMMAND
 //echo every Order receive
 #define ECHO_ORDER
+//echo a ping message
+//#define ECHO_PING "TEST0MESSAGE"
 
 #include "hal.h"
 #include "ch.h"
