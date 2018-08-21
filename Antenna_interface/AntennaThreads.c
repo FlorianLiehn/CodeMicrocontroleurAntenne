@@ -113,8 +113,6 @@ THD_FUNCTION(antennaRxThread, arg){
 			writeLogToFifo(fifo_log_arg,ID_MSG_LOG_ANTENNA_RETURN,
 							new_log.arguments);
 		}
-
-		chThdSleepMilliseconds(2);
 	}
 
 }

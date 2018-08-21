@@ -130,7 +130,6 @@ static THD_FUNCTION(gpsThread, arg) {
 			writeLogToFifo(fifo_log_arg,ID_MSG_ALERT_WRONG_GPS_MESSAGE,
 					(ARGS){0});
 		}
-		chThdSleepMilliseconds(10);
 	}
 }
 
