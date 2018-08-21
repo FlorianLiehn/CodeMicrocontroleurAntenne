@@ -198,11 +198,12 @@ int checkTargetsCollision(File_Target tar1,File_Target tar2){
 
 void checkForNextTargeting(File_Target* targets,int tot,int* next){
 	if(*next<0)return;
+	time_t now=mktime(gmtime(&(time_t){time(NULL)}));
 	for(int i=0;i<tot;i++){
 		if(i!=*next && targets[i].priority_level<targets[*next].priority_level &&
-		 checkTargetsCollision(targets[i],targets[*next]) ){
+		 checkTargetsCollision(targets[i],targets[*next]) &&
+		 difftime(targets[i].beginning,now) > 0 ){
 			//check the new date
-			time_t now=mktime(gmtime(&(time_t){time(NULL)}));
 			if(difftime(targets[i].beginning,now)<PREPARATION_TIME){
 				//re-check with the new targets
 				printf("Collision %d VS %d\n",*next,i);
