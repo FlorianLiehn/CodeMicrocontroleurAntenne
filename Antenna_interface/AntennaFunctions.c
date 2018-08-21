@@ -90,8 +90,9 @@ void trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj){
 	sdAsynchronousWrite(&SD3,(uint8_t*)target,ANTENNA_MESSAGE_LENGTH);
 
 	if( trajCheckCorrectLength(traj) ){
-		ARGS empty_args;
-		writeLogToFifo(fifo_log,ID_MSG_LOG_TRAJ_FINISH_TRAJECTORY,empty_args);
+		writeLogToFifo(fifo_log,
+			ID_MSG_LOG_TRAJ_FINISH_TRAJECTORY,
+			(ARGS) {0});
 
 		trajInit(traj);
 		*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
@@ -109,8 +110,9 @@ void emergencyBehaviour(int *state,objects_fifo_t*  fifo_log,
 	//TODO Drop all messages in fifo ( multiple Emergency loop)
 	(void)fifo_order;
 
-	ARGS empty_args;
-	writeLogToFifo(fifo_log,ID_MSG_LOG_EXIT_EMERGENCY,empty_args);
+	writeLogToFifo(fifo_log,
+		ID_MSG_LOG_EXIT_EMERGENCY,
+		(ARGS) {0});
 	*state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 }
 
