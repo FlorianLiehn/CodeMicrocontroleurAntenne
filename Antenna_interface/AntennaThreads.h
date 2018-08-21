@@ -10,7 +10,7 @@
 
 #include "Messages/messages.h"
 
-//Time out if no 1pps receive
+//Time out if no 1pps receive (wait 1005 ms
 #define TIMEOUT_1PPS  TIME_MS2I(1005)
 #define ANTICIPATION_TIME_BEFORE_TRACKING 2 + 1 + 1
 							//2s anticip +1 error RTC + 1anticp next 1pps
@@ -21,16 +21,15 @@
 
 #define PIN_1PPS PAL_LINE(GPIOB,0)
 
-void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
-						Trajectory* traj);
-
-
 enum STATE_ANTENNA_TRANSMISSION{
 	STATE_ANTENNA_TRANSMISSION_NOMINAL,
 	STATE_ANTENNA_TRANSMISSION_WAITING_TIME,
 	STATE_ANTENNA_TRANSMISSION_PROCESS_TRAJ,
 	STATE_ANTENNA_EMERGENCY,
 };
+
+void startAntennaThreads(objects_fifo_t* log, objects_fifo_t* order,
+						Trajectory* traj);
 
 int  testEmergencyStop(int *state,SimpleMessage* input_message);
 void   nominalBehaviour(int *state,objects_fifo_t*  fifo_log,
@@ -39,7 +38,6 @@ void   waitingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
 void  trackingBehaviour(int *state,objects_fifo_t*  fifo_log,Trajectory* traj);
 void emergencyBehaviour(int *state,objects_fifo_t*  fifo_log,
 								objects_fifo_t*  fifo_order);
-
 
 int readAntennaMessage(uint8_t* message,int lenght);
 
