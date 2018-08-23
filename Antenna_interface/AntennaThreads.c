@@ -19,11 +19,12 @@ const SerialConfig antennaSerialConfig =  {
 THD_WORKING_AREA(waAntennaTxThread, 512);
 static THD_FUNCTION(antennaTxThread, arg) {
 	//initialisation
-	objects_fifo_t*  fifo_log_arg  =((ProtectedThreadsArgs*)arg)->fifo_log_arg;
-	objects_fifo_t*  fifo_order_arg=((ProtectedThreadsArgs*)arg)->fifo_order_arg;
-	Trajectory* traj_arg=((ProtectedThreadsArgs*)arg)->traj_arg;
+	ProtectedThreadsArgs *ptarg = (ProtectedThreadsArgs*)arg;
+	objects_fifo_t*  fifo_log_arg  =ptarg->fifo_log_arg;
+	objects_fifo_t*  fifo_order_arg=ptarg->fifo_order_arg;
+	Trajectory* traj_arg=ptarg->traj_arg;
 	//free the semaphore
-	chBSemSignal(& ((ProtectedThreadsArgs*)arg) ->protect_sem);
+	chBSemSignal(& ptarg->protect_sem);
 
 	int state=STATE_ANTENNA_TRANSMISSION_NOMINAL;
 
