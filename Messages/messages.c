@@ -174,7 +174,7 @@ void writeEmergencyToOrder(objects_fifo_t* fifo_order){
 	new_message->id=ID_MSG_ORDER_SURVIE;
 	new_message->arguments=(ARGS){0};
 	//send emergency message
-	chFifoSendObject(fifo_order,(void*)new_message);
+	chFifoSendObjectAhead(fifo_order,(void*)new_message);
 }
 
 void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg){
