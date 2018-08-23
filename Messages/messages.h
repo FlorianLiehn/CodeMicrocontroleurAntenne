@@ -169,6 +169,7 @@ typedef struct {
 }ProtectedThreadsArgs;
 
 void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args);
+void writeEmergencyToOrder(objects_fifo_t* fifo_order);
 void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg);
 #endif
 

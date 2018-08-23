@@ -141,26 +141,42 @@ int readMessage(read_write_callback_t reader,uint8_t* message){
 
 #if !(defined(_WIN32) || defined(WIN32)  ||  defined(__unix__) )
 
-void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
-
-	StampedMessage* new_message=(StampedMessage*)
-		chFifoTakeObjectTimeout(fifo_log,TIME_IMMEDIATE);
-
-	new_message->id=id;
-	new_message->arguments=args;
-	//timestamps
+static void setStampedMessageTime(StampedMessage* message){
 	RTCDateTime current_time;
 	rtcGetTime(&RTCD1, &current_time);
 	//set millis
 	for(int i=0;i<4;i++)
-		new_message->date.millis[i]=(current_time.millisecond>>(i*8))&0xFF;
-	new_message->date.day=current_time.day;
-	new_message->date.month=current_time.month;
+		message->date.millis[i]=(current_time.millisecond>>(i*8))&0xFF;
+	message->date.day=current_time.day;
+	message->date.month=current_time.month;
 	//set year
-	new_message->date.year=current_time.year;
+	message->date.year=current_time.year;
+}
 
-
+void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
+	//take new message
+	StampedMessage* new_message=(StampedMessage*)
+		chFifoTakeObjectTimeout(fifo_log,TIME_IMMEDIATE);
+	//set id & args
+	new_message->id=id;
+	new_message->arguments=args;
+	//timestamps
+	setStampedMessageTime(new_message);
+	//send message
 	chFifoSendObject(fifo_log,(void*)new_message);
+}
+
+void writeEmergencyToOrder(objects_fifo_t* fifo_order){
+	//take new message
+	StampedMessage* new_message=(StampedMessage*)
+		chFifoTakeObjectTimeout(fifo_order,TIME_IMMEDIATE);
+	//set emergency id & args
+	new_message->id=ID_MSG_ORDER_SURVIE;
+	new_message->arguments=(ARGS){0};
+	//timestamps
+	setStampedMessageTime(new_message);
+	//send emergency message
+	chFifoSendObject(fifo_order,(void*)new_message);
 }
 
 void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg){
