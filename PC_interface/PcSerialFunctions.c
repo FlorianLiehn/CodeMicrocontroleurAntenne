@@ -70,10 +70,8 @@ int handleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 
 	switch(incoming_message.id){
 	case ID_MSG_ORDER_SURVIE:
-		//TODO Handle high priority
-		incoming_message.id= ID_MSG_ORDER_ANTENNA;
-		strcpy(incoming_message.arguments.message_antenne,ANTENNA_SURVIE);
-		break;
+		writeEmergencyToOrder(fifo_order);
+		return 0;
 	case ID_MSG_ORDER_DESACTIVATE:
 		incoming_message.id= ID_MSG_ORDER_ANTENNA;
 		strcpy(incoming_message.arguments.message_antenne,ANTENNA_DESACTIVATE);
@@ -90,6 +88,13 @@ int handleCommunMessage(objects_fifo_t*  fifo_log,objects_fifo_t* fifo_order,
 		//TODO handle ALL commun orders
 		break;
 	case ID_MSG_ORDER_ANTENNA:
+		if(strncmp(incoming_message.arguments.message_antenne,
+			ANTENNA_SURVIE,
+			ANTENNA_MESSAGE_LENGTH) == 0 ){
+		writeEmergencyToOrder(fifo_order);
+		return 0;
+		}
+		break;
 	case ID_MSG_ORDER_DO_TRAJ_AT_DATE:
 		break;
 	default:

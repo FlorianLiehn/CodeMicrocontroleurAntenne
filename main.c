@@ -101,14 +101,7 @@ int main(void) {
 		palToggleLine(PIN_LED_USER_BUTTON1);
 		palToggleLine(PIN_LED_USER_BUTTON2);
 		//EMERGENCY USER COMMAND
-		//create a emergency message
-		SimpleMessage* new_order=(SimpleMessage*)
-				chFifoTakeObjectTimeout(&Fifo_order,TIME_IMMEDIATE);
-		new_order->id=ID_MSG_ORDER_ANTENNA;
-		strncpy(new_order->arguments.message_antenne,ANTENNA_SURVIE,
-				ANTENNA_MESSAGE_LENGTH);
-		//send the message with order fifo
-		chFifoSendObject(&Fifo_order,  (void*)new_order);
+		writeEmergencyToOrder(&Fifo_order);
 
 	}
   }

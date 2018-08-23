@@ -168,13 +168,11 @@ void writeLogToFifo(objects_fifo_t* fifo_log,uint8_t id,ARGS args){
 
 void writeEmergencyToOrder(objects_fifo_t* fifo_order){
 	//take new message
-	StampedMessage* new_message=(StampedMessage*)
+	SimpleMessage* new_message=(SimpleMessage*)
 		chFifoTakeObjectTimeout(fifo_order,TIME_IMMEDIATE);
 	//set emergency id & args
 	new_message->id=ID_MSG_ORDER_SURVIE;
 	new_message->arguments=(ARGS){0};
-	//timestamps
-	setStampedMessageTime(new_message);
 	//send emergency message
 	chFifoSendObject(fifo_order,(void*)new_message);
 }
@@ -188,7 +186,6 @@ void convertDateArgs2RTCDateTime(RTCDateTime* time,DateArgs date_arg){
 	time->millisecond=0;
 	for(int i=0;i<4;i++)
 		time->millisecond+=(date_arg.millis[i])<<(8*i);
-
 
 }
 
