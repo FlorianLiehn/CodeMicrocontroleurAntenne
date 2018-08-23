@@ -36,17 +36,17 @@
 #define MIN_EL_ANGLE 10
 //encoder limits
 #define MAX_ENCODER_X 28235
-#define MIN_ENCODER_X -MAX_ENCODER_X
+#define MIN_ENCODER_X (-MAX_ENCODER_X)
 #define MAX_ENCODER_Y 31435
-#define MIN_ENCODER_Y -MAX_ENCODER_Y
+#define MIN_ENCODER_Y (-MAX_ENCODER_Y)
 //encoder increment
-#define ENCODER_X_STEP_BY_ANGLE 6000./17
-#define ENCODER_Y_STEP_BY_ANGLE 20000./51
+#define ENCODER_X_STEP_BY_ANGLE (6000./17)
+#define ENCODER_Y_STEP_BY_ANGLE (20000./51)
 
 //
 #define INT16_ASCCI_HEX_LENGTH 4
 #define CHAR_ZERO '0'
-#define CHAR_A_OFFSET 'A'- CHAR_ZERO -10
+#define CHAR_A_OFFSET ('A'- CHAR_ZERO -10)
 
 //ASCII antenna mods
 enum MODE_ANTENNA{

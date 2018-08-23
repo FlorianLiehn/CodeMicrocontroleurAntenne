@@ -70,7 +70,7 @@ typedef struct {
 typedef struct {
 }NoneArgs;
 
-#define MAX_TRAJ_LENGTH 20*60 //max= 20min
+#define MAX_TRAJ_LENGTH (20*60) //max= 20min
 //Args needed for setting traj length
 typedef struct {
 	uint8_t length[2];//0=LB 1=HB

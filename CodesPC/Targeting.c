@@ -64,22 +64,22 @@ void executeTargeting(char traj[MAX_TRAJ_LENGTH][ANTENNA_MESSAGE_LENGTH],
 	sleep(TIME_BEFORE_REINI_AND_CALAGE);
 	//calage
 	writeMessageToPipe(pipe_port,ID_MSG_ORDER_CALAGE,(ARGS){0});
-	usleep(TIME_BEFORE2ORDERS);
+	usleep(TIME_BETWEEN2ORDERS);
 	//load trajectory on microcontroleur during calage
 	//reinitialisation: traj
 	writeMessageToPipe(pipe_port,ID_MSG_ORDER_TRAJ_REINI,(ARGS){0});
-	usleep(TIME_BEFORE2ORDERS);
+	usleep(TIME_BETWEEN2ORDERS);
 	//set length
 	ARGS arguments;
 	arguments.traj_length.length[0]=(length>>0)&0XFF;
 	arguments.traj_length.length[1]=(length>>8)&0XFF;
 	writeMessageToPipe(pipe_port,ID_MSG_ORDER_TRAJ_SET_LENGTH,arguments);
-	usleep(TIME_BEFORE2ORDERS);
+	usleep(TIME_BETWEEN2ORDERS);
 	//set traj points
 	for(int i=0;i<length;i++){
 		strncpy(arguments.message_antenne,traj[i],ANTENNA_MESSAGE_LENGTH);
 		writeMessageToPipe(pipe_port,ID_MSG_ORDER_TRAJ_SET_NEW_POINT,arguments);
-		usleep(TIME_BEFORE2ORDERS);
+		usleep(TIME_BETWEEN2ORDERS);
 	}
 	//set date
 	writeMessageToPipe(pipe_port,ID_MSG_ORDER_DO_TRAJ_AT_DATE,

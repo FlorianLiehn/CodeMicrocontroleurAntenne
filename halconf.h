@@ -419,7 +419,7 @@
  */
 //TODO PROTECT BUFFER EXPLOSION !
 #if !defined(SERIAL_BUFFERS_SIZE) || defined(__DOXYGEN__)
-#define SERIAL_BUFFERS_SIZE                 32*10
+#define SERIAL_BUFFERS_SIZE                 (32*10)
 #endif
 
 /*===========================================================================*/

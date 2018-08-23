@@ -23,7 +23,7 @@
 #define MAX(x,y)  ( ( (x) > (y) ) ? x : y )
 
 #define TIME_BEFORE_REINI_AND_CALAGE 2 //2s
-#define TIME_BEFORE2ORDERS 50*1000 //50ms
+#define TIME_BETWEEN2ORDERS (50*1000) //50ms
 #define MAX_FILE_LINE_LENGTH 1000
 
 static inline void writeMessageToPipe(int pipe,int id,ARGS args){

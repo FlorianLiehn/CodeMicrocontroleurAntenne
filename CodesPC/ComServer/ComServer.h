@@ -17,7 +17,7 @@
 #define MICROCONTROLER_PORT "/dev/ttyACM1"
 #define MICROCONTROLER_COM_PARAM ( O_RDWR | O_NOCTTY | O_SYNC)
 
-#define US_EXIT_LOOP 1000*500
+#define US_EXIT_LOOP (1000*500)
 
 #define LOG_FILE_NAME ????
 
