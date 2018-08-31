@@ -10,9 +10,11 @@ monitor halt
 monitor arm semihosting enable
 symbol-file "./build/ch.elf"
 load "./build/ch.elf"
-tbreak main
+
 monitor reset halt
 monitor halt
+
+monitor reset run
 
 END
 
