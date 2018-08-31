@@ -8,10 +8,11 @@
 #include "AntennaThreads.h"
 
 int  testEmergencyStop(int *state,SimpleMessage* input_message){
-	if(input_message->id==ID_MSG_ORDER_ANTENNA &&
+	if(input_message->id==ID_MSG_ORDER_SURVIE ||
+		(input_message->id==ID_MSG_ORDER_ANTENNA &&
 		strncmp(input_message->arguments.message_antenne,
 				ANTENNA_SURVIE,
-				ANTENNA_MESSAGE_LENGTH) == 0 ){
+				ANTENNA_MESSAGE_LENGTH) == 0 )){
 		*state=STATE_ANTENNA_EMERGENCY;
 		return -1;
 	}
