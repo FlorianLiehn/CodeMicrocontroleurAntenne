@@ -28,13 +28,14 @@ cd CodeMicrocontroleurAntenne
 
 For building you need the correct compilator: arm-none-eabi-gcc
 ```bash
-sudo apt install make
-sudo apt install gcc #C compilator
+sudo apt-get install make
+sudo apt-get install gcc #C compilator
 sudo apt-get install software-properties-common #install add-apt-repository
-sudo -E add-apt-repository ppa:team-gcc-arm-embedded/ppa #add arm gcc rep
+sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa #add arm gcc rep
 sudo apt-get update
 sudo apt-get install gcc-arm-none-eabi #install compilator
 sudo apt-get install openocd #install flash tools
+sudo apt-get install gdb-multiarch
 ```
 
 And in the project folder tape make
@@ -43,4 +44,7 @@ cd CodeMicrocontroleurAntenne
 make
 ```
 The Elf file and PcHandler are generated in build directory
+
+### Execution
+just run the flash.sh script
 
