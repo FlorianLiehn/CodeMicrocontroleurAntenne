@@ -28,6 +28,8 @@ cd CodeMicrocontroleurAntenne
 
 For building you need the correct compilator: arm-none-eabi-gcc
 ```bash
+sudo apt install make
+sudo apt install gcc #C compilator
 sudo apt-get install software-properties-common #install add-apt-repository
 sudo -E add-apt-repository ppa:team-gcc-arm-embedded/ppa #add arm gcc rep
 sudo apt-get update
